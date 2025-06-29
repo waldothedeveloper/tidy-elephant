@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
