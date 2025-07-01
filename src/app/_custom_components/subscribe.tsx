@@ -25,6 +25,7 @@ export default function SubscribeToLaunch() {
               required
               placeholder="Enter your email"
               autoComplete="email"
+              className="text-background"
             />
             <Button className="font-semibold" type="submit">
               Subscribe
