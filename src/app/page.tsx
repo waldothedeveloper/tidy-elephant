@@ -1,16 +1,17 @@
-import {
-  LoginLink,
-  RegisterLink,
-} from "@kinde-oss/kinde-auth-nextjs/components";
+import AboutUs from "./_custom_components/about-us";
+import Benefits from "./_custom_components/benefits";
+import FAQ from "./_custom_components/faq";
+import HeroPage from "./_custom_components/hero";
+import SubscribeToLaunch from "./_custom_components/subscribe";
 
-import { Button } from "@/components/ui/button";
-
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex flex-col">
-      <Button>Click me</Button>
-      <LoginLink>Sign in</LoginLink>
-      <RegisterLink>Sign up</RegisterLink>
-    </div>
+    <>
+      <HeroPage />
+      <SubscribeToLaunch />
+      <Benefits />
+      <AboutUs />
+      <FAQ />
+    </>
   );
 }
