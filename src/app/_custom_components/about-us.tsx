@@ -45,7 +45,7 @@ export default function AboutUs() {
               <div className="aspect-square overflow-hidden rounded-xl shadow-xl outline-1 -outline-offset-1 outline-black/10">
                 <Image
                   alt=""
-                  src="/woman.png"
+                  src="https://images.unsplash.com/photo-1657980223973-73be27c8171a?q=80&w=744&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   className="block size-full object-cover"
                   width={560}
                   height={560}
@@ -54,7 +54,7 @@ export default function AboutUs() {
               <div className="-mt-8 aspect-square overflow-hidden rounded-xl shadow-xl outline-1 -outline-offset-1 outline-black/10 lg:-mt-40">
                 <Image
                   alt=""
-                  src="https://images.unsplash.com/photo-1742483359033-13315b247c74?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1662496167635-14c958c52833?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   className="block size-full object-cover"
                   width={560}
                   height={560}
@@ -63,7 +63,7 @@ export default function AboutUs() {
               <div className="aspect-square overflow-hidden rounded-xl shadow-xl outline-1 -outline-offset-1 outline-black/10">
                 <Image
                   alt=""
-                  src="https://images.unsplash.com/photo-1556910638-6cdac31d44dc?q=80&w=1365&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1672640770474-e1d8a28fd0d2?q=80&w=695&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   className="block size-full object-cover"
                   width={560}
                   height={560}
@@ -72,7 +72,7 @@ export default function AboutUs() {
               <div className="-mt-8 aspect-square overflow-hidden rounded-xl shadow-xl outline-1 -outline-offset-1 outline-black/10 lg:-mt-40">
                 <Image
                   alt=""
-                  src="https://images.pexels.com/photos/8581019/pexels-photo-8581019.jpeg"
+                  src="https://images.unsplash.com/photo-1533929702053-9986939ea193?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   className="block size-full object-cover"
                   width={560}
                   height={560}
