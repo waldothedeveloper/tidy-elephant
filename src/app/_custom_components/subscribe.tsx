@@ -11,7 +11,6 @@ export default function SubscribeToLaunch() {
     success: false,
     message: "",
   });
-  console.log("state: ", state);
 
   return (
     <div className="bg-foreground py-16 sm:py-24 lg:py-32">
@@ -23,6 +22,7 @@ export default function SubscribeToLaunch() {
           Join our waitlist to get early access, exclusive launch offers, and be
           among the first to transform your space with trusted local experts.
         </p>
+        <div className="mt-10 max-w-md"></div>
         <form action={formAction} className="mt-10 max-w-md">
           <div className="flex gap-x-4">
             <label htmlFor="email-address" className="sr-only">
