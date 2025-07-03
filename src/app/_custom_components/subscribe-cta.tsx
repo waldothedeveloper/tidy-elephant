@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import appImage from "./images/zoom-homepage.png";
 
 export default function SubscribeCTA() {
   return (
@@ -28,9 +29,10 @@ export default function SubscribeCTA() {
           <div className="relative mt-16 h-80 lg:mt-8">
             <Image
               alt="App screenshot"
-              src="/images/zoom-homepage.png"
-              width={1824}
-              height={1080}
+              src={appImage} // Updated to use the imported image
+              // src="/images/zoom-homepage.png"
+              // width={1824}
+              // height={1080}
               className="absolute top-0 left-0 w-228 max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
             />
           </div>
