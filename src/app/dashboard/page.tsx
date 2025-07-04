@@ -1,10 +1,14 @@
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 export default function Dashboard() {
   return (
-    <div className="flex flex-col text-6xl font-bold text-black">
+    <div className="flex flex-col text-6xl font-bold text-foreground text-center items-center justify-center min-h-screen">
       DASHBOARD
-      <LogoutLink>Log out</LogoutLink>
+      <div className="mt-8">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
     </div>
   );
 }

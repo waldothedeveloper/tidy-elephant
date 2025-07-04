@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AboutUs() {
   return (
@@ -18,10 +20,10 @@ export default function AboutUs() {
         </div>
         <section className="mt-20 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 lg:gap-y-16">
           <div className="lg:pr-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-pretty text-gray-900">
+            <h2 className="text-2xl font-semibold tracking-tight text-pretty text-foreground">
               Our mission
             </h2>
-            <p className="mt-6 text-base/7 text-gray-600">
+            <p className="mt-6 text-base/7 text-muted-foreground">
               You know that chair covered in clothes? The junk drawer that
               won&apos;t close? That garage you can&apos;t park in? Yeah,
               we&apos;ve all been there. Here&apos;s the truth: 71% of Americans
@@ -29,7 +31,7 @@ export default function AboutUs() {
               hours a year just looking for their stuff.
             </p>
 
-            <p className="mt-8 text-base/7 text-gray-600">
+            <p className="mt-8 text-base/7 text-muted-foreground">
               We&apos;re building{" "}
               <span className="text-primary font-semibold">Ease & Arrange</span>{" "}
               because everyone deserves to love their home again. Soon,
@@ -39,6 +41,14 @@ export default function AboutUs() {
               our decluttering and organizing pros will have your back. Get on
               our launch list and be the first to transform your space!
             </p>
+            <div className="mt-10">
+              <Button
+                variant="link"
+                className="text-muted-foreground text-base hover:text-primary -ml-4"
+              >
+                <Link href="/waitlist/join-us">Join the waitlist &rarr;</Link>
+              </Button>
+            </div>
           </div>
           <div className="pt-16 lg:row-span-2 lg:-mr-16 xl:mr-auto">
             <div className="-mx-8 grid grid-cols-2 gap-4 sm:-mx-16 sm:grid-cols-4 lg:mx-0 lg:grid-cols-2 lg:gap-4 xl:gap-8">

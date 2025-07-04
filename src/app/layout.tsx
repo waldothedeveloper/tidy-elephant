@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
-import { AuthProvider } from "@/provider/auth-provider";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import Navigation from "./_custom_components/navigation";
@@ -31,7 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
+    <ClerkProvider
+      appearance={{
+        cssLayerName: "clerk",
+      }}
+      waitlistUrl="/waitlist/join-us"
+    >
       <html lang="en">
         <body className={`${inter.className} antialiased`}>
           <Navigation />
@@ -40,6 +45,6 @@ export default function RootLayout({
           <SpeedInsights />
         </body>
       </html>
-    </AuthProvider>
+    </ClerkProvider>
   );
 }

@@ -4,19 +4,18 @@ import FAQ from "./_custom_components/faq";
 import Filler from "./_custom_components/filler";
 import Footer from "./_custom_components/footer";
 import HeroPage from "./_custom_components/hero";
-import SubscribeToLaunch from "./_custom_components/subscribe";
+import SubscribeCTA from "./_custom_components/subscribe-cta";
 
 export default function LandingPage() {
   return (
     <>
       <HeroPage />
-      <SubscribeToLaunch />
+      <SubscribeCTA />
       <Benefits2 />
-      <SubscribeToLaunch />
+      <Filler />
+      <SubscribeCTA />
       <AboutUs />
       <FAQ />
-      <Filler />
-      <SubscribeToLaunch />
       <Footer />
     </>
   );
