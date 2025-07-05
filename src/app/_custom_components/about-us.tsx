@@ -64,7 +64,7 @@ export default function AboutUs() {
               <div className="-mt-8 aspect-square overflow-hidden rounded-xl shadow-xl outline-1 -outline-offset-1 outline-black/10 lg:-mt-40">
                 <Image
                   alt=""
-                  src="https://images.unsplash.com/photo-1662496167635-14c958c52833?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1683534239440-3b741f48a7ea?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   className="block size-full object-cover"
                   width={560}
                   height={560}

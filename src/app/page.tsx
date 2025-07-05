@@ -2,7 +2,6 @@ import AboutUs from "./_custom_components/about-us";
 import Benefits2 from "./_custom_components/benefits-2";
 import FAQ from "./_custom_components/faq";
 import Filler from "./_custom_components/filler";
-import Footer from "./_custom_components/footer";
 import HeroPage from "./_custom_components/hero";
 import SubscribeCTA from "./_custom_components/subscribe-cta";
 
@@ -16,7 +15,6 @@ export default function LandingPage() {
       <SubscribeCTA />
       <AboutUs />
       <FAQ />
-      <Footer />
     </>
   );
 }

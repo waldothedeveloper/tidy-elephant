@@ -47,7 +47,9 @@ export async function subscribeToWaitlist(
       message: `Subscription successful! Check your email for confirmation. ${data}`,
     };
   } catch (error) {
-    console.error("Subscription error:", error);
-    throw new Error("Failed to subscribe to waitlist");
+    throw new Error(
+      "Failed to subscribe to waitlist" +
+        (error instanceof Error ? `: ${error.message}` : "")
+    );
   }
 }
