@@ -2,21 +2,16 @@ import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
+import Footer from "./_custom_components/footer";
+import { IBM_Plex_Sans } from "next/font/google";
 import type { Metadata } from "next";
-import Navigation from "./_custom_components/navigation";
+import NavigationMenuPage from "@/app/_custom_components/real-navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// const spaceMono = Space_Mono({
-//   subsets: ["latin"],
-//   variable: "--font-space-mono",
-//   display: "swap",
-//   weight: ["400", "700"],
-// });
-
-const inter = Inter({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-ibm-plex-sans",
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -38,11 +33,12 @@ export default function RootLayout({
       waitlistUrl="/waitlist/join-us"
     >
       <html lang="en">
-        <body className={`${inter.className} antialiased`}>
-          <Navigation />
+        <body className={`${ibmPlexSans.className} antialiased`}>
+          <NavigationMenuPage />
           {children}
           <Analytics />
           <SpeedInsights />
+          <Footer />
         </body>
       </html>
     </ClerkProvider>
