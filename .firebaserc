@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "dev": "ease-and-arrange-development",
+    "prod": "ease-and-arrange-prod"
+  }
+}
