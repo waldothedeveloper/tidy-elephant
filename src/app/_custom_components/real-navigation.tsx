@@ -8,6 +8,10 @@ import { usePathname } from "next/navigation";
 export default function NavigationMenuPage() {
   const pathname = usePathname();
 
+  if (pathname.startsWith("/provider/")) {
+    return null; // Do not render the navigation menu on provider routes
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 border-b border-muted-foreground/20 mb-12">
       <div className="relative flex h-16 justify-between items-center">
@@ -19,14 +23,11 @@ export default function NavigationMenuPage() {
           </p>
         </Link>
 
-        {/* Button on the right - hidden on /provider/become-an-ease-specialist */}
-        {pathname !== "/provider/become-an-ease-specialist" && (
-          <Button variant="link" asChild className="text-base">
-            <Link href="/provider/become-an-ease-specialist">
-              Become an Ease Specialist
-            </Link>
-          </Button>
-        )}
+        <Button variant="link" asChild className="text-base">
+          <Link href="/provider/become-an-ease-specialist">
+            Become an Ease Specialist
+          </Link>
+        </Button>
       </div>
     </div>
   );
