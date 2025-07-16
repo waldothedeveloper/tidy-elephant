@@ -3,6 +3,7 @@ import { Flower } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { OnboardingProgress } from "./onboarding-progress";
+
 export default async function ProviderLayout({
   children,
 }: {
@@ -28,9 +29,8 @@ export default async function ProviderLayout({
           <OnboardingProgress />
         </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32">
-        {children}
-      </div>
+
+      <div>{children}</div>
     </div>
   );
 }

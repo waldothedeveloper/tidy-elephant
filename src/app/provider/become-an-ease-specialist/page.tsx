@@ -88,7 +88,7 @@ function EaseSpecialistHero() {
                   {process.env.NODE_ENV === "development" ? (
                     <Link
                       className="size-full"
-                      href="/provider/onboarding/build-profile"
+                      href="/provider/onboarding/basic-info"
                     >
                       <Button className="w-full py-6 text-xl font-semibold">
                         Become an Ease Specialist
@@ -517,7 +517,7 @@ function ReadyToDiveIn() {
         <div className="mt-10 flex items-center gap-x-6 lg:mt-0 lg:shrink-0">
           {process.env.NODE_ENV === "development" ? (
             <Button>
-              <Link href="/provider/onboarding/build-profile">
+              <Link href="/provider/onboarding/basic-info">
                 Become an Ease Specialist
               </Link>
             </Button>
