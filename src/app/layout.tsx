@@ -7,6 +7,7 @@ import { IBM_Plex_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import NavigationMenuPage from "@/app/_custom_components/real-navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from "@/components/ui/sonner";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -39,6 +40,12 @@ export default function RootLayout({
           <Analytics />
           <SpeedInsights />
           <Footer />
+          <Toaster
+            richColors
+            position="bottom-right"
+            closeButton
+            // duration={20000}
+          />
         </body>
       </html>
     </ClerkProvider>

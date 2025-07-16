@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const schema = z.object({
   email: z.string({
-    invalid_type_error: "Please enter a valid email.",
+    error: "Please enter a valid email.",
   }),
 });
 
@@ -23,9 +23,7 @@ export async function subscribeToWaitlist(
   });
 
   if (!validatedFields.success) {
-    throw new Error(
-      validatedFields.error.errors[0].message || "Invalid email address"
-    );
+    throw new Error(validatedFields.error.message || "Invalid email address");
   }
 
   try {
