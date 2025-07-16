@@ -1,8 +1,8 @@
-import { auth } from "@clerk/nextjs/server";
 import { Flower } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { OnboardingProgress } from "./onboarding-progress";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function ProviderLayout({
   children,
@@ -10,8 +10,8 @@ export default async function ProviderLayout({
   children: React.ReactNode;
 }) {
   if (
-    (await auth()).sessionClaims?.metadata.onboardingComplete === true &&
-    (await auth()).sessionClaims?.metadata.isAProvider === true
+    (await auth()).sessionClaims?.metadata?.onboardingComplete === true &&
+    (await auth()).sessionClaims?.metadata?.isAProvider === true
   ) {
     redirect("/provider/dashboard");
   }
