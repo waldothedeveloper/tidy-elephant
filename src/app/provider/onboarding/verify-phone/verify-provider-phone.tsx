@@ -33,11 +33,11 @@ export function VerifyProviderPhone({
       <form onSubmit={phoneVerificationForm.handleSubmit(onSubmit)}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-6 flex items-center justify-between gap-x-6">
-            <Link href="/provider/onboarding/basic-info" type="button">
-              <Button type="button" variant="outline">
+            <Button type="button" variant="outline">
+              <Link href="/provider/onboarding/basic-info" type="button">
                 Previous
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
             <Button variant="outline" type="button" disabled>
               Submit & Next Step

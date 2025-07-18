@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/input-otp";
 
 import { Button } from "@/components/ui/button";
-import { e164PhoneNumberSchema } from "@/lib/schemas";
 import { CircleCheckBig } from "lucide-react";
 import Link from "next/link";
-import { z } from "zod";
+import { e164PhoneNumberSchema } from "@/lib/schemas";
 import { useCodeVerification } from "./useCodeVerification";
+import { z } from "zod";
 
 export function VerifyProviderPhoneSMSCode({
   clearPhoneNumber,
@@ -53,23 +53,23 @@ export function VerifyProviderPhoneSMSCode({
       <form onSubmit={codeVerificationForm.handleSubmit(onSubmit)}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-6 flex items-center justify-between gap-x-6">
-            <Link href="/provider/onboarding/basic-info" type="button">
-              <Button variant="outline">Previous</Button>
-            </Link>
-            <Link
-              href={canSubmit ? "/provider/onboarding/create-schedule" : "#"}
-              className={
-                !canSubmit ? "pointer-events-none cursor-not-allowed" : ""
-              }
+            <Button variant="outline">
+              <Link href="/provider/onboarding/basic-info" type="button">
+                Previous
+              </Link>
+            </Button>
+
+            <Button
+              disabled={!canSubmit}
+              variant={!canSubmit ? "outline" : "default"}
+              type="button"
             >
-              <Button
-                disabled={!canSubmit}
-                variant={!canSubmit ? "outline" : "default"}
-                type="button"
+              <Link
+                href={canSubmit ? "/provider/onboarding/create-schedule" : "#"}
               >
                 Submit & Next Step
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32">

@@ -1,12 +1,12 @@
 "use client";
 
-import { AlertTriangle, Camera, FileText, RefreshCw, User } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Phone, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect } from "react";
 
-export default function BasicInfoError({
+export default function VerifyPhoneError({
   error,
   reset,
 }: {
@@ -15,14 +15,20 @@ export default function BasicInfoError({
 }) {
   // Log the error to an error reporting service
   useEffect(() => {
-    console.error("Basic Info Error:", error);
+    console.error("Phone Verification Error:", error);
   }, [error]);
 
   return (
     <div>
       {/* Header Navigation - matching the actual page */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mt-6 flex items-center justify-end gap-x-6">
+        <div className="mt-6 flex items-center justify-between gap-x-6">
+          <Link href="/provider/onboarding/basic-info">
+            <Button type="button" variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+          </Link>
           <Button variant="outline" disabled>
             Submit & Next Step
           </Button>
@@ -30,7 +36,7 @@ export default function BasicInfoError({
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32">
         <div className="pb-12">
           <span className="mt-2 text-sm text-muted-foreground">
             Activate Profile
@@ -38,12 +44,13 @@ export default function BasicInfoError({
           <div className="flex items-center mt-4 mb-4">
             <AlertTriangle className="w-6 h-6 text-amber-500 mr-3" />
             <h2 className="text-3xl font-semibold text-foreground">
-              Profile setup temporarily unavailable
+              Phone verification temporarily unavailable
             </h2>
           </div>
           <p className="mt-2 max-w-4xl text-sm text-muted-foreground">
-            We&apos;re having trouble saving your profile information right now.
-            This is usually temporary and should be resolved shortly.
+            We&apos;re having trouble connecting to our phone verification
+            service right now. This is usually temporary and should be resolved
+            shortly.
           </p>
         </div>
 
@@ -58,44 +65,33 @@ export default function BasicInfoError({
                 <RefreshCw className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    Try submitting again
+                    Try again in a moment
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Your form data is still saved in your browser
+                    The issue might resolve itself automatically
                   </p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <User className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <Phone className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    Check your information
+                    Check your phone number
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Make sure all required fields are filled out correctly
+                    Make sure you entered a valid mobile phone number
                   </p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <Camera className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <ArrowLeft className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    Try uploading your photo later
+                    Continue setting up your profile
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    You can complete your profile without a photo for now
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <FileText className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Save your progress
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Copy your &quot;About me&quot; text to avoid losing your
-                    work
+                    You can verify your phone number later and still use the
+                    platform
                   </p>
                 </div>
               </div>
@@ -108,9 +104,6 @@ export default function BasicInfoError({
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button variant="outline" asChild className="flex-1 sm:flex-none">
-              <Link href="/provider/onboarding">Start Over</Link>
-            </Button>
           </div>
 
           {/* Help section */}
@@ -120,17 +113,17 @@ export default function BasicInfoError({
             </p>
             <div className="flex flex-col sm:flex-row gap-2 text-sm">
               <Link
-                href={`mailto:support@easeandarrange.com?subject=Profile Setup Issue&body=I encountered an error while setting up my profile. Error ID: ${error.digest || "N/A"}`}
+                href="mailto:support@easeandarrange.com?subject=Phone Verification Issue"
                 className="text-primary hover:underline"
               >
                 Email support
               </Link>
               <span className="hidden sm:inline text-muted-foreground">•</span>
               <Link
-                href="/help/profile-setup"
+                href="/help/phone-verification"
                 className="text-primary hover:underline"
               >
-                Profile setup help
+                Phone verification help
               </Link>
               <span className="hidden sm:inline text-muted-foreground">•</span>
               <Link href="/help" className="text-primary hover:underline">
