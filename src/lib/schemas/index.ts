@@ -21,3 +21,26 @@ export const userProfileSchema = z.object({
     error: "Please upload a photo so customers can recognize you",
   }),
 });
+
+// Validate formatted phone number (xxx) xxx-xxxx
+export const userProfilePhoneVerificationSchema = z.object({
+  phoneNumber: z
+    .string()
+    .regex(/^\(\d{3}\) \d{3}-\d{4}$/, {
+      error: "Please enter a valid phone number.",
+    })
+    .length(14, { error: "Phone number must be exactly 10 characters" }),
+});
+
+export const userProfileCodeVerificationSchema = z.object({
+  verificationCode: z.string().min(6, {
+    error: "Verification code must be exactly 6 digits",
+  }),
+});
+
+export const e164PhoneNumberSchema = z.object({
+  phoneNumber: z.string().regex(/^\+1\d{10}$/, {
+    error:
+      "Phone number must be in E.164 format for US numbers, e.g., +13055555555",
+  }),
+});
