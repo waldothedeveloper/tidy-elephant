@@ -242,7 +242,6 @@ export default function ProviderOnboardingBasicInfo() {
                               {...field}
                             />
                           </FormControl>
-
                           <FormMessage />
                         </FormItem>
                       )}
