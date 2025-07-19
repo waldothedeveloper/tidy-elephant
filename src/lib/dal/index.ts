@@ -13,6 +13,112 @@ import { redirect } from "next/navigation";
 import twilio from "twilio";
 import { z } from "zod";
 
+// Retry delay constants for better maintainability
+const RETRY_DELAY_RATE_LIMIT = 60; // 1 minute for rate limiting
+const RETRY_DELAY_MAX_ATTEMPTS = 3600; // 1 hour for max attempts
+
+// Add Twilio error interface at the top
+interface TwilioError extends Error {
+  status: number;
+  code: number;
+  moreInfo: string;
+}
+
+// Helper function to check if error is a Twilio error
+function isTwilioError(error: unknown): error is TwilioError {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    "status" in error &&
+    "code" in error &&
+    typeof error.status === "number" &&
+    typeof error.code === "number"
+  );
+}
+
+function handleTwilioError(error: unknown, context: "send" | "verify") {
+  // Handle Twilio-specific errors
+  if (isTwilioError(error)) {
+    switch (error.status) {
+      case 429:
+        return {
+          success: false as const,
+          error: "Too many requests. Please wait before trying again.",
+          retryAfter: RETRY_DELAY_RATE_LIMIT,
+          ...(context === "verify" && { verified: false }),
+        };
+      case 400:
+        if (error.code === 60200) {
+          return {
+            success: false as const,
+            error: "Invalid phone number format.",
+            ...(context === "verify" && { verified: false }),
+          };
+        }
+        if (error.code === 60203) {
+          return {
+            success: false as const,
+            error: "Maximum send attempts reached for this phone number.",
+            retryAfter: RETRY_DELAY_MAX_ATTEMPTS,
+            ...(context === "verify" && { verified: false }),
+          };
+        }
+        if (error.code === 60202 && context === "verify") {
+          return {
+            success: false as const,
+            verified: false,
+            error:
+              "Maximum verification attempts reached. Please request a new code.",
+          };
+        }
+        break;
+      case 403:
+        return {
+          success: false as const,
+          error: "Forbidden. Check your Twilio account permissions.",
+          ...(context === "verify" && { verified: false }),
+        };
+      case 404:
+        if (error.code === 20404 && context === "verify") {
+          return {
+            success: false as const,
+            verified: false,
+            error: "Verification code has expired. Please request a new one.",
+          };
+        }
+        return {
+          success: false as const,
+          error: "Verification service not found. Check your configuration.",
+          ...(context === "verify" && { verified: false }),
+        };
+      default:
+        return {
+          success: false as const,
+          error: `Twilio error: ${error.message}`,
+          ...(context === "verify" && { verified: false }),
+        };
+    }
+  }
+
+  // Handle generic errors
+  if (error instanceof Error) {
+    return {
+      success: false as const,
+      error: error.message,
+      ...(context === "verify" && { verified: false }),
+    };
+  }
+
+  return {
+    success: false as const,
+    error:
+      context === "send"
+        ? "An unknown error occurred. Please try again later."
+        : "An unknown error occurred during verification.",
+    ...(context === "verify" && { verified: false }),
+  };
+}
+
 /*
 
   !!!ABOUT ENFORCING AUTHENTICATION FOR ANY DAL OPERATIONS
@@ -104,33 +210,36 @@ export async function sendTwilioVerificationCodeDAL(
   }
 
   try {
-    const { status } = await client.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+    if (!process.env.TWILIO_VERIFY_SERVICE_SID) {
+      throw new Error(
+        "Twilio Verify Service SID is not set in environment variables. Please check that your .env file is configured correctly."
+      );
+    }
+
+    const verification = await client.verify.v2
+      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
       .verifications.create({
         to: phoneNumber,
         channel: "sms",
       });
 
-    if (status === "max_attempts_reached") {
-      throw new Error("Maximum attempts reached. Please try again later.");
+    if (verification.status === "max_attempts_reached") {
+      return {
+        success: false,
+        error: "Maximum attempts reached. Please try again later.",
+        retryAfter: RETRY_DELAY_MAX_ATTEMPTS, // 1 hour in seconds
+      };
     }
 
-    if (status !== "pending") {
+    if (verification.status !== "pending") {
       throw new Error(
         "Something went wrong while sending the verification code. Please try again later."
       );
     }
 
-    return { success: true, message: status };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "An unknown error occurred trying to send verification code";
-    return {
-      success: false,
-      error: `${errorMessage}`,
-    };
+    return { success: true, message: verification.status };
+  } catch (error: unknown) {
+    return handleTwilioError(error, "send");
   }
 }
 
@@ -146,24 +255,29 @@ export async function verifyTwilioCodeDAL(
         "Twilio Verify Service SID is not set in environment variables. Please check that your .env file is configured correctly."
       );
     }
-    const { status } = await client.verify.v2
+
+    const verificationCheck = await client.verify.v2
       .services(process.env.TWILIO_VERIFY_SERVICE_SID)
       .verificationChecks.create({
         code,
         to: phoneNumber,
       });
 
-    if (status !== "approved") {
-      throw new Error("Failed to verify code. Please try again.");
+    if (verificationCheck.status !== "approved") {
+      return {
+        success: false,
+        verified: false,
+        error: "Invalid verification code. Please try again.",
+      };
     }
 
-    return { success: true, message: "Code verified successfully." };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
     return {
-      success: false,
-      error: "An unknown error occurred. Please try again later.",
+      success: true,
+      verified: true,
+      message: "Code verified successfully.",
     };
+  } catch (error: unknown) {
+    return handleTwilioError(error, "verify");
   }
 }
 

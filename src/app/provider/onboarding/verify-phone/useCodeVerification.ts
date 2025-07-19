@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { twilioSendVerificationCodeAction } from "@/app/actions/onboarding/twilio-send-verification-code";
 import { twilioVerifyCodeAction } from "@/app/actions/onboarding/twilio-verify-code";
 import { useForm } from "react-hook-form";
+import { useResendTimer } from "./useResendTimer";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +43,15 @@ export function useCodeVerification(
       verificationCode: "",
     },
   });
+
+  const {
+    timeLeft,
+    canResend,
+    maxAttemptsReached,
+    startTimer,
+    resetTimer,
+    formatTime,
+  } = useResendTimer();
 
   // Step 1: Send verification code when component mounts
   useEffect(() => {
@@ -87,6 +97,12 @@ export function useCodeVerification(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sharedPhoneNumber, step]);
 
+  useEffect(() => {
+    if (sharedPhoneNumber) {
+      resetTimer();
+    }
+  }, [sharedPhoneNumber, resetTimer]);
+
   const codeVerificationCache = useRef<
     Map<string, { success: boolean; error?: string }>
   >(new Map());
@@ -109,18 +125,18 @@ export function useCodeVerification(
           setCodeVerificationState({
             step: "code-invalid",
             error:
-              "You already entered this code and it was invalid. Please try a different code.",
+              "You already entered this code and it was invalid. Contact Support if you need assistance.",
           });
 
           toast.error(
-            "You already entered this code and it was invalid. Please try a different code."
+            "You already entered this code and it was invalid. Contact Support if you need assistance."
           );
           // this is such a funny hack!
           setTimeout(() => {
             codeVerificationForm.setError("verificationCode", {
               type: "manual",
               message:
-                "You already entered this code and it was invalid. Please try a different code.",
+                "You already entered this code and it was invalid. Contact Support if you need assistance.",
             });
           }, 0);
           return; // Exit early - don't make API call
@@ -183,10 +199,15 @@ export function useCodeVerification(
   );
 
   const resendCode = useCallback(async () => {
+    if (!canResend) return;
+
     setCodeVerificationState({ step: "sending-code" });
     codeVerificationForm.setValue("verificationCode", "");
 
     try {
+      // Start timer immediately to prevent multiple clicks
+      startTimer();
+
       const response =
         await twilioSendVerificationCodeAction(sharedPhoneNumber);
       if (response.success) {
@@ -216,7 +237,7 @@ export function useCodeVerification(
       });
       toast.error("Failed to resend verification code. Please try again.");
     }
-  }, [sharedPhoneNumber, codeVerificationForm]);
+  }, [sharedPhoneNumber, codeVerificationForm, canResend, startTimer]);
 
   function onSubmit() {
     if (step === "code-verified") {
@@ -234,5 +255,10 @@ export function useCodeVerification(
     resendCode,
     onSubmit,
     canSubmit,
+    timeLeft,
+    canResend,
+    formatTime,
+
+    maxAttemptsReached,
   };
 }
