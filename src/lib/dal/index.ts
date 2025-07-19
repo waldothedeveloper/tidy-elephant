@@ -1,12 +1,12 @@
 import "server-only";
 
+import { Firestore, addDoc, collection } from "firebase/firestore";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import {
   e164PhoneNumberSchema,
   userProfileCodeVerificationSchema,
   userProfileSchema,
 } from "@/lib/schemas/index";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
-import { Firestore, addDoc, collection } from "firebase/firestore";
 
 // import { cache } from "react";
 import { redirect } from "next/navigation";
@@ -41,6 +41,12 @@ const enforceAuthProvider = async () => {
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+if (!accountSid || !authToken) {
+  throw new Error(
+    "Twilio credentials are not set in environment variables. Please check that your .env file is configured correctly."
+  );
+}
+
 const client = twilio(accountSid, authToken);
 
 // *** TWILIO DAL FUNCTIONS ***
@@ -135,8 +141,13 @@ export async function verifyTwilioCodeDAL(
   await enforceAuthProvider();
 
   try {
+    if (!process.env.TWILIO_VERIFY_SERVICE_SID) {
+      throw new Error(
+        "Twilio Verify Service SID is not set in environment variables. Please check that your .env file is configured correctly."
+      );
+    }
     const { status } = await client.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
       .verificationChecks.create({
         code,
         to: phoneNumber,

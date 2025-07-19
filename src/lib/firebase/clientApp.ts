@@ -14,6 +14,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APPID,
 };
 
+Object.keys(firebaseConfig).forEach((key) => {
+  if (!firebaseConfig[key as keyof typeof firebaseConfig]) {
+    throw new Error(
+      `Firebase configuration error: ${key} is not set. Please check your environment variables.`
+    );
+  }
+});
+
 export const firebaseApp = initializeApp(firebaseConfig);
 
 export const auth = getAuth(firebaseApp);

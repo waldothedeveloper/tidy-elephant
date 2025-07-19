@@ -4,6 +4,11 @@ import { EmailTemplate } from "@/app/_custom_components/email-template";
 import { Resend } from "resend";
 import { z } from "zod";
 
+if (!process.env.RESEND_API_KEY) {
+  throw new Error(
+    "Resend API key is not set in environment variables. Please check that your .env file is configured correctly."
+  );
+}
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const schema = z.object({
