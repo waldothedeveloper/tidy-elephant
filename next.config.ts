@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     devtoolSegmentExplorer: true,
+    typedEnv: true,
   },
   images: {
     remotePatterns: [

@@ -13,6 +13,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APPID,
 };
 
+Object.keys(firebaseConfig).forEach((key) => {
+  if (!firebaseConfig[key as keyof typeof firebaseConfig]) {
+    throw new Error(
+      `Firebase configuration error: ${key} is not set. Please check your environment variables.`
+    );
+  }
+});
+
 // Returns an authenticated client SDK instance for use in Server Side Rendering
 // and Static Site Generation
 export async function getAuthenticatedAppForUser() {
