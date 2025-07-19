@@ -38,6 +38,10 @@ export function VerifyProviderPhoneSMSCode({
     resendCode,
     onSubmit,
     canSubmit,
+    timeLeft,
+    canResend,
+    formatTime,
+    maxAttemptsReached,
   } = useCodeVerification(clearPhoneNumber, sharedPhoneNumber);
 
   const inputClassNames =
@@ -170,18 +174,28 @@ export function VerifyProviderPhoneSMSCode({
                 <div className="-ml-2">
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="outline"
                     onClick={resendCode}
                     disabled={
+                      !canResend ||
+                      maxAttemptsReached ||
                       step === "sending-code" ||
                       step === "verifying-code" ||
                       step === "code-verified"
                     }
                   >
-                    {step === "sending-code"
-                      ? "Sending..."
-                      : "Resend Verification Code in 59s"}
+                    {maxAttemptsReached
+                      ? "Maximum attempts reached"
+                      : !canResend && timeLeft > 0
+                        ? `Resend in ${formatTime(timeLeft)}`
+                        : "Resend Verification Code"}
                   </Button>
+                  {maxAttemptsReached && (
+                    <p className="text-sm text-destructive mt-2">
+                      You&apos;ve reached the maximum number of resend attempts.
+                      Please contact support or try again later.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
