@@ -158,14 +158,11 @@ export async function verifyTwilioCodeDAL(
     }
 
     return { success: true, message: "Code verified successfully." };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "An unknown error occurred trying to verify the code";
     return {
       success: false,
-      error: `${errorMessage}`,
+      error: "An unknown error occurred. Please try again later.",
     };
   }
 }
