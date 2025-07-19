@@ -152,7 +152,16 @@ export function VerifyProviderPhoneSMSCode({
                         )}
                         <FormDescription>
                           Enter the 6-digit confirmation code we sent to your
-                          phone ending with {maskedPhone}. <br />
+                          phone ending with {maskedPhone}. <br /> You can also
+                          <Button
+                            type="button"
+                            variant="link"
+                            onClick={clearPhoneNumber}
+                            className="px-1 py-0"
+                          >
+                            change your phone number
+                          </Button>
+                          if needed.
                         </FormDescription>
                       </FormItem>
                     )}
