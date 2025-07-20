@@ -152,8 +152,8 @@ export function useCodeVerification(
             // DON'T cache successful codes - just proceed
             setCodeVerificationState({ step: "code-verified" });
             toast.success("Phone number verified successfully!");
-            //! *** navigate to next step automatically ***
-            router.push("/provider/onboarding/create-schedule");
+
+            router.push("/onboarding/create-schedule");
           } else {
             // ONLY cache invalid codes
             const errorMsg = response.error || "Invalid verification code";

@@ -123,10 +123,13 @@ export async function twilioVerifyCodeAction(
   );
 
   if (!rateLimitResult.success || !dailyLimitResult.success) {
+    const failedResult = !rateLimitResult.success
+      ? rateLimitResult
+      : dailyLimitResult;
     return {
       success: false,
       error: "Rate limit exceeded. Please try again later.",
-      retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+      retryAfter: Math.ceil((failedResult.reset - Date.now()) / 1000),
     };
   }
 
