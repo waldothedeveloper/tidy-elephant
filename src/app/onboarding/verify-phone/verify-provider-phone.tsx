@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,14 +35,19 @@ export function VerifyProviderPhone({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-6 flex items-center justify-between gap-x-6">
             <Button asChild type="button" variant="outline">
-              <Link href="/basic-info" type="button">
+              <Link href="/onboarding/basic-info" type="button">
                 Previous
               </Link>
             </Button>
 
-            <Button variant="outline" type="button" disabled>
-              Submit & Next Step
-            </Button>
+            <div className="flex items-center gap-x-4">
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <Button variant="outline" type="button" disabled>
+                Submit & Next Step
+              </Button>
+            </div>
           </div>
         </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32">
