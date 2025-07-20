@@ -1,21 +1,12 @@
 import { Flower } from "lucide-react";
 import Link from "next/link";
 import { OnboardingProgress } from "./onboarding-progress";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
-export default async function ProviderLayout({
+export default async function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  if (
-    (await auth()).sessionClaims?.metadata?.onboardingComplete === true &&
-    (await auth()).sessionClaims?.metadata?.isAProvider === true
-  ) {
-    redirect("/provider/dashboard");
-  }
-
   return (
     <div>
       <div className="relative flex px-4 sm:px-6 lg:px-8 py-12 justify-between items-center border-b border-muted-foreground/10">

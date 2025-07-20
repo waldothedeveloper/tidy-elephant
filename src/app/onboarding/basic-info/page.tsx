@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2Icon, UserRound } from "lucide-react";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useCallback, useState, useTransition } from "react";
 
@@ -17,11 +18,10 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { clerkAddProviderOnboardingMetadataAction } from "@/app/actions/onboarding/clerk-add-provider-onboarding-metadata";
 import { firebaseCreateProviderProfileAction } from "@/app/actions/onboarding/firebase-create-provider-profile-action";
 import { storage } from "@/lib/firebase/clientApp";
 import { toast } from "sonner";
-import { useFirebaseAuth } from "@/app/provider/_hooks/use-firebase-client-auth";
+import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -52,33 +52,27 @@ export default function ProviderOnboardingBasicInfo() {
   const { isDirty } = form.formState;
 
   async function onSubmit(values: z.infer<typeof userProfileSchema>) {
-    startTransition(async () => {
-      const submitPromise = Promise.all([
-        firebaseCreateProviderProfileAction(values),
-        clerkAddProviderOnboardingMetadataAction(),
-      ]).then(async (res) => {
-        const [firebaseProfileResult, clerkMetadataFirebaseProfileResult] = res;
-
+    const submitPromise = firebaseCreateProviderProfileAction(values).then(
+      async (result) => {
         // Check profile creation result
-        if (!firebaseProfileResult.success) {
-          throw new Error(firebaseProfileResult.error);
-        }
-
-        // Check metadata result
-        if (!clerkMetadataFirebaseProfileResult.success) {
-          throw new Error(clerkMetadataFirebaseProfileResult.error);
+        if (!result.success) {
+          throw new Error(result.error);
         }
 
         await user?.reload();
         router.push("/provider/onboarding/verify-phone");
         return { message: "Your profile has been created successfully!" };
-      });
+      }
+    );
 
-      toast.promise(submitPromise, {
-        loading: "Creating your profile...",
-        success: (data) => data.message,
-        error: (error) => `Ouch! Something went wrong: ${error.message}`,
-      });
+    toast.promise(submitPromise, {
+      loading: "Creating your profile...",
+      success: () => `Profile created successfully!`,
+      error: (error) => `Ouch! Something went wrong: ${error.message}`,
+    });
+
+    startTransition(async () => {
+      await submitPromise;
     });
   }
 
@@ -200,6 +194,9 @@ export default function ProviderOnboardingBasicInfo() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-6 flex items-center justify-end gap-x-6">
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
             <Button
               variant={!isDirty ? "outline" : "default"}
               disabled={isPending || !isDirty || isUploading}

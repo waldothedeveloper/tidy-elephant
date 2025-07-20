@@ -287,13 +287,13 @@ export async function addClerkProviderMetadataDAL() {
   const client = await clerkClient();
 
   try {
-    const res = await client.users.updateUser(userId, {
-      publicMetadata: {
+    await client.users.updateUserMetadata(userId, {
+      privateMetadata: {
         isAProvider: true,
         onboardingComplete: false,
       },
     });
-    return { success: true, message: res.publicMetadata };
+    return { success: true, message: "User metadata updated successfully." };
   } catch (err) {
     const errorMessage =
       err instanceof Error

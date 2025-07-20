@@ -1,5 +1,7 @@
 "use client";
 
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+
 import { Button } from "@/components/ui/button";
 import { Flower } from "lucide-react";
 import Link from "next/link";
@@ -8,8 +10,8 @@ import { usePathname } from "next/navigation";
 export default function NavigationMenuPage() {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/provider/")) {
-    return null; // Do not render the navigation menu on provider routes
+  if (pathname.startsWith("/onboarding")) {
+    return null; // Do not render the navigation menu on onboarding routes
   }
 
   return (
@@ -23,11 +25,23 @@ export default function NavigationMenuPage() {
           </p>
         </Link>
 
-        <Button variant="link" asChild className="text-base">
-          <Link href="/provider/become-an-ease-specialist">
-            Become an Ease Specialist
-          </Link>
-        </Button>
+        <div className="flex items-center justify-center">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+
+          <SignedOut>
+            <Button variant="link" asChild className="text-base">
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+          </SignedOut>
+
+          <Button variant="link" asChild className="text-base">
+            <Link href="/become-an-ease-specialist">
+              Become an Ease Specialist
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

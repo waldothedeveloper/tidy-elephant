@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import {
+  clerkClient,
+  clerkMiddleware,
+  createRouteMatcher,
+} from "@clerk/nextjs/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -7,34 +11,79 @@ const isPublicRoute = createRouteMatcher([
   "/terms",
   "/privacy",
   "/waitlist(.*)",
-  "/provider/become-an-ease-specialist",
+  "/become-an-ease-specialist",
 ]);
 
 const isProviderRoute = createRouteMatcher(["/provider(.*)"]);
+const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
+const isOnboardingWelcomeRoute = createRouteMatcher(["/onboarding/welcome"]);
 
-// Add a matcher for all onboarding routes
-const isOnboardingRoute = createRouteMatcher(["/provider/onboarding(.*)"]);
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  const { userId, redirectToSignIn, sessionClaims } = await auth();
-  // If the user isn't signed in and the route is private, redirect to sign-in
-  if (!userId && !isPublicRoute(req))
-    return redirectToSignIn({ returnBackUrl: req.url });
+  const clerkClientInstance = await clerkClient();
+  const { userId, redirectToSignIn } = await auth();
 
-  // Check if this is a provider route (excluding become-an-ease-specialist)
-  if (
-    isProviderRoute(req) &&
-    !isOnboardingRoute(req) &&
-    !req.nextUrl.pathname.startsWith("/provider/become-an-ease-specialist")
-  ) {
-    // If user is not a provider redirect to home
-    if (!sessionClaims?.metadata?.isAProvider) {
-      const homeUrl = new URL("/", req.url);
-      return NextResponse.redirect(homeUrl);
+  // ROUTES
+  const homeURL = new URL("/", req.url);
+  const onboardingUrl = new URL("/onboarding/basic-info", req.url);
+
+  // 1. Non authenticated users can only visit public routes
+  if (!userId && !isPublicRoute(req)) {
+    return redirectToSignIn({ returnBackUrl: req.url });
+  }
+
+  if (userId) {
+    const currentUser = await clerkClientInstance.users.getUser(userId);
+
+    // USER METADATA
+    const isProvider = currentUser.privateMetadata?.isAProvider;
+    const onboardingComplete = currentUser.privateMetadata?.onboardingComplete;
+
+    // Provider routes
+    if (isProviderRoute(req)) {
+      // 2. Authenticated users (not providers) cannot visit provider routes
+      if (!isProvider) {
+        return NextResponse.redirect(homeURL);
+      }
+
+      // 3. Providers without completed onboarding cannot visit provider routes
+      if (isProvider && !onboardingComplete) {
+        // we might eventually redirect to the step where they left off
+        return NextResponse.redirect(onboardingUrl);
+      }
+
+      // Provider with completed onboarding can access provider routes
+      if (isProvider && onboardingComplete) {
+        return NextResponse.next();
+      }
     }
 
-    // If the user is logged in and the route is protected, let them view.
-    if (userId && !isPublicRoute(req)) return NextResponse.next();
+    // Onboarding routes
+    if (isOnboardingRoute(req)) {
+      if (isOnboardingWelcomeRoute(req)) {
+        // Allow access to the welcome onboarding page
+        return NextResponse.next();
+      }
+
+      if (!isProvider) {
+        // 2. Authenticated users (not providers) cannot visit onboarding routes
+        return NextResponse.redirect(homeURL);
+      }
+
+      // 3. Providers can access onboarding routes (regardless of completion status)
+      if (isProvider && !onboardingComplete) {
+        return NextResponse.next();
+      }
+
+      // 4. Providers who completed onboarding should be redirected away from onboarding routes
+      if (isProvider && onboardingComplete) {
+        const providerDashboard = new URL("/provider/dashboard", req.url);
+        return NextResponse.redirect(providerDashboard);
+      }
+    }
   }
+
+  // Allow access to public routes and other authenticated user routes
+  return NextResponse.next();
 });
 
 export const config = {
