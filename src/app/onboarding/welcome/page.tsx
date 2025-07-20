@@ -1,7 +1,8 @@
+import { notFound, redirect } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { beginProviderOnboardingAction } from "@/app/actions/onboarding/begin-provider-onboarding-action";
-import { redirect } from "next/navigation";
 
 async function handleBeginOnboarding() {
   "use server";
@@ -9,10 +10,7 @@ async function handleBeginOnboarding() {
   const result = await beginProviderOnboardingAction();
 
   if (!result.success) {
-    // In a real app, you might want to pass this error to a client component
-    // For now, we'll just redirect to an error page or back to this page
-    console.error("Onboarding start error:", result.error);
-    return;
+    notFound();
   }
 
   redirect("/onboarding/basic-info");
@@ -65,19 +63,13 @@ export default function OnboardingWelcomePage() {
             </div>
 
             <form action={handleBeginOnboarding}>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full sm:w-auto px-8 py-3"
-              >
-                Begin Onboarding
-              </Button>
+              <Button type="submit">Begin Onboarding</Button>
             </form>
           </div>
 
           <p className="mt-8 text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Button variant="link">
+            <Button asChild variant="link">
               <Link href="/provider/dashboard">Go to dashboard</Link>
             </Button>
           </p>
