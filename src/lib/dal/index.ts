@@ -137,9 +137,10 @@ const enforceAuth = async () => {
 
 // users that are not providers should not be able to access provider DAL functions
 const enforceAuthProvider = async () => {
-  const userId = await enforceAuth();
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
   const user = await currentUser();
-  if (!user || !user?.publicMetadata?.isAProvider) {
+  if (!user?.privateMetadata?.isAProvider) {
     throw new Error("Unauthorized: User is not a provider.");
   }
   return userId;

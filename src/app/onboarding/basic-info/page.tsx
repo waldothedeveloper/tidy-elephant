@@ -52,6 +52,8 @@ export default function ProviderOnboardingBasicInfo() {
   const { isDirty } = form.formState;
 
   async function onSubmit(values: z.infer<typeof userProfileSchema>) {
+    const successMessage = "Profile created successfully!";
+
     const submitPromise = firebaseCreateProviderProfileAction(values).then(
       async (result) => {
         // Check profile creation result
@@ -60,14 +62,14 @@ export default function ProviderOnboardingBasicInfo() {
         }
 
         await user?.reload();
-        router.push("/provider/onboarding/verify-phone");
-        return { message: "Your profile has been created successfully!" };
+        router.push("/onboarding/verify-phone");
+        return { message: successMessage };
       }
     );
 
     toast.promise(submitPromise, {
       loading: "Creating your profile...",
-      success: () => `Profile created successfully!`,
+      success: () => successMessage,
       error: (error) => `Ouch! Something went wrong: ${error.message}`,
     });
 

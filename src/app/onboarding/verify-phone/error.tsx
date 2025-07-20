@@ -23,7 +23,7 @@ export default function VerifyPhoneError({
       {/* Header Navigation - matching the actual page */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-6 flex items-center justify-between gap-x-6">
-          <Link href="/provider/onboarding/basic-info">
+          <Link href="/onboarding/basic-info">
             <Button type="button" variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Previous

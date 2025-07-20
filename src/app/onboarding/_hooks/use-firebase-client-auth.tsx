@@ -20,26 +20,23 @@ export const useFirebaseAuth = () => {
           Tokens can only be generated if the user is signed in.
       *** */
         const token = await getToken({ template: "integration_firebase" });
+
         if (!token) {
           throw new Error("Failed to retrieve Firebase token from Clerk");
         }
         const userCredentials = await signInWithCustomToken(auth, token || "");
-
         if (userCredentials.user) {
           const fireIDToken = await userCredentials.user.getIdToken();
 
-          // Set Firebase session cookie with proper security attributes and expiration
-          // Cookie expires in 1 hour (same as Firebase token TTL)
           const expirationDate = new Date();
           expirationDate.setTime(expirationDate.getTime() + 60 * 60 * 1000); // 1 hour
 
           document.cookie = [
             `__firebase__session=${fireIDToken}`,
             `expires=${expirationDate.toUTCString()}`,
-            "path=/",
-            "secure",
+            "path=/onboarding",
+            ...(window.location.protocol === "https:" ? ["secure"] : []),
             "SameSite=Strict",
-            "HttpOnly=false", // Must be false for client-side access
           ].join("; ");
 
           setIsAuthenticated(true);
@@ -50,8 +47,8 @@ export const useFirebaseAuth = () => {
         document.cookie = [
           "__firebase__session=",
           "expires=Thu, 01 Jan 1970 00:00:00 UTC",
-          "path=/",
-          "secure",
+          "path=/onboarding",
+          ...(window.location.protocol === "https:" ? ["secure"] : []),
           "SameSite=Strict",
         ].join("; ");
       }
