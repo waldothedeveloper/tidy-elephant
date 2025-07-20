@@ -57,20 +57,19 @@ export function VerifyProviderPhoneSMSCode({
       <form onSubmit={codeVerificationForm.handleSubmit(onSubmit)}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-6 flex items-center justify-between gap-x-6">
-            <Button variant="outline">
-              <Link href="/provider/onboarding/basic-info" type="button">
+            <Button asChild variant="outline">
+              <Link href="/onboarding/basic-info" type="button">
                 Previous
               </Link>
             </Button>
 
             <Button
+              asChild
               disabled={!canSubmit}
               variant={!canSubmit ? "outline" : "default"}
               type="button"
             >
-              <Link
-                href={canSubmit ? "/provider/onboarding/create-schedule" : "#"}
-              >
+              <Link href={canSubmit ? "/onboarding/create-schedule" : "#"}>
                 Submit & Next Step
               </Link>
             </Button>

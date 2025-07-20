@@ -513,7 +513,7 @@ function ReadyToDiveIn() {
         </div>
         <div className="mt-10 flex items-center gap-x-6 lg:mt-0 lg:shrink-0">
           {process.env.NODE_ENV === "development" ? (
-            <Button>
+            <Button asChild>
               <Link href="/onboarding/basic-info">
                 Become an Ease Specialist
               </Link>

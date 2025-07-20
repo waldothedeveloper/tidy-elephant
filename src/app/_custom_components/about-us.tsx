@@ -43,6 +43,7 @@ export default function AboutUs() {
             </p>
             <div className="mt-10">
               <Button
+                asChild
                 variant="link"
                 className="text-muted-foreground text-base hover:text-primary -ml-4"
               >

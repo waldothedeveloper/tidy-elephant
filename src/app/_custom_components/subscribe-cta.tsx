@@ -19,6 +19,7 @@ export default function SubscribeCTA() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
               <Button
+                asChild
                 variant="link"
                 className="text-foreground text-xl hover:text-primary"
               >
