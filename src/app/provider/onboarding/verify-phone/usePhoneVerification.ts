@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 
-import { lookupTwilioPhoneNumberAction } from "@/app/actions/onboarding/twilio-lookup-phone";
 import { formatPhoneNumber } from "@/app/utils";
-import { userProfilePhoneVerificationSchema } from "@/lib/schemas/index";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { lookupTwilioPhoneNumberAction } from "@/app/actions/onboarding/twilio-lookup-phone";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { userProfilePhoneVerificationSchema } from "@/lib/schemas/index";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type PhoneVerificationState =
   | { step: "idle" }
@@ -91,7 +91,7 @@ export function usePhoneVerification(
                 });
 
                 if (!res.success) {
-                  throw new Error(res.message || "Phone number lookup failed");
+                  throw new Error(res.error || "Phone number lookup failed");
                 } else {
                   // Cache successful result
                   phoneValidationCache.current.set(phoneNumber, {
