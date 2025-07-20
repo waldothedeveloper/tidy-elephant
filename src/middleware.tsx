@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 const isProviderRoute = createRouteMatcher(["/provider(.*)"]);
+
 // Add a matcher for all onboarding routes
 const isOnboardingRoute = createRouteMatcher(["/provider/onboarding(.*)"]);
 export default clerkMiddleware(async (auth, req: NextRequest) => {
@@ -19,26 +20,21 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   if (!userId && !isPublicRoute(req))
     return redirectToSignIn({ returnBackUrl: req.url });
 
-  // Check if this is a provider route (excluding onboarding and become-an-ease-specialist)
+  // Check if this is a provider route (excluding become-an-ease-specialist)
   if (
     isProviderRoute(req) &&
     !isOnboardingRoute(req) &&
     !req.nextUrl.pathname.startsWith("/provider/become-an-ease-specialist")
   ) {
-    // If user is not logged in, redirect to sign-in
-    if (!userId) {
-      return redirectToSignIn({ returnBackUrl: req.url });
-    }
-
     // If user is not a provider redirect to home
     if (!sessionClaims?.metadata?.isAProvider) {
       const homeUrl = new URL("/", req.url);
       return NextResponse.redirect(homeUrl);
     }
-  }
 
-  // If the user is logged in and the route is protected, let them view.
-  if (userId && !isPublicRoute(req)) return NextResponse.next();
+    // If the user is logged in and the route is protected, let them view.
+    if (userId && !isPublicRoute(req)) return NextResponse.next();
+  }
 });
 
 export const config = {
