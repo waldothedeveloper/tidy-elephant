@@ -53,7 +53,7 @@ export function VerifyProviderPhone({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32">
           <div className="pb-12">
             <span className="mt-2 text-sm text-muted-foreground">
-              Activate Profile
+              Create Profile
             </span>
             <h2 className="text-3xl font-semibold text-foreground">
               Great, now let&apos;s verify your phone number

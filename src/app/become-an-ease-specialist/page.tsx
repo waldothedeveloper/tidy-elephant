@@ -88,7 +88,7 @@ function EaseSpecialistHero() {
                   {process.env.NODE_ENV === "development" ? (
                     <Link className="size-full" href="/onboarding/basic-info">
                       <Button className="w-full py-6 text-xl font-semibold">
-                        Become an Ease Specialist
+                        Become a Tidy Specialist
                       </Button>
                     </Link>
                   ) : (
@@ -378,7 +378,7 @@ function HowItWorks() {
             </p>
             <p className="mt-6 text-base/7 text-muted-foreground">
               Our process is simple and straightforward. Just follow these steps
-              to become an Ease & Arrange specialist:
+              to become a Tidy Specialist:
             </p>
           </div>
           <dl className="col-span-3 grid grid-cols-1 gap-x-8 gap-y-10 text-base/7 text-muted-foreground sm:grid-cols-2 lg:gap-y-16">
@@ -515,7 +515,7 @@ function ReadyToDiveIn() {
           {process.env.NODE_ENV === "development" ? (
             <Button asChild>
               <Link href="/onboarding/basic-info">
-                Become an Ease Specialist
+                Become a Tidy Specialist
               </Link>
             </Button>
           ) : (

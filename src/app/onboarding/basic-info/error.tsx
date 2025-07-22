@@ -33,7 +33,7 @@ export default function BasicInfoError({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="pb-12">
           <span className="mt-2 text-sm text-muted-foreground">
-            Activate Profile
+            Create Profile
           </span>
           <div className="flex items-center mt-4 mb-4">
             <AlertTriangle className="w-6 h-6 text-amber-500 mr-3" />

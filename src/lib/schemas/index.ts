@@ -44,3 +44,21 @@ export const e164PhoneNumberSchema = z.object({
       "Phone number must be in E.164 format for US numbers, e.g., +13055555555",
   }),
 });
+
+export const userCategoriesSchema = z.object({
+  categories: z
+    .array(z.string().min(1, "Category ID cannot be empty"))
+    .min(1, {
+      message: "You must select at least one category to provide services in.",
+    })
+    .refine(
+      (categories) => {
+        // Ensure no duplicate categories
+        const uniqueCategories = new Set(categories);
+        return uniqueCategories.size === categories.length;
+      },
+      {
+        message: "You cannot select the same category multiple times.",
+      }
+    ),
+});

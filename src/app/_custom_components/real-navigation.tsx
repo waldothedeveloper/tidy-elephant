@@ -3,9 +3,10 @@
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
-import { Flower } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import tidyElephantLogo from "../../../public/tidy-elephant.svg";
 
 export default function NavigationMenuPage() {
   const pathname = usePathname();
@@ -17,12 +18,13 @@ export default function NavigationMenuPage() {
   return (
     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 border-b border-muted-foreground/20 mb-12">
       <div className="relative flex h-16 justify-between items-center">
-        {/* Logo on the left */}
         <Link href="/" className="flex shrink-0 items-center">
-          <Flower className="h-8 w-auto text-primary" />
-          <p className="text-foreground text-base ml-1 font-semibold">
-            Ease & Arrange
-          </p>
+          <p className="text-primary text-lg font-semibold uppercase">Tidy</p>
+          <Image
+            className="h-10 md:h-14 w-auto"
+            src={tidyElephantLogo}
+            alt="Tidy Elephant Logo"
+          />
         </Link>
 
         <div className="flex items-center justify-center">
@@ -38,7 +40,7 @@ export default function NavigationMenuPage() {
 
           <Button variant="link" asChild className="text-base">
             <Link href="/become-an-ease-specialist">
-              Become an Ease Specialist
+              Become a Tidy Specialist
             </Link>
           </Button>
         </div>
