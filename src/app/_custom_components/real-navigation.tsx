@@ -5,8 +5,8 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+// import tidyElephantLogo from "../../../public/images/tidy-elephant.svg";
 import { usePathname } from "next/navigation";
-import tidyElephantLogo from "../../../public/tidy-elephant.svg";
 
 export default function NavigationMenuPage() {
   const pathname = usePathname();
@@ -22,7 +22,7 @@ export default function NavigationMenuPage() {
           <p className="text-primary text-lg font-semibold uppercase">Tidy</p>
           <Image
             className="h-10 md:h-14 w-auto"
-            src={tidyElephantLogo}
+            src="/images/tidy-elephant.svg"
             alt="Tidy Elephant Logo"
           />
         </Link>
