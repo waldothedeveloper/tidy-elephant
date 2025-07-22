@@ -9,25 +9,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2Icon, UserRound } from "lucide-react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { Loader2Icon, UserRound } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
 
+import { firebaseCreateProviderProfileAction } from "@/app/actions/onboarding/firebase-create-provider-profile-action";
+import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { firebaseCreateProviderProfileAction } from "@/app/actions/onboarding/firebase-create-provider-profile-action";
 import { storage } from "@/lib/firebase/clientApp";
-import { toast } from "sonner";
-import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { userProfileSchema } from "@/lib/schemas";
-import { z } from "zod";
+import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // TODO: Maybe add a character counter for the about section
 export default function ProviderOnboardingBasicInfo() {
@@ -212,7 +212,7 @@ export default function ProviderOnboardingBasicInfo() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
           <div className="pb-12">
             <span className="mt-2 text-sm text-muted-foreground">
-              Activate Profile
+              Create Profile
             </span>
             <h2 className="mt-2 text-3xl font-semibold text-foreground">
               Basic Information

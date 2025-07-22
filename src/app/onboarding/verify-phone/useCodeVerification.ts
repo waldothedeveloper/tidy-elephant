@@ -153,7 +153,7 @@ export function useCodeVerification(
             setCodeVerificationState({ step: "code-verified" });
             toast.success("Phone number verified successfully!");
 
-            router.push("/onboarding/create-schedule");
+            router.push("/onboarding/select-categories");
           } else {
             // ONLY cache invalid codes
             const errorMsg = response.error || "Invalid verification code";
