@@ -1,6 +1,19 @@
 import "server-only";
 
 import {
+  DataOrError,
+  OperationResult,
+  OperationResultWithRetry,
+  PhoneLoadupResult,
+  VerificationResult,
+  createErrorResponse,
+  createErrorResponseWithRetry,
+  createSuccessResponse,
+  createVerificationErrorResponse,
+  createVerificationErrorResponseWithRetry,
+  createVerificationSuccessResponse,
+} from "@/types/api-responses";
+import {
   FirebaseUser,
   ProviderDetails,
   ProviderRatings,
@@ -9,19 +22,6 @@ import {
   UserProfile,
   UserRoles,
 } from "@/types/user";
-import {
-  createErrorResponse,
-  createErrorResponseWithRetry,
-  createSuccessResponse,
-  createVerificationErrorResponse,
-  createVerificationErrorResponseWithRetry,
-  createVerificationSuccessResponse,
-  DataOrError,
-  OperationResult,
-  OperationResultWithRetry,
-  PhoneLoadupResult,
-  VerificationResult,
-} from "@/types/api-responses";
 import {
   Firestore,
   addDoc,
@@ -36,11 +36,13 @@ import { User, auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import {
   e164PhoneNumberSchema,
   userCategoriesSchema,
+  userHourlyRateInputSchema,
   userProfileCodeVerificationSchema,
   userProfileSchema,
 } from "@/lib/schemas/index";
 
 import { cache } from "react";
+import { dollarsToCents } from "@/lib/utils";
 import twilio from "twilio";
 import { z } from "zod";
 
@@ -68,9 +70,18 @@ function isTwilioError(error: unknown): error is TwilioError {
 }
 
 // Function overloads for better type safety
-function handleTwilioError(error: unknown, context: "send"): OperationResultWithRetry;
-function handleTwilioError(error: unknown, context: "verify"): VerificationResult;
-function handleTwilioError(error: unknown, context: "send" | "verify"): OperationResultWithRetry | VerificationResult {
+function handleTwilioError(
+  error: unknown,
+  context: "send"
+): OperationResultWithRetry;
+function handleTwilioError(
+  error: unknown,
+  context: "verify"
+): VerificationResult;
+function handleTwilioError(
+  error: unknown,
+  context: "send" | "verify"
+): OperationResultWithRetry | VerificationResult {
   // Handle Twilio-specific errors
   if (isTwilioError(error)) {
     switch (error.status) {
@@ -321,9 +332,7 @@ export async function verifyTwilioCodeDAL(
       );
     }
 
-    return createVerificationSuccessResponse(
-      "Code verified successfully."
-    );
+    return createVerificationSuccessResponse("Code verified successfully.");
   } catch (error: unknown) {
     return handleTwilioError(error, "verify");
   }
@@ -448,9 +457,7 @@ export const getFirebaseProviderCategoriesDAL = cache(
     } catch (error) {
       console.error("Error fetching provider categories:", error);
 
-      return createErrorResponse(
-        "Failed to retrieve provider categories"
-      );
+      return createErrorResponse("Failed to retrieve provider categories");
     }
   }
 );
@@ -520,9 +527,9 @@ export async function saveFirebaseProviderCategoriesDAL(
       collection(authenticatedFirebaseDB, "Users"),
       where("clerkUserID", "==", userId)
     );
-    
+
     const querySnapshot = await getDocs(userQuery);
-    
+
     if (querySnapshot.empty) {
       return createErrorResponse(
         "User profile not found. Please complete your basic profile first."
@@ -547,5 +554,51 @@ export async function saveFirebaseProviderCategoriesDAL(
     return createErrorResponse(
       "Failed to save service categories. Please try again."
     );
+  }
+}
+
+export async function saveFirebaseProviderHourlyRateDAL(
+  data: { hourlyRate: number },
+  authenticatedFirebaseDB: Firestore
+): Promise<OperationResult> {
+  const userId = await enforceAuthProvider();
+
+  try {
+    // First, find the user's document by clerkUserID
+    const userQuery = query(
+      collection(authenticatedFirebaseDB, "Users"),
+      where("clerkUserID", "==", userId)
+    );
+
+    const querySnapshot = await getDocs(userQuery);
+
+    if (querySnapshot.empty) {
+      return createErrorResponse(
+        "User profile not found. Please complete your basic profile first."
+      );
+    }
+
+    // Get the user document
+    const userDoc = querySnapshot.docs[0];
+    const userDocRef = doc(authenticatedFirebaseDB, "Users", userDoc.id);
+
+    // Convert dollars to cents for storage
+    const hourlyRateInCents = dollarsToCents(data.hourlyRate.toString());
+
+    // Update the provider's hourly rate in their providerDetails (stored in cents)
+    await updateDoc(userDocRef, {
+      "providerDetails.hourlyRate": hourlyRateInCents,
+      updatedAt: new Date(),
+    });
+
+    return createSuccessResponse(
+      `Successfully set your hourly rate to $${data.hourlyRate} per hour.`
+    );
+  } catch (error) {
+    console.error(
+      "Error saving provider hourly rate during onboarding:",
+      error
+    );
+    return createErrorResponse("Failed to save hourly rate. Please try again.");
   }
 }
