@@ -14,6 +14,8 @@ export default async function OnboardingLayout({
         <Link href="/" className="flex shrink-0 items-center">
           <p className="text-primary text-lg font-semibold uppercase">Tidy</p>
           <Image
+            height={56}
+            width={56}
             className="h-10 md:h-14 w-auto"
             src="/images/tidy-elephant.svg"
             alt="Tidy Elephant Logo"

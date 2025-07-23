@@ -81,35 +81,6 @@ export default function SelectCategoriesError({
           </div>
         </div>
       </div>
-
-      {/* Development error details */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 pb-8">
-          <details>
-            <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors mb-4">
-              Development Details
-            </summary>
-            <div className="bg-muted/30 p-4 rounded text-xs font-mono text-muted-foreground space-y-2">
-              <p>
-                <strong>Message:</strong> {error.message}
-              </p>
-              {error.digest && (
-                <p>
-                  <strong>Digest:</strong> {error.digest}
-                </p>
-              )}
-              {error.stack && (
-                <div>
-                  <strong>Stack:</strong>
-                  <pre className="mt-1 whitespace-pre-wrap text-xs">
-                    {error.stack}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </details>
-        </div>
-      )}
     </div>
   );
 }
