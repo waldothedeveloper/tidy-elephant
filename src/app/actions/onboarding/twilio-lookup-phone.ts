@@ -43,7 +43,7 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 }
 *** */
 
-import { lookupTwilioPhoneNumberDAL } from "@/lib/dal";
+import { lookupTwilioPhoneNumberDAL } from "@/lib/dal/twilio";
 import { e164PhoneNumberSchema } from "@/lib/schemas/index";
 import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 import { auth } from "@clerk/nextjs/server";

@@ -49,7 +49,7 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
 import { getFirestore } from "firebase/firestore";
-import { saveFirebaseProviderHourlyRateDAL } from "@/lib/dal";
+import { saveFirebaseProviderHourlyRateDAL } from "@/lib/dal/clerk";
 import { userHourlyRateSchema } from "@/lib/schemas";
 
 export async function firebaseSaveProviderHourlyRateAction(formData: {

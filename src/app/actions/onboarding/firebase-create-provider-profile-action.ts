@@ -1,6 +1,6 @@
 "use server";
 
-import { createFirebaseUserProviderDAL } from "@/lib/dal";
+import { createFirebaseUserProviderDAL } from "@/lib/dal/clerk";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
 import { getFirestore } from "firebase/firestore";
 import { userProfileSchema } from "@/lib/schemas";

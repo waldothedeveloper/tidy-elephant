@@ -46,7 +46,7 @@ import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 import { Duration } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
 import { e164PhoneNumberSchema } from "@/lib/schemas";
-import { sendTwilioVerificationCodeDAL } from "@/lib/dal";
+import { sendTwilioVerificationCodeDAL } from "@/lib/dal/twilio";
 import { z } from "zod";
 
 interface SendVerificationResult {

@@ -41,11 +41,15 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 
 "use server";
 
+import {
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/types/api-responses";
+
 import { auth } from "@clerk/nextjs/server";
-import { createErrorResponse, createSuccessResponse } from "@/types/api-responses";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
 import { getFirestore } from "firebase/firestore";
-import { saveFirebaseProviderCategoriesDAL } from "@/lib/dal";
+import { saveFirebaseProviderCategoriesDAL } from "@/lib/dal/clerk";
 import { userCategoriesSchema } from "@/lib/schemas";
 import { z } from "zod";
 
@@ -61,8 +65,10 @@ export async function firebaseSaveProviderCategoriesAction(
   try {
     // 2. SANITIZE INPUTS - Clean data before validation
     const sanitizedData = {
-      categories: Array.isArray(formData.categories) 
-        ? formData.categories.map(id => typeof id === 'string' ? id.trim() : '').filter(Boolean)
+      categories: Array.isArray(formData.categories)
+        ? formData.categories
+            .map((id) => (typeof id === "string" ? id.trim() : ""))
+            .filter(Boolean)
         : [],
     };
 
@@ -92,7 +98,7 @@ export async function firebaseSaveProviderCategoriesAction(
 
     // Save categories using DAL function
     const result = await saveFirebaseProviderCategoriesDAL(data, db);
-    
+
     // 7. RETURN CONSISTENT TYPES - Use types from api-responses
     if (!result.success) {
       return createErrorResponse(result.error);
@@ -106,10 +112,10 @@ export async function firebaseSaveProviderCategoriesAction(
     // 8. LOG ERRORS SAFELY - Never expose internal details to client
     console.error("Unexpected error in firebaseSaveProviderCategoriesAction:", {
       userId,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
       stack: error instanceof Error ? error.stack : undefined,
     });
-    
+
     // 9. USE GENERIC ERROR MESSAGES - Don't leak internal system details
     return createErrorResponse(
       "An unexpected error occurred while saving your categories. Please try again."

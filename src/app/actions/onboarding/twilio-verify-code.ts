@@ -53,7 +53,7 @@ import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 
 import { Duration } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
-import { verifyTwilioCodeDAL } from "@/lib/dal";
+import { verifyTwilioCodeDAL } from "@/lib/dal/twilio";
 import { z } from "zod";
 
 interface VerificationResult {

@@ -41,7 +41,7 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
     Make sure to set these in your .env files or deployment environment
 *** */
 
-import { addClerkProviderMetadataDAL } from "@/lib/dal";
+import { addClerkProviderMetadataDAL } from "@/lib/dal/clerk";
 import { auth } from "@clerk/nextjs/server";
 
 interface BeginProviderOnboardingResult {
