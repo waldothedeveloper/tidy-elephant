@@ -59,7 +59,7 @@ export function CategoriesWrapper({
           }
 
           await user?.reload();
-          router.push("/onboarding/upload-work-photos");
+          router.push("/onboarding/hourly-rate");
           return { message: successMessage };
         }
       );

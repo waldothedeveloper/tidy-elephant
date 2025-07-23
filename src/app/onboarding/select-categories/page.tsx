@@ -1,6 +1,6 @@
 import { CategoriesWrapper } from "./categories-wrapper";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
-import { getFirebaseProviderCategoriesDAL } from "@/lib/dal";
+import { getFirebaseProviderCategoriesDAL } from "@/lib/dal/clerk";
 import { getFirestore } from "firebase/firestore";
 export default async function ProviderOnboardingSelectCategoriesPage() {
   const { firebaseServerApp } = await getAuthenticatedAppForUser();
