@@ -62,3 +62,32 @@ export const userCategoriesSchema = z.object({
       }
     ),
 });
+
+// Input schema for form validation (string input)
+export const userHourlyRateInputSchema = z.object({
+  hourlyRate: z
+    .string()
+    .min(1, {
+      message: "Please enter your hourly rate.",
+    })
+    .regex(/^\d+$/, {
+      message: "Hourly rate must be a whole number (no cents or decimals).",
+    })
+    .refine((val) => {
+      const num = parseInt(val, 10);
+      return num >= 25;
+    }, {
+      message: "Hourly rate must be at least $25 per hour.",
+    })
+    .refine((val) => {
+      const num = parseInt(val, 10);
+      return num <= 250;
+    }, {
+      message: "Hourly rate cannot exceed $250 per hour.",
+    }),
+});
+
+// Processed schema for internal use (string -> number transformation)
+export const userHourlyRateSchema = userHourlyRateInputSchema.transform((data) => ({
+  hourlyRate: parseInt(data.hourlyRate, 10),
+}));

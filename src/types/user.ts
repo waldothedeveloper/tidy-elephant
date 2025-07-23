@@ -50,7 +50,7 @@ export interface ProviderDetails {
   isPhoneVerified: boolean;
   categories: string[]; // Service category IDs
   serviceAreas?: string[]; // Geographic areas they serve
-  hourlyRate?: number;
+  hourlyRate?: number; // Stored in cents (e.g., $75.00 = 7500 cents)
   availability?: ProviderAvailability;
   businessInfo?: BusinessInfo;
   certifications?: Certification[];
