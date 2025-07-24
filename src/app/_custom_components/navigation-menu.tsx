@@ -5,10 +5,9 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-// import tidyElephantLogo from "../../../public/images/tidy-elephant.svg";
 import { usePathname } from "next/navigation";
 
-export default function NavigationMenuPage() {
+export default function NavigationMenu() {
   const pathname = usePathname();
 
   if (pathname.startsWith("/onboarding")) {
@@ -21,8 +20,10 @@ export default function NavigationMenuPage() {
         <Link href="/" className="flex shrink-0 items-center">
           <p className="text-primary text-lg font-semibold uppercase">Tidy</p>
           <Image
+            height={56}
+            width={56}
             className="h-10 md:h-14 w-auto"
-            src="/images/tidy-elephant.svg"
+            src="https://firebasestorage.googleapis.com/v0/b/ease-and-arrange-prod.firebasestorage.app/o/media%2Ftidy-elephant.svg?alt=media&token=f8d6b255-3984-4e41-b121-f1f774932d12"
             alt="Tidy Elephant Logo"
           />
         </Link>

@@ -107,7 +107,7 @@ function EaseSpecialistHero() {
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
           <Image
             alt=""
-            src="https://images.unsplash.com/photo-1670272505284-8faba1c31f7d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             className="aspect-3/2 object-cover lg:aspect-auto lg:size-full"
             width={1587}
             height={1058}
@@ -539,7 +539,7 @@ function Testimonial() {
               <Image
                 fill
                 alt=""
-                src="https://images.unsplash.com/photo-1611093344167-8a5e327ab3b2?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src="https://images.unsplash.com/photo-1625019030820-e4ed970a6c95?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 className="absolute inset-0 size-full rounded-2xl bg-foreground/90 object-cover shadow-2xl"
                 sizes="(max-width: 1280px) 100vw, 384px"
               />

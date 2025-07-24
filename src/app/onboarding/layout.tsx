@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-// import tidyElephantLogo from "../../../public/tidy-elephant.svg";
 import { OnboardingProgress } from "./onboarding-progress";
 
 export default async function OnboardingLayout({
@@ -17,7 +16,7 @@ export default async function OnboardingLayout({
             height={56}
             width={56}
             className="h-10 md:h-14 w-auto"
-            src="/images/tidy-elephant.svg"
+            src="https://firebasestorage.googleapis.com/v0/b/ease-and-arrange-prod.firebasestorage.app/o/media%2Ftidy-elephant.svg?alt=media&token=f8d6b255-3984-4e41-b121-f1f774932d12"
             alt="Tidy Elephant Logo"
           />
         </Link>
