@@ -1,6 +1,5 @@
 import "./globals.css";
 
-import NavigationMenuPage from "@/app/_custom_components/real-navigation";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
@@ -8,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import Footer from "./_custom_components/footer";
+import NavigationMenu from "./_custom_components/navigation-menu";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -35,7 +35,7 @@ export default function RootLayout({
     >
       <html lang="en">
         <body className={`${ibmPlexSans.className} antialiased`}>
-          <NavigationMenuPage />
+          <NavigationMenu />
           {children}
           <Analytics />
           <SpeedInsights />
