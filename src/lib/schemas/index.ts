@@ -73,21 +73,41 @@ export const userHourlyRateInputSchema = z.object({
     .regex(/^\d+$/, {
       message: "Hourly rate must be a whole number (no cents or decimals).",
     })
-    .refine((val) => {
-      const num = parseInt(val, 10);
-      return num >= 25;
-    }, {
-      message: "Hourly rate must be at least $25 per hour.",
-    })
-    .refine((val) => {
-      const num = parseInt(val, 10);
-      return num <= 250;
-    }, {
-      message: "Hourly rate cannot exceed $250 per hour.",
-    }),
+    .refine(
+      (val) => {
+        const num = parseInt(val, 10);
+        return num >= 25;
+      },
+      {
+        message: "Hourly rate must be at least $25 per hour.",
+      }
+    )
+    .refine(
+      (val) => {
+        const num = parseInt(val, 10);
+        return num <= 250;
+      },
+      {
+        message: "Hourly rate cannot exceed $250 per hour.",
+      }
+    ),
 });
 
 // Processed schema for internal use (string -> number transformation)
-export const userHourlyRateSchema = userHourlyRateInputSchema.transform((data) => ({
-  hourlyRate: parseInt(data.hourlyRate, 10),
-}));
+export const userHourlyRateSchema = userHourlyRateInputSchema.transform(
+  (data) => ({
+    hourlyRate: parseInt(data.hourlyRate, 10),
+  })
+);
+
+export const workPhotosSchema = z.object({
+  workPhotos: z
+    .array(z.url("Each photo must be a valid URL"))
+    .min(3, {
+      message:
+        "Please upload at least 3 work photos to showcase your services.",
+    })
+    .max(8, {
+      message: "You can upload a maximum of 8 work photos.",
+    }),
+});

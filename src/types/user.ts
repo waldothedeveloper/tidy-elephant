@@ -48,6 +48,7 @@ export interface ProviderDetails {
   isOnboarded: boolean;
   isActive: boolean;
   isPhoneVerified: boolean;
+  workPhotos?: string[]; // URLs of Firebase URLs of uploaded work photos
   categories: string[]; // Service category IDs
   serviceAreas?: string[]; // Geographic areas they serve
   hourlyRate?: number; // Stored in cents (e.g., $75.00 = 7500 cents)
@@ -203,7 +204,7 @@ export interface ServiceCategory {
 // Provider Category Types Enum
 export enum ProviderCategoryType {
   CORE_PROFESSIONAL_ORGANIZERS = "Core Professional Organizers",
-  MOVE_MANAGERS_DOWNSIZING = "Move Managers and Downsizing Specialists", 
+  MOVE_MANAGERS_DOWNSIZING = "Move Managers and Downsizing Specialists",
   TIME_PRODUCTIVITY_COACHES = "Time & Productivity Coaches",
   HOME_STAGERS = "Home Stagers",
   OFFICE_ORGANIZERS = "Office Organizers",
@@ -212,7 +213,7 @@ export enum ProviderCategoryType {
   PAPERWORK_DOCUMENT_ORGANIZERS = "Paperwork/Document Organizers",
   FENG_SHUI_CONSULTANTS = "Feng Shui Consultants",
   HOME_ORGANIZERS = "Home Organizers",
-  ESTATE_CLEANOUT_HOARDING = "Estate Cleanout / Hoarding Specialists"
+  ESTATE_CLEANOUT_HOARDING = "Estate Cleanout / Hoarding Specialists",
 }
 
 // Provider Categories Data Structure
@@ -220,69 +221,75 @@ export const PROVIDER_CATEGORIES = [
   {
     type: ProviderCategoryType.CORE_PROFESSIONAL_ORGANIZERS,
     name: "Core Professional Organizers",
-    description: "General organizing services for homes and spaces (primary category)",
-    isActive: true
+    description:
+      "General organizing services for homes and spaces (primary category)",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.MOVE_MANAGERS_DOWNSIZING,
     name: "Move Managers and Downsizing Specialists",
     description: "Help with life transitions, relocations, and downsizing",
-    isActive: true
+    isActive: true,
   },
   {
     type: ProviderCategoryType.TIME_PRODUCTIVITY_COACHES,
-    name: "Time & Productivity Coaches", 
-    description: "Help with calendar management, workflows, and task organization",
-    isActive: true
+    name: "Time & Productivity Coaches",
+    description:
+      "Help with calendar management, workflows, and task organization",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.HOME_STAGERS,
     name: "Home Stagers",
     description: "Prepare homes for sale by optimizing layout and presentation",
-    isActive: true
+    isActive: true,
   },
   {
     type: ProviderCategoryType.OFFICE_ORGANIZERS,
     name: "Office Organizers",
-    description: "Organize home offices or corporate spaces for productivity", 
-    isActive: true
+    description: "Organize home offices or corporate spaces for productivity",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.DIGITAL_ORGANIZERS,
     name: "Digital Organizers",
-    description: "Help clients organize digital files, photos, and online accounts",
-    isActive: true
+    description:
+      "Help clients organize digital files, photos, and online accounts",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.INTERIOR_DESIGNERS,
     name: "Interior Designers",
-    description: "Design and organize interior spaces for functionality and aesthetics",
-    isActive: true
+    description:
+      "Design and organize interior spaces for functionality and aesthetics",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.PAPERWORK_DOCUMENT_ORGANIZERS,
     name: "Paperwork/Document Organizers",
     description: "Create filing systems and organize important documents",
-    isActive: true
+    isActive: true,
   },
   {
     type: ProviderCategoryType.FENG_SHUI_CONSULTANTS,
     name: "Feng Shui Consultants",
-    description: "Focus on optimizing energy flow in spaces for harmony and balance",
-    isActive: true
+    description:
+      "Focus on optimizing energy flow in spaces for harmony and balance",
+    isActive: true,
   },
   {
     type: ProviderCategoryType.HOME_ORGANIZERS,
-    name: "Home Organizers", 
+    name: "Home Organizers",
     description: "Specialize in organizing residential living spaces",
-    isActive: true
+    isActive: true,
   },
   {
     type: ProviderCategoryType.ESTATE_CLEANOUT_HOARDING,
     name: "Estate Cleanout / Hoarding Specialists",
-    description: "Handle estates after death or extreme clutter/hoarding situations with sensitivity",
-    isActive: true
-  }
+    description:
+      "Handle estates after death or extreme clutter/hoarding situations with sensitivity",
+    isActive: true,
+  },
 ] as const;
 
 // Type for a single provider category definition
@@ -294,7 +301,9 @@ export interface ProviderCategoryDefinition {
 }
 
 // Utility type for active categories only
-export type ActiveProviderCategories = typeof PROVIDER_CATEGORIES[number] & { isActive: true };
+export type ActiveProviderCategories = (typeof PROVIDER_CATEGORIES)[number] & {
+  isActive: true;
+};
 
 // Type guards for discriminating between provider and client users
 export const isProvider = (

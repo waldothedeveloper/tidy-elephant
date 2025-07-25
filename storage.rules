@@ -2,25 +2,20 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Profile photos - readable by all authenticated users, writable only by owner
+    // Profile photos - readable by anyone, writable only by owner
     match /profile-photos/{userId}/{allPaths=**} {
       allow read: if true;
       allow write, delete: if request.auth != null && request.auth.uid == userId;
     }
-    
-    // Private documents - only accessible by owner
-    match /private-documents/{userId}/{allPaths=**} {
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-    }
 
-// Allow read access to media such as company logos
+// Allow read access to media such as our company logos or any other public media
     match /media/{allPaths=**} {
       allow read: if true;
     }
     
     // Fallback - deny all other access
     match /{allPaths=**} {
-      allow read, write: if false;
+      allow read, write, delete: if false;
     }
   }
 }
