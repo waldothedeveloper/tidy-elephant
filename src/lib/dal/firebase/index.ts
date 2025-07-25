@@ -26,7 +26,11 @@ import {
   where,
 } from "firebase/firestore";
 import { enforceAuth, enforceAuthProvider } from "@/lib/dal/clerk";
-import { userCategoriesSchema, userProfileSchema } from "@/lib/schemas/index";
+import {
+  userCategoriesSchema,
+  userProfileSchema,
+  workPhotosSchema,
+} from "@/lib/schemas/index";
 
 import { cache } from "react";
 import { currentUser } from "@clerk/nextjs/server";
@@ -59,6 +63,7 @@ export async function createFirebaseUserProviderDAL(
       isActive: false,
       isPhoneVerified: false,
       categories: [],
+      workPhotos: [],
     };
 
     const providerRatings: ProviderRatings = {
@@ -271,5 +276,45 @@ export async function saveFirebaseProviderHourlyRateDAL(
       error
     );
     return createErrorResponse("Failed to save hourly rate. Please try again.");
+  }
+}
+
+export async function saveFirebaseProviderWorkPhotosDAL(
+  data: z.infer<typeof workPhotosSchema>,
+  authenticatedFirebaseDB: Firestore
+): Promise<OperationResult> {
+  const userId = await enforceAuthProvider();
+
+  try {
+    // First, find the user's document by clerkUserID
+    const userQuery = query(
+      collection(authenticatedFirebaseDB, "Users"),
+      where("clerkUserID", "==", userId)
+    );
+
+    const querySnapshot = await getDocs(userQuery);
+
+    if (querySnapshot.empty) {
+      return createErrorResponse(
+        "User profile not found. Please complete your basic profile first."
+      );
+    }
+
+    // Get the user document
+    const userDoc = querySnapshot.docs[0];
+    const userDocRef = doc(authenticatedFirebaseDB, "Users", userDoc.id);
+
+    // Update the provider's work photos in their providerDetails
+    await updateDoc(userDocRef, {
+      "providerDetails.workPhotos": data.workPhotos,
+      updatedAt: new Date(),
+    });
+
+    return createSuccessResponse(
+      `Successfully saved ${data.workPhotos.length} work photo${data.workPhotos.length === 1 ? "" : "s"} to your profile.`
+    );
+  } catch (error) {
+    console.error("Error saving provider work photos:", error);
+    return createErrorResponse("Failed to save work photos. Please try again.");
   }
 }

@@ -20,6 +20,11 @@ This is a Next.js 15 marketplace application connecting professional organizers 
 - **Tailwind CSS v4** for styling
 - **React 19** with React Hook Form and Zod validation
 
+### Styling Rules
+
+Always use ShadCN/UI and TailwindCSS v4 and above.
+Do NOT use tailwindcss utility classes such e.g. "h-4 w-4", these height and width sizes can be set easily like this e.g. "size-4" , "size-12" and so on.
+
 ### Authentication & User Management
 
 - **Clerk** for authentication with custom onboarding flows

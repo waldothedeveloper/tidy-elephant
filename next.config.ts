@@ -72,10 +72,16 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/photo-1607748862156-7c548e7e98f4/**",
       },
+      // *** Even these two look very similar, one is for production and the other for development, so do NOT change ***
       {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
-        pathname: "/v0/b/ease-and-arrange-prod.firebasestorage.app/o/media/**",
+        pathname: "/v0/b/ease-and-arrange-prod.firebasestorage.app/o/**",
+      },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        pathname: "/v0/b/ease-and-arrange-development.firebasestorage.app/o/**",
       },
     ],
   },
