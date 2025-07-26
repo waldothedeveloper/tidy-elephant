@@ -1,205 +1,204 @@
 // Firebase User Document Interface
-export interface FirebaseUser {
-  id?: string; // Firestore document ID
-  createdAt: Date;
-  updatedAt: Date | null;
-  clerkUserID: string;
-  isAProvider: boolean;
-  profile: UserProfile;
-  roles: UserRoles;
+// export interface FirebaseUser {
+//   id?: string; // Firestore document ID
+//   createdAt: Date;
+//   updatedAt: Date | null;
+//   clerkUserID: string;
+//   isAProvider: boolean;
+//   profile: UserProfile;
+//   roles: UserRoles;
 
-  // Provider-specific fields (only present when isAProvider = true)
-  providerDetails?: ProviderDetails;
-  providerRatings?: ProviderRatings;
-  providerReviews?: ProviderReview[];
+//   // Provider-specific fields (only present when isAProvider = true)
+//   providerDetails?: ProviderDetails;
+//   providerRatings?: ProviderRatings;
+//   providerReviews?: ProviderReview[];
 
-  // Client-specific fields (only present when isAProvider = false)
-  clientDetails?: ClientDetails;
-  bookingHistory?: BookingHistory[];
-  clientPreferences?: ClientPreferences;
-}
+//   // Client-specific fields (only present when isAProvider = false)
+//   clientDetails?: ClientDetails;
+//   bookingHistory?: BookingHistory[];
+//   clientPreferences?: ClientPreferences;
+// }
 
-export interface UserProfile {
-  firstName: string;
-  lastName: string;
-  about: string;
-  photo: string;
-  email: string;
-  phoneNumber?: string;
-  address?: UserAddress;
-}
+// export interface UserProfile {
+//   firstName: string;
+//   lastName: string;
+//   about: string;
+//   photo: string;
+//   email: string;
+//   phoneNumber?: string;
+//   address?: UserAddress;
+// }
 
-export interface UserAddress {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
+// export interface UserAddress {
+//   street: string;
+//   city: string;
+//   state: string;
+//   zipCode: string;
+//   country: string;
+// }
 
-export interface UserRoles {
-  provider?: boolean;
-  client?: boolean;
-  admin?: boolean;
-}
+// export interface UserRoles {
+//   provider?: boolean;
+//   client?: boolean;
+//   admin?: boolean;
+// }
 
 // Provider-specific interfaces
-export interface ProviderDetails {
-  isOnboarded: boolean;
-  isActive: boolean;
-  isPhoneVerified: boolean;
-  workPhotos?: string[]; // URLs of Firebase URLs of uploaded work photos
-  categories: string[]; // Service category IDs
-  serviceAreas?: string[]; // Geographic areas they serve
-  hourlyRate?: number; // Stored in cents (e.g., $75.00 = 7500 cents)
-  availability?: ProviderAvailability;
-  businessInfo?: BusinessInfo;
-  certifications?: Certification[];
-  experience?: number; // Years of experience
-  languages?: string[];
-}
+// export interface ProviderDetails {
+//   isOnboarded: boolean;
+//   isActive: boolean;
+//   isPhoneVerified: boolean;
+//   workPhotos?: string[]; // URLs of Firebase URLs of uploaded work photos
+//   categories: string[]; // Service category IDs
+//   serviceAreas?: string[]; // Geographic areas they serve
+//   hourlyRate?: number; // Stored in cents (e.g., $75.00 = 7500 cents)
+//   availability?: ProviderAvailability;
+//   businessInfo?: BusinessInfo;
+//   certifications?: Certification[];
+//   experience?: number; // Years of experience
+//   languages?: string[];
+// }
 
-export interface ProviderAvailability {
-  monday?: TimeSlot[];
-  tuesday?: TimeSlot[];
-  wednesday?: TimeSlot[];
-  thursday?: TimeSlot[];
-  friday?: TimeSlot[];
-  saturday?: TimeSlot[];
-  sunday?: TimeSlot[];
-  timezone: string;
-  blackoutDates?: Date[]; // Unavailable dates
-}
+// export interface ProviderAvailability {
+//   monday?: TimeSlot[];
+//   tuesday?: TimeSlot[];
+//   wednesday?: TimeSlot[];
+//   thursday?: TimeSlot[];
+//   friday?: TimeSlot[];
+//   saturday?: TimeSlot[];
+//   sunday?: TimeSlot[];
+//   blackoutDates?: Date[]; // Unavailable dates
+// }
 
-export interface TimeSlot {
-  startTime: string; // Format: "HH:mm"
-  endTime: string; // Format: "HH:mm"
-}
+// export interface TimeSlot {
+//   startTime: string; // Format: "HH:mm"
+//   endTime: string; // Format: "HH:mm"
+// }
 
-export interface BusinessInfo {
-  businessName?: string;
-  businessLicense?: string;
-  insurance?: InsuranceInfo;
-  taxId?: string;
-  website?: string;
-  socialMedia?: SocialMediaLinks;
-}
+// export interface BusinessInfo {
+//   businessName?: string;
+//   businessLicense?: string;
+//   insurance?: InsuranceInfo;
+//   taxId?: string;
+//   website?: string;
+//   socialMedia?: SocialMediaLinks;
+// }
 
-export interface InsuranceInfo {
-  provider: string;
-  policyNumber: string;
-  expirationDate: Date;
-  coverageAmount: number;
-}
+// export interface InsuranceInfo {
+//   provider: string;
+//   policyNumber: string;
+//   expirationDate: Date;
+//   coverageAmount: number;
+// }
 
-export interface SocialMediaLinks {
-  instagram?: string;
-  facebook?: string;
-  linkedin?: string;
-  website?: string;
-}
+// export interface SocialMediaLinks {
+//   instagram?: string;
+//   facebook?: string;
+//   linkedin?: string;
+//   website?: string;
+// }
 
-export interface Certification {
-  name: string;
-  issuedBy: string;
-  issueDate: Date;
-  expirationDate?: Date;
-  credentialId?: string;
-  verificationUrl?: string;
-}
+// export interface Certification {
+//   name: string;
+//   issuedBy: string;
+//   issueDate: Date;
+//   expirationDate?: Date;
+//   credentialId?: string;
+//   verificationUrl?: string;
+// }
 
-export interface ProviderRatings {
-  averageRating: number;
-  totalReviews: number;
-  ratingBreakdown?: {
-    5: number;
-    4: number;
-    3: number;
-    2: number;
-    1: number;
-  };
-}
+// export interface ProviderRatings {
+//   averageRating: number;
+//   totalReviews: number;
+//   ratingBreakdown?: {
+//     5: number;
+//     4: number;
+//     3: number;
+//     2: number;
+//     1: number;
+//   };
+// }
 
-export interface ProviderReview {
-  id: string;
-  clientId: string;
-  clientName: string;
-  rating: number;
-  comment: string;
-  createdAt: Date;
-  bookingId: string;
-  isVerified: boolean;
-  responseFromProvider?: ProviderResponse;
-}
+// export interface ProviderReview {
+//   id: string;
+//   clientId: string;
+//   clientName: string;
+//   rating: number;
+//   comment: string;
+//   createdAt: Date;
+//   bookingId: string;
+//   isVerified: boolean;
+//   responseFromProvider?: ProviderResponse;
+// }
 
-export interface ProviderResponse {
-  comment: string;
-  createdAt: Date;
-}
+// export interface ProviderResponse {
+//   comment: string;
+//   createdAt: Date;
+// }
 
-// Client-specific interfaces
-export interface ClientDetails {
-  isActive: boolean;
-  isPhoneVerified: boolean;
-  communicationPreferences?: CommunicationPreferences;
-}
+// // Client-specific interfaces
+// export interface ClientDetails {
+//   isActive: boolean;
+//   isPhoneVerified: boolean;
+//   communicationPreferences?: CommunicationPreferences;
+// }
 
-export interface CommunicationPreferences {
-  emailNotifications: boolean;
-  smsNotifications: boolean;
-  pushNotifications: boolean;
-  marketingEmails: boolean;
-  bookingReminders: boolean;
-  reviewRequests: boolean;
-}
+// export interface CommunicationPreferences {
+//   emailNotifications: boolean;
+//   smsNotifications: boolean;
+//   pushNotifications: boolean;
+//   marketingEmails: boolean;
+//   bookingReminders: boolean;
+//   reviewRequests: boolean;
+// }
 
-export interface ClientPreferences {
-  preferredProviders?: string[]; // Provider IDs
-  blockedProviders?: string[]; // Provider IDs
-  servicePreferences?: ServicePreference[];
-  budgetRange?: {
-    min: number;
-    max: number;
-  };
-  timePreferences?: {
-    preferredDays: string[];
-    preferredTimes: string[];
-  };
-}
+// export interface ClientPreferences {
+//   preferredProviders?: string[]; // Provider IDs
+//   blockedProviders?: string[]; // Provider IDs
+//   servicePreferences?: ServicePreference[];
+//   budgetRange?: {
+//     min: number;
+//     max: number;
+//   };
+//   timePreferences?: {
+//     preferredDays: string[];
+//     preferredTimes: string[];
+//   };
+// }
 
-export interface ServicePreference {
-  categoryId: string;
-  notes?: string;
-  priority: "low" | "medium" | "high";
-}
+// export interface ServicePreference {
+//   categoryId: string;
+//   notes?: string;
+//   priority: "low" | "medium" | "high";
+// }
 
-// Booking-related interfaces
-export interface BookingHistory {
-  id: string;
-  providerId: string;
-  providerName: string;
-  serviceCategory: string;
-  status: "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
-  scheduledDate: Date;
-  duration: number; // Hours
-  totalCost: number;
-  address: UserAddress;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  completedAt?: Date;
-  cancelledAt?: Date;
-  cancellationReason?: string;
-  hasReview: boolean;
-}
+// // Booking-related interfaces
+// export interface BookingHistory {
+//   id: string;
+//   providerId: string;
+//   providerName: string;
+//   serviceCategory: string;
+//   status: "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
+//   scheduledDate: Date;
+//   duration: number; // Hours
+//   totalCost: number;
+//   address: UserAddress;
+//   notes?: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+//   completedAt?: Date;
+//   cancelledAt?: Date;
+//   cancellationReason?: string;
+//   hasReview: boolean;
+// }
 
-// Service Categories (used by providers)
-export interface ServiceCategory {
-  id: string;
-  name: string;
-  description: string;
-  isActive: boolean;
-}
+// // Service Categories (used by providers)
+// export interface ServiceCategory {
+//   id: string;
+//   name: string;
+//   description: string;
+//   isActive: boolean;
+// }
 
 // Provider Category Types Enum
 export enum ProviderCategoryType {
@@ -292,61 +291,12 @@ export const PROVIDER_CATEGORIES = [
   },
 ] as const;
 
-// Type for a single provider category definition
-export interface ProviderCategoryDefinition {
-  type: ProviderCategoryType;
-  name: string;
-  description: string;
-  isActive: boolean;
-}
+/*
+------------------>> WE ALWAYS DERIVE THE TYPES FROM THE SCHEMAS, SO WE DON'T NEED TO REDEFINE THEM HERE <<------------------
 
-// Utility type for active categories only
-export type ActiveProviderCategories = (typeof PROVIDER_CATEGORIES)[number] & {
-  isActive: true;
-};
+*/
 
-// Type guards for discriminating between provider and client users
-export const isProvider = (
-  user: FirebaseUser
-): user is FirebaseUser & {
-  providerDetails: ProviderDetails;
-  providerRatings: ProviderRatings;
-  providerReviews: ProviderReview[];
-} => {
-  return user.isAProvider === true;
-};
+import { userProfileSchema } from "@/lib/schemas/index";
+import { z } from "zod";
 
-export const isClient = (
-  user: FirebaseUser
-): user is FirebaseUser & {
-  clientDetails: ClientDetails;
-  bookingHistory: BookingHistory[];
-  clientPreferences: ClientPreferences;
-} => {
-  return user.isAProvider === false;
-};
-
-// Utility types for creating/updating users
-export type CreateProviderData = Omit<
-  FirebaseUser,
-  "id" | "createdAt" | "updatedAt" | "clerkUserID"
-> & {
-  isAProvider: true;
-  providerDetails: ProviderDetails;
-  providerRatings: ProviderRatings;
-  providerReviews: ProviderReview[];
-};
-
-export type CreateClientData = Omit<
-  FirebaseUser,
-  "id" | "createdAt" | "updatedAt" | "clerkUserID"
-> & {
-  isAProvider: false;
-  clientDetails: ClientDetails;
-  bookingHistory: BookingHistory[];
-  clientPreferences: ClientPreferences;
-};
-
-export type UpdateUserData = Partial<
-  Omit<FirebaseUser, "id" | "createdAt" | "clerkUserID">
->;
+export type UserProfile = z.infer<typeof userProfileSchema>;

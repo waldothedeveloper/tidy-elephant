@@ -56,14 +56,12 @@ import { z } from "zod";
 export async function firebaseSaveProviderCategoriesAction(
   formData: z.infer<typeof userCategoriesSchema>
 ) {
-  // 1. AUTHENTICATE FIRST - Check auth before any logic
   const { userId } = await auth();
   if (!userId) {
     return createErrorResponse("Authentication required to save categories");
   }
 
   try {
-    // 2. SANITIZE INPUTS - Clean data before validation
     const sanitizedData = {
       categories: Array.isArray(formData.categories)
         ? formData.categories
@@ -72,7 +70,6 @@ export async function firebaseSaveProviderCategoriesAction(
         : [],
     };
 
-    // 3. VALIDATE ALL INPUTS - Use safeParse(), never parse()
     const { success, data } = userCategoriesSchema.safeParse(sanitizedData);
     if (!success) {
       // 4. USE GENERIC ERROR MESSAGES - Don't leak validation details
@@ -81,7 +78,6 @@ export async function firebaseSaveProviderCategoriesAction(
       );
     }
 
-    // 5. TRY/CATCH EVERYTHING - Wrap all external calls
     let firebaseServerApp;
     let db;
     try {
@@ -89,17 +85,14 @@ export async function firebaseSaveProviderCategoriesAction(
       firebaseServerApp = authResult.firebaseServerApp;
       db = getFirestore(firebaseServerApp);
     } catch (authError) {
-      // 6. LOG ERRORS SAFELY - Never expose internal details to client
       console.error("Firebase authentication failed:", authError);
       return createErrorResponse(
         "Unable to authenticate with database. Please try again."
       );
     }
 
-    // Save categories using DAL function
     const result = await saveFirebaseProviderCategoriesDAL(data, db);
 
-    // 7. RETURN CONSISTENT TYPES - Use types from api-responses
     if (!result.success) {
       return createErrorResponse(result.error);
     }
@@ -109,7 +102,6 @@ export async function firebaseSaveProviderCategoriesAction(
       data: data.categories,
     };
   } catch (error) {
-    // 8. LOG ERRORS SAFELY - Never expose internal details to client
     console.error("Unexpected error in firebaseSaveProviderCategoriesAction:", {
       userId,
       error: error instanceof Error ? error.message : "Unknown error",

@@ -1,5 +1,6 @@
 {
   "workbench.colorCustomizations": {},
   "coderabbit.agentType": "Native",
-  "coderabbit.autoReviewMode": "prompt"
+  "coderabbit.autoReviewMode": "prompt",
+  "editor.suggest.showReferences": true
 }

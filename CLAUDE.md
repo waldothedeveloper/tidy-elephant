@@ -24,6 +24,8 @@ This is a Next.js 15 marketplace application connecting professional organizers 
   **ShadCN/UI** for styling
   **react-hook-form** For Forms hooked with ShadCN
   **eslint**
+  **date-fns** Modern JavaScript date utility library
+  **react-day-picker** DayPicker is a React component for creating date pickers, calendars, and date inputs for web applications.
 
 ### Styling Rules
 

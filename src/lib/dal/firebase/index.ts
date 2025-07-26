@@ -7,15 +7,6 @@ import {
   createSuccessResponse,
 } from "@/types/api-responses";
 import {
-  FirebaseUser,
-  ProviderDetails,
-  ProviderRatings,
-  ProviderReview,
-  ServiceCategory,
-  UserProfile,
-  UserRoles,
-} from "@/types/user";
-import {
   Firestore,
   addDoc,
   collection,
@@ -32,12 +23,14 @@ import {
   workPhotosSchema,
 } from "@/lib/schemas/index";
 
+import { UserProfile } from "@/types/user";
 import { cache } from "react";
 import { currentUser } from "@clerk/nextjs/server";
 import { dollarsToCents } from "@/lib/utils";
 import { z } from "zod";
 
 // *** FIRESTORE DAL FUNCTIONS ***
+//  This function creates just a new USER profile, but we're calling it "createFirebaseUserProviderDAL" to align with the naming convention for provider-related operations.
 export async function createFirebaseUserProviderDAL(
   data: z.infer<typeof userProfileSchema>,
   authenticatedFirebaseDB: Firestore
@@ -46,48 +39,38 @@ export async function createFirebaseUserProviderDAL(
   const clerkUser = await currentUser();
 
   try {
-    const userProfile: UserProfile = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      about: data.about,
-      photo: data.photo,
-      email: clerkUser?.emailAddresses[0]?.emailAddress || "",
-    };
-
-    const userRoles: UserRoles = {
-      provider: true,
-    };
-
-    const providerDetails: ProviderDetails = {
-      isOnboarded: false,
-      isActive: false,
-      isPhoneVerified: false,
-      categories: [],
-      workPhotos: [],
-    };
-
-    const providerRatings: ProviderRatings = {
-      averageRating: 0,
-      totalReviews: 0,
-    };
-
-    const providerReviews: ProviderReview[] = [];
-
-    const firebaseUser: Omit<FirebaseUser, "id"> = {
+    const user: Omit<UserProfile, "id"> = {
       createdAt: new Date(),
       updatedAt: null,
       clerkUserID: clerkUser?.id || "",
-      isAProvider: true,
-      profile: userProfile,
-      roles: userRoles,
-      providerDetails,
-      providerRatings,
-      providerReviews,
+      profile: {
+        firstName: data.profile.firstName,
+        lastName: data.profile.lastName,
+        about: data.profile.about,
+        photo: data.profile.photo,
+        email: data.profile.email,
+        phoneNumber: data.profile.phoneNumber,
+        address: data.profile.address,
+      },
+      roles: {
+        provider: true,
+        client: false,
+        admin: false,
+      },
+      providerDetails: {
+        isOnboarded: false,
+        isActive: false,
+        // this goes true when we verify the user's phone during onboarding
+        isPhoneVerified: false,
+        workPhotos: null,
+        categories: null,
+        hourlyRate: null,
+      },
     };
 
     const docRef = await addDoc(
       collection(authenticatedFirebaseDB, "Users"),
-      firebaseUser
+      user
     );
 
     if (!docRef.id) {
@@ -160,12 +143,7 @@ export async function getFirebaseUserByIdDAL(
     const userData = userDoc.data();
 
     // Map Firestore data to FirebaseUser interface
-    const firebaseUser: FirebaseUser = {
-      id: userDoc.id,
-      createdAt: userData.createdAt?.toDate() || new Date(),
-      updatedAt: userData.updatedAt?.toDate() || null,
-      clerkUserID: userData.clerkUserID || "",
-      isAProvider: userData.isAProvider || false,
+    const firebaseUser: Partial<FirebaseUser> = {
       profile: {
         firstName: userData.profile?.firstName || "",
         lastName: userData.profile?.lastName || "",
@@ -175,13 +153,6 @@ export async function getFirebaseUserByIdDAL(
         phoneNumber: userData.profile?.phoneNumber,
         address: userData.profile?.address,
       },
-      roles: userData.roles || {},
-      providerDetails: userData.providerDetails,
-      providerRatings: userData.providerRatings,
-      providerReviews: userData.providerReviews || [],
-      clientDetails: userData.clientDetails,
-      bookingHistory: userData.bookingHistory || [],
-      clientPreferences: userData.clientPreferences,
     };
 
     return firebaseUser;
