@@ -1,8 +1,8 @@
-# Pink Elephant 🐘
+# Tidy Elephant 🐘
 
 > The Premier Marketplace for Organizing Professionals
 
-Pink Elephant connects skilled organizing professionals with clients who need help creating order in their lives. Whether you're a certified professional organizer, home stager, move manager, or productivity coach, our platform helps you build a thriving business serving clients who value your expertise.
+Tidy Elephant connects skilled organizing professionals with clients who need help creating order in their lives. Whether you're a certified professional organizer, home stager, move manager, or productivity coach, our platform helps you build a thriving business serving clients who value your expertise.
 
 ## 🌟 Features
 
