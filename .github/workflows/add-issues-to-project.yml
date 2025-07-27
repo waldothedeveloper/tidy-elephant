@@ -1,0 +1,16 @@
+name: Add Issues to Project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Issue to Project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/waldothedeveloper/projects/15
+          github-token: ${{ secrets.PINK_ELEPHANT_TOKEN }}
