@@ -40,9 +40,8 @@ Do NOT use tailwindcss utility classes such e.g. "h-4 w-4", these height and wid
 
 ### Database & Storage
 
-- **Firebase Firestore** for data persistence
-- **Firebase Storage** for file uploads
-- **Firebase Auth** integration with Clerk for dual authentication
+- **Neon PostgreSQL** for data persistence with serverless scaling
+- **Drizzle ORM** for type-safe database operations and schema management
 - **Upstash Redis** with rate limiting
 
 ### External Services
@@ -68,7 +67,7 @@ All database operations (data access layer) go through `src/lib/dal/**` which:
 1. Users sign up via Clerk
 2. Provider onboarding sets `privateMetadata.isAProvider = true`
 3. Middleware routes users based on authentication state and provider status
-4. Firebase maintains parallel user records for additional data
+4. PostgreSQL maintains user data with full relational capabilities
 
 ### Form Validation
 
@@ -113,19 +112,24 @@ Located in `src/app/actions/**` with subdirectories for feature areas:
 - Motion animations with Framer Motion
 - Toast notifications via Sonner
 
-## Firebase Configuration
+## Database Configuration
 
-### Emulators (for development)
+### Neon PostgreSQL
 
-- **Auth**: Port 9099
-- **Firestore**: Port 8080
-- **Storage**: Port 9199
-- **UI**: Enabled for local development
+- **Production**: Neon serverless PostgreSQL database
+- **Connection**: Uses connection pooling for optimal performance
+- **SSL**: Required for all connections
 
-### Collections Structure
+### Drizzle ORM
 
-- `Users` - Provider profiles with nested data structure
-- `Provider_Categories` - Available service categories
+- **Schema**: Defined in `src/lib/db/schema.ts`
+- **Migrations**: Located in `drizzle/` directory
+- **Studio**: `npx drizzle-kit studio` for database management
+- **Config**: `drizzle.config.ts` with Neon connection
+
+### Database Schema
+
+- To be created soon...
 
 ## Environment Variables Required
 
@@ -133,10 +137,9 @@ Located in `src/app/actions/**` with subdirectories for feature areas:
 
 - Clerk authentication keys
 
-### Firebase
+### Database
 
-- `NEXT_PUBLIC_FIREBASE_*` variables for client-side config
-- Server-side Firebase service account credentials
+- `DATABASE_URL` - Neon PostgreSQL connection string
 
 ### Twilio
 
