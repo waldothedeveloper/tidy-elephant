@@ -139,7 +139,7 @@ export const categoriesSortOrderIndex = index("idx_categories_sort_order").on(ca
 // Provider categories junction table indexes
 export const providerCategoriesProviderIndex = index("idx_provider_categories_provider").on(providerCategoriesTable.providerId);
 export const providerCategoriesCategoryIndex = index("idx_provider_categories_category").on(providerCategoriesTable.categoryId);
-export const providerCategoriesPrimaryIndex = index("idx_provider_categories_primary").on(providerCategoriesTable.providerId, providerCategoriesTable.isPrimary);
+export const providerCategoriesMainSpecialtyIndex = index("idx_provider_categories_main_specialty").on(providerCategoriesTable.providerId, providerCategoriesTable.isMainSpecialty);
 export const providerCategoriesCompositeIndex = index("idx_provider_categories_composite").on(providerCategoriesTable.providerId, providerCategoriesTable.categoryId);
 
 // Client preferred categories junction table indexes

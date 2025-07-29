@@ -1,12 +1,15 @@
 import {
   boolean,
+  check,
   integer,
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 import { clientProfilesTable } from "./client-schema";
 import { providerProfilesTable } from "./provider-schema";
@@ -34,7 +37,10 @@ export const categoriesTable = pgTable("categories", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => ({
+  // Validation constraints
+  validHexColor: check("valid_hex_color", sql`${table.colorHex} IS NULL OR ${table.colorHex} ~ '^#[0-9A-Fa-f]{6}$'`),
+}));
 
 // Junction table for provider categories (Many-to-Many)
 export const providerCategoriesTable = pgTable("provider_categories", {
@@ -47,14 +53,20 @@ export const providerCategoriesTable = pgTable("provider_categories", {
     .references(() => categoriesTable.id, { onDelete: "cascade" }),
 
   // Relationship metadata
-  isPrimary: boolean("is_primary").notNull().default(false), // Provider's main category
+  isMainSpecialty: boolean("is_main_specialty").notNull().default(false), // Provider's main specialty category
   experienceYears: integer("experience_years"), // Years of experience in this category
 
   // System fields
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => ({
+  // Unique constraints to prevent duplicate relationships
+  uniqueProviderCategory: unique("unique_provider_category").on(
+    table.providerId, 
+    table.categoryId
+  ),
+}));
 
 // Junction table for client preferred categories (Many-to-Many)
 export const clientPreferredCategoriesTable = pgTable(
@@ -75,7 +87,14 @@ export const clientPreferredCategoriesTable = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
-  }
+  },
+  (table) => ({
+    // Unique constraints to prevent duplicate preferences
+    uniqueClientCategory: unique("unique_client_category").on(
+      table.clientId, 
+      table.categoryId
+    ),
+  })
 );
 
 // Initial category data - will be inserted via migration or seed script

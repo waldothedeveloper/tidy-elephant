@@ -87,9 +87,9 @@ The categories system defines the professional organizing service types availabl
 
 ### Database Schema
 
-- **Categories Table**: Master list of all service categories
-- **Provider Categories Junction**: Many-to-many relationship between providers and categories
-- **Client Preferred Categories Junction**: Client preferences for service types
+- **Categories Table**: Master list of all service categories with validation constraints
+- **Provider Categories Junction**: Many-to-many relationship with unique constraints and single main specialty rule
+- **Client Preferred Categories Junction**: Client preferences with unique constraints and priority ordering
 - **Booking Category Reference**: Direct foreign key from bookings to categories
 
 ### Key Fields
@@ -110,13 +110,15 @@ The categories system defines the professional organizing service types availabl
 
    - Providers can offer multiple service categories
    - Categories can be offered by multiple providers
-   - Additional metadata: primary category flag, years of experience
+   - Additional metadata: main specialty flag (max 1 per provider), years of experience
+   - Unique constraint prevents duplicate provider-category relationships
 
 2. **Client → Categories**: Many-to-many through junction table
 
    - Clients can prefer multiple service categories
    - Categories can be preferred by multiple clients
-   - Additional metadata: priority ranking
+   - Additional metadata: priority ranking (1 = highest priority)
+   - Unique constraint prevents duplicate client-category relationships
 
 3. **Booking → Category**: Direct foreign key reference
    - Each booking is associated with one primary service category
@@ -144,6 +146,19 @@ The categories system defines the professional organizing service types availabl
 - Category activation/deactivation controlled by admin
 - Sort order determines display sequence in UI
 - Color coding provides visual consistency across platform
+
+### Data Migration Strategy
+- **Migration Scripts**: Convert existing text[] data to normalized junction tables
+- **Backup Strategy**: Automatic backup of existing data before migration
+- **Validation Functions**: Ensure data integrity after migration
+- **Rollback Capability**: Restore previous state if migration fails
+
+### Data Integrity Constraints
+- **Hex Color Validation**: Database-level validation for proper color format (#RRGGBB)
+- **Slug Format Validation**: Ensures URL-friendly lowercase format with hyphens
+- **Single Main Specialty**: Unique index prevents multiple main specialties per provider
+- **Positive Priorities**: Ensures client priority values are greater than 0
+- **Reasonable Experience**: Years of experience constrained to 0-50 years
 
 ### Analytics & Reporting
 
