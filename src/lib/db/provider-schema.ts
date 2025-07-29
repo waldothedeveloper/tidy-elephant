@@ -58,8 +58,6 @@ export const providerProfilesTable = pgTable("provider_profiles", {
     .default("not_required"),
   idVerificationCompletedAt: timestamp("id_verification_completed_at", { withTimezone: true }),
 
-  // Service Categories (will reference categories table when created)
-  categories: text("categories").array().default([]), // TODO: Reference to categories table
 
   // Pricing
   hourlyRate: integer("hourly_rate"),

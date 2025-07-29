@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { usersTable } from "./user-schema";
+import { categoriesTable } from "./category-schema";
 
 // Booking-specific enums
 export const bookingStatusEnum = pgEnum("booking_status", [
@@ -47,7 +48,7 @@ export const bookingsTable = pgTable("bookings", {
   status: bookingStatusEnum("status").notNull().default("pending"),
   
   // Service Details
-  serviceCategory: varchar("service_category", { length: 100 }), // TODO: Reference to categories table when created
+  serviceCategoryId: uuid("service_category_id").references(() => categoriesTable.id),
   serviceDescription: text("service_description"),
   
   // Scheduling Information
