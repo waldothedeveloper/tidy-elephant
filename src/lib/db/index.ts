@@ -1,4 +1,4 @@
-import * as schema from "./schema";
+import * as schema from "./user-schema";
 
 import { drizzle } from "drizzle-orm/neon-http";
 import { env } from "@/lib/env";
