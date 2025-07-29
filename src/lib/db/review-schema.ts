@@ -1,5 +1,6 @@
 import { 
   boolean,
+  check,
   integer,
   json,
   pgEnum, 
@@ -9,6 +10,7 @@ import {
   uuid, 
   varchar 
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { usersTable } from "./user-schema";
 import { bookingsTable } from "./booking-schema";
 
@@ -28,13 +30,13 @@ export const reviewsTable = pgTable("reviews", {
   providerId: uuid("provider_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   
   // Review Content
-  rating: integer("rating").notNull(), // 1-5 scale, validation in application layer
-  comment: text("comment").notNull(), // Minimum 10 characters - validation in application layer
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull(),
   isVerified: boolean("is_verified").notNull().default(true), // From actual completed booking
   
   // Review Lifecycle
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   status: reviewStatusEnum("status").notNull().default("active"),
   
   // Optional Enhancement Fields (Future consideration)
@@ -47,6 +49,10 @@ export const reviewsTable = pgTable("reviews", {
   
   // Moderation
   flaggedReason: varchar("flagged_reason", { length: 200 }),
-  moderatedBy: uuid("moderated_by").references(() => usersTable.id), // Admin who reviewed
-  moderatedAt: timestamp("moderated_at"),
-});
+  moderatedBy: uuid("moderated_by").references(() => usersTable.id),
+  moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+}, (table) => ({
+  // Check constraints for data validation
+  ratingRange: check("rating_range", sql`${table.rating} >= 1 AND ${table.rating} <= 5`),
+  commentLength: check("comment_length", sql`length(${table.comment}) >= 10`),
+}));

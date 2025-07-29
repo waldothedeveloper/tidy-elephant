@@ -63,13 +63,43 @@ WHERE provider_id = $1
 ORDER BY created_at DESC;
 ```
 
+### Geographic Address Queries
+```sql
+-- Optimized by: idx_address_geocode
+SELECT * FROM addresses 
+WHERE latitude BETWEEN $lat_min AND $lat_max 
+  AND longitude BETWEEN $lng_min AND $lng_max;
+
+-- Optimized by: idx_user_address_primary
+SELECT a.* FROM addresses a
+JOIN user_addresses ua ON a.id = ua.address_id
+WHERE ua.user_id = $1 AND ua.is_primary = true;
+```
+
+### Complex Booking Queries
+```sql
+-- Optimized by: idx_booking_status_date_range
+SELECT * FROM bookings 
+WHERE status IN ('confirmed', 'in_progress')
+  AND service_date BETWEEN $start_date AND $end_date
+ORDER BY service_date ASC;
+
+-- Optimized by: idx_booking_category_status
+SELECT * FROM bookings 
+WHERE service_category = 'home_organization' 
+  AND status = 'completed'
+ORDER BY service_date DESC;
+```
+
 ## Index Maintenance Strategy
 
 ### Array Column Indexes
 
-- **GIN indexes** for array columns (`categories`, `preferred_providers`)
-- Enable fast containment queries (`@>`, `&&` operators)
+- **GIN indexes** for all array columns (`categories`, `preferred_providers`, `roles`, `languages`, etc.)
+- Enable fast containment queries (`@>`, `&&`, `<@` operators)
+- Support array overlap and containment operations efficiently
 - Higher storage cost but essential for array search performance
+- Critical for provider search by categories and client preference matching
 
 ### JSON Column Indexes
 
@@ -132,6 +162,7 @@ WHERE is_onboarded = true AND average_rating >= 4.0 AND hourly_rate BETWEEN 5000
 
 - **Business uniqueness**: One review per booking, unique referral codes
 - **Data consistency**: Prevent duplicate profiles per user
+- **Booking uniqueness**: Prevents duplicate bookings for same client/provider/datetime
 
 ## Implementation Notes
 
@@ -169,6 +200,25 @@ WHERE is_onboarded = true AND average_rating >= 4.0 AND hourly_rate BETWEEN 5000
 - **Connection pooling**: Optimized for serverless scaling
 - **Autoscaling**: Indexes scale with usage
 - **Storage efficiency**: Balance index count with storage costs
+
+## Database Triggers for Rating Calculations
+
+### Automatic Rating Updates
+- **PostgreSQL triggers**: Automatically recalculate provider ratings when reviews change
+- **Race condition prevention**: Eliminates inconsistencies from concurrent updates
+- **Real-time accuracy**: Rating statistics always reflect current review data
+- **Atomic operations**: Rating updates happen within the same transaction as review changes
+
+### Trigger Functions
+- **INSERT triggers**: Recalculate when new reviews are added
+- **UPDATE triggers**: Recalculate when reviews are modified or status changes
+- **DELETE triggers**: Recalculate when reviews are removed
+- **Conditional execution**: Only fires when rating-relevant fields change
+
+### Maintenance Functions
+- **Initial sync**: `syncAllProviderRatings()` for setup or data fixes
+- **Consistency checks**: `checkRatingConsistency()` for monitoring
+- **Manual recalculation**: Per-provider rating refresh capabilities
 
 ## Future Considerations
 

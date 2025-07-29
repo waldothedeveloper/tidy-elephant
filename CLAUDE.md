@@ -603,3 +603,7 @@ const processPayment = (payment: Payment): ProcessedPayment => {
   return executePayment(payment);
 };
 ```
+
+## Development Guidelines
+
+- **MAKE SURE you are not adding stupid comments. Code should be self explanatory.**

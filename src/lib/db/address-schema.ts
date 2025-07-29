@@ -59,8 +59,8 @@ export const addressesTable = pgTable("addresses", {
   buildingInfo: text("building_info"), // Building name, floor, buzzer code, etc.
   
   // System fields
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // User Addresses Junction Table (Many-to-Many)
@@ -75,8 +75,8 @@ export const userAddressesTable = pgTable("user_addresses", {
   label: varchar("label", { length: 50 }), // User's custom label for this address
   
   // System fields
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // Booking Addresses Junction Table (Many-to-Many)
@@ -90,5 +90,5 @@ export const bookingAddressesTable = pgTable("booking_addresses", {
   role: addressTypeEnum("role").notNull(), // "service_location", "billing", etc.
   
   // System fields
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

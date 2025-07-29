@@ -17,7 +17,7 @@ export const usersReferralCodeIndex = index("idx_users_referral_code").on(usersT
 
 // Query optimization indexes
 export const usersAccountStatusIndex = index("idx_users_account_status").on(usersTable.accountStatus);
-export const usersRolesIndex = index("idx_users_roles").on(usersTable.roles);
+export const usersRolesGinIndex = index("idx_users_roles_gin").using("gin", usersTable.roles);
 export const usersReferredByIndex = index("idx_users_referred_by").on(usersTable.referredBy);
 
 // =============================================================================
@@ -31,12 +31,16 @@ export const providerOnboardedIndex = index("idx_provider_onboarded").on(provide
 // Search and filtering indexes
 export const providerRatingIndex = index("idx_provider_avg_rating").on(providerProfilesTable.averageRating);
 export const providerHourlyRateIndex = index("idx_provider_hourly_rate").on(providerProfilesTable.hourlyRate);
-export const providerCategoriesIndex = index("idx_provider_categories").on(providerProfilesTable.categories);
+export const providerCategoriesGinIndex = index("idx_provider_categories_gin").using("gin", providerProfilesTable.categories);
 export const providerYearsExperienceIndex = index("idx_provider_years_experience").on(providerProfilesTable.yearsOfExperience);
 
 // Verification status indexes
 export const providerBackgroundCheckIndex = index("idx_provider_background_check").on(providerProfilesTable.backgroundCheckStatus);
 export const providerIdVerificationIndex = index("idx_provider_id_verification").on(providerProfilesTable.idVerificationStatus);
+
+// Array field GIN indexes for provider searching
+export const providerLanguagesGinIndex = index("idx_provider_languages_gin").using("gin", providerProfilesTable.languages);
+export const providerCertificationsGinIndex = index("idx_provider_certifications_gin").using("gin", providerProfilesTable.certifications);
 
 // Composite indexes for common search patterns
 export const providerSearchIndex = index("idx_provider_search")
@@ -49,10 +53,10 @@ export const providerSearchIndex = index("idx_provider_search")
 // Core lookup index
 export const clientUserIdIndex = unique("idx_client_user_id").on(clientProfilesTable.userId);
 
-// Preference indexes for matching
-export const clientPreferredCategoriesIndex = index("idx_client_preferred_categories").on(clientProfilesTable.preferredServiceCategories);
-export const clientPreferredProvidersIndex = index("idx_client_preferred_providers").on(clientProfilesTable.preferredProviders);
-export const clientBlockedProvidersIndex = index("idx_client_blocked_providers").on(clientProfilesTable.blockedProviders);
+// Preference indexes for matching (GIN for array operations)
+export const clientPreferredCategoriesGinIndex = index("idx_client_preferred_categories_gin").using("gin", clientProfilesTable.preferredServiceCategories);
+export const clientPreferredProvidersGinIndex = index("idx_client_preferred_providers_gin").using("gin", clientProfilesTable.preferredProviders);
+export const clientBlockedProvidersGinIndex = index("idx_client_blocked_providers_gin").using("gin", clientProfilesTable.blockedProviders);
 
 // =============================================================================
 // BOOKINGS TABLE INDEXES
@@ -79,6 +83,9 @@ export const bookingProviderDashboardIndex = index("idx_booking_provider_dashboa
 
 // Service category index for analytics
 export const bookingServiceCategoryIndex = index("idx_booking_service_category").on(bookingsTable.serviceCategory);
+
+// Array field GIN indexes for booking features
+export const bookingAccessibilityNeedsGinIndex = index("idx_booking_accessibility_needs_gin").using("gin", bookingsTable.accessibilityNeeds);
 
 // =============================================================================
 // REVIEWS TABLE INDEXES
@@ -119,23 +126,57 @@ export const paymentHistoryIndex = index("idx_payment_history")
   .on(paymentTransactionsTable.status, paymentTransactionsTable.type, paymentTransactionsTable.createdAt);
 
 // =============================================================================
+// ADDRESS SYSTEM INDEXES
+// =============================================================================
+
+// Geographic indexes for location-based queries
+export const addressGeocodeIndex = index("idx_address_geocode").on(addressesTable.latitude, addressesTable.longitude);
+export const addressLatitudeIndex = index("idx_address_latitude").on(addressesTable.latitude);
+export const addressLongitudeIndex = index("idx_address_longitude").on(addressesTable.longitude);
+
+// Address validation and lookup indexes
+export const addressTypeIndex = index("idx_address_type").on(addressesTable.type);
+export const addressCityStateIndex = index("idx_address_city_state").on(addressesTable.city, addressesTable.state);
+export const addressPostalCodeIndex = index("idx_address_postal_code").on(addressesTable.postalCode);
+export const addressVerificationIndex = index("idx_address_verification").on(addressesTable.isVerified, addressesTable.isDeliverable);
+
+// User address junction table indexes
+export const userAddressPrimaryIndex = index("idx_user_address_primary").on(userAddressesTable.userId, userAddressesTable.isPrimary);
+export const userAddressLookupIndex = index("idx_user_address_lookup").on(userAddressesTable.userId, userAddressesTable.addressId);
+
+// Booking address junction table indexes
+export const bookingAddressRoleIndex = index("idx_booking_address_role").on(bookingAddressesTable.bookingId, bookingAddressesTable.role);
+export const bookingAddressLookupIndex = index("idx_booking_address_lookup").on(bookingAddressesTable.bookingId, bookingAddressesTable.addressId);
+
+// =============================================================================
+// ENHANCED BOOKING INDEXES FOR COMPLEX QUERIES
+// =============================================================================
+
+// Date range queries with status filtering
+export const bookingDateStatusIndex = index("idx_booking_date_status").on(bookingsTable.serviceDate, bookingsTable.status);
+export const bookingStatusDateRangeIndex = index("idx_booking_status_date_range").on(bookingsTable.status, bookingsTable.serviceDate, bookingsTable.createdAt);
+
+// Service category filtering with other criteria
+export const bookingCategoryStatusIndex = index("idx_booking_category_status").on(bookingsTable.serviceCategory, bookingsTable.status);
+export const bookingCategoryDateIndex = index("idx_booking_category_date").on(bookingsTable.serviceCategory, bookingsTable.serviceDate);
+
+// Provider availability and scheduling optimization
+export const bookingProviderDateStatusIndex = index("idx_booking_provider_date_status").on(bookingsTable.providerId, bookingsTable.serviceDate, bookingsTable.status);
+export const bookingClientDateStatusIndex = index("idx_booking_client_date_status").on(bookingsTable.clientId, bookingsTable.serviceDate, bookingsTable.status);
+
+// Geographic proximity composite indexes (for use with address joins)
+export const bookingProviderServiceAreaIndex = index("idx_booking_provider_service_area").on(bookingsTable.providerId, bookingsTable.serviceArea);
+
+// =============================================================================
 // ADDITIONAL CONSTRAINTS (Beyond Foreign Keys)
 // =============================================================================
 
-// Note: These would be added via migrations as they require specific constraint syntax
-/*
-ALTER TABLE users ADD CONSTRAINT chk_users_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
-ALTER TABLE users ADD CONSTRAINT chk_users_phone_format CHECK (phone ~* '^\+?[1-9]\d{1,14}$');
-
-ALTER TABLE provider_profiles ADD CONSTRAINT chk_provider_hourly_rate_range CHECK (hourly_rate >= 2500 AND hourly_rate <= 25000);
-ALTER TABLE provider_profiles ADD CONSTRAINT chk_provider_avg_rating_range CHECK (average_rating >= 0 AND average_rating <= 5);
-ALTER TABLE provider_profiles ADD CONSTRAINT chk_provider_years_experience CHECK (years_of_experience >= 0 AND years_of_experience <= 50);
-
-ALTER TABLE reviews ADD CONSTRAINT chk_review_rating_range CHECK (rating >= 1 AND rating <= 5);
-ALTER TABLE reviews ADD CONSTRAINT chk_review_comment_length CHECK (char_length(comment) >= 10);
-
-ALTER TABLE payment_transactions ADD CONSTRAINT chk_payment_amount_positive CHECK (amount > 0);
-
--- Self-referential foreign key for users.referredBy (couldn't be added in schema due to TypeScript circular reference)
-ALTER TABLE users ADD CONSTRAINT fk_users_referred_by FOREIGN KEY (referred_by) REFERENCES users(id);
-*/
+// Note: Check constraints are now implemented directly in schema files using Drizzle's check() function:
+// - User phone number validation (E.164 format: +1234567890)
+// - User email format validation (standard email regex)
+// - Provider hourly rate validation (2500-25000 cents = $25-$250)
+// - Review rating validation (1-5 scale)
+// - Review comment length validation (minimum 10 characters)
+// - Payment amount validation (positive amounts only)
+// - Booking price validation (positive amounts only)
+// - Self-referential foreign key handled via Drizzle relations

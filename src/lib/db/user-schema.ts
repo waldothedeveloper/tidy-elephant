@@ -1,5 +1,6 @@
 import { 
   boolean, 
+  check,
   pgEnum, 
   pgTable, 
   text, 
@@ -7,6 +8,7 @@ import {
   uuid, 
   varchar 
 } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
 
 // Enums
 export const userRoleEnum = pgEnum("user_role", ["client", "provider"]);
@@ -37,11 +39,10 @@ export const usersTable = pgTable("users", {
   roles: userRoleEnum("roles").array().notNull().default(["client"]),
   
   // System Fields (Automatically managed)
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   
   // Location & Contact
-  timezone: varchar("timezone", { length: 50 }),
   preferredContactMethod: preferredContactMethodEnum("preferred_contact_method").default("email"),
   language: varchar("language", { length: 10 }).default("en"),
   
@@ -53,7 +54,7 @@ export const usersTable = pgTable("users", {
   
   // Trust & Safety
   agreedToTerms: boolean("agreed_to_terms").notNull().default(false),
-  agreedToTermsAt: timestamp("agreed_to_terms_at"),
+  agreedToTermsAt: timestamp("agreed_to_terms_at", { withTimezone: true }),
   privacyPolicyAccepted: boolean("privacy_policy_accepted").notNull().default(false),
   
   // Communication Preferences
@@ -63,6 +64,23 @@ export const usersTable = pgTable("users", {
   
   // Referral & Growth
   referralCode: varchar("referral_code", { length: 20 }).unique(),
-  referredBy: uuid("referred_by"), // Self-reference to users table - FK constraint added in migration
+  referredBy: uuid("referred_by"),
   howDidYouHearAbout: varchar("how_did_you_hear_about", { length: 100 }),
-});
+}, (table) => ({
+  // Check constraints for data validation
+  phoneFormat: check("phone_format", sql`${table.phone} ~ '^\+[1-9]\d{1,14}$'`),
+  emailFormat: check("email_format", sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'`),
+}));
+
+// Relations - handles foreign key relationships properly
+export const usersRelations = relations(usersTable, ({ one, many }) => ({
+  // Self-reference for referrals
+  referrer: one(usersTable, {
+    fields: [usersTable.referredBy],
+    references: [usersTable.id],
+  }),
+  
+  // Users they referred
+  referredUsers: many(usersTable),
+}));
+

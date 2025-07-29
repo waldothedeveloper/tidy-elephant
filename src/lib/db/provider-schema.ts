@@ -1,5 +1,6 @@
 import {
   boolean,
+  check,
   integer,
   json,
   numeric,
@@ -9,6 +10,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 import { usersTable } from "./user-schema";
 
@@ -50,17 +52,17 @@ export const providerProfilesTable = pgTable("provider_profiles", {
   backgroundCheckStatus: backgroundCheckStatusEnum("background_check_status")
     .notNull()
     .default("not_required"),
-  backgroundCheckCompletedAt: timestamp("background_check_completed_at"),
+  backgroundCheckCompletedAt: timestamp("background_check_completed_at", { withTimezone: true }),
   idVerificationStatus: idVerificationStatusEnum("id_verification_status")
     .notNull()
     .default("not_required"),
-  idVerificationCompletedAt: timestamp("id_verification_completed_at"),
+  idVerificationCompletedAt: timestamp("id_verification_completed_at", { withTimezone: true }),
 
   // Service Categories (will reference categories table when created)
   categories: text("categories").array().default([]), // TODO: Reference to categories table
 
   // Pricing
-  hourlyRate: integer("hourly_rate"), // Rate in cents (min: 2500, max: 25000)
+  hourlyRate: integer("hourly_rate"),
   cancellationPolicy: cancellationPolicyEnum("cancellation_policy").default(
     "moderate"
   ),
@@ -77,10 +79,8 @@ export const providerProfilesTable = pgTable("provider_profiles", {
   // Availability & Scheduling
   availability: json("availability"), // JSON object for schedule information
 
-  // Ratings & Reviews (calculated fields)
-  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default(
-    "0.00"
-  ), // 0-5 scale
+  // Ratings & Reviews (auto-calculated via database triggers)
+  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default("0.00"),
   totalReviews: integer("total_reviews").notNull().default(0),
   ratingBreakdown: json("rating_breakdown")
     .$type<{
@@ -99,6 +99,11 @@ export const providerProfilesTable = pgTable("provider_profiles", {
     }),
 
   // System fields
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => ({
+  // Check constraints for data validation
+  hourlyRateRange: check("hourly_rate_range", sql`${table.hourlyRate} >= 2500 AND ${table.hourlyRate} <= 25000`),
+  averageRatingRange: check("average_rating_range", sql`${table.averageRating} >= 0 AND ${table.averageRating} <= 5`),
+  yearsExperienceRange: check("years_experience_range", sql`${table.yearsOfExperience} >= 0 AND ${table.yearsOfExperience} <= 50`),
+}));

@@ -1,4 +1,5 @@
 import { 
+  check,
   integer,
   pgEnum, 
   pgTable, 
@@ -6,6 +7,7 @@ import {
   uuid, 
   varchar 
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { bookingsTable } from "./booking-schema";
 
 // Payment-specific enums
@@ -33,11 +35,14 @@ export const paymentTransactionsTable = pgTable("payment_transactions", {
   stripeChargeId: varchar("stripe_charge_id", { length: 255 }), // When captured
   
   // Transaction Details
-  amount: integer("amount").notNull(), // Amount in cents
+  amount: integer("amount").notNull(),
   type: paymentTypeEnum("type").notNull().default("payment"),
   status: paymentTransactionStatusEnum("status").notNull().default("pending"), // Mirrors Stripe status
   
   // System Fields
-  createdAt: timestamp("created_at").notNull().defaultNow(), // When you created the record
-  updatedAt: timestamp("updated_at").notNull().defaultNow(), // Last sync with Stripe
-});
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => ({
+  // Check constraints for data validation
+  positiveAmount: check("positive_amount", sql`${table.amount} > 0`),
+}));
