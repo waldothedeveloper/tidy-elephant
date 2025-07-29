@@ -1,0 +1,447 @@
+// Professional Organizer Marketplace Database Schema
+// Generated from Drizzle ORM schemas in src/lib/db/
+// Use this file with dbdiagram.io to visualize the database structure
+
+//----------------------------------------------
+// ENUMS
+//----------------------------------------------
+
+Enum user_role {
+  client
+  provider
+}
+
+Enum account_status {
+  active
+  inactive
+  suspended
+  pending_verification
+}
+
+Enum preferred_contact_method {
+  email
+  phone
+  app_messaging
+}
+
+Enum background_check_status {
+  not_required
+  pending
+  approved
+  rejected
+}
+
+Enum id_verification_status {
+  not_required
+  pending
+  approved
+  rejected
+  expired
+}
+
+Enum cancellation_policy {
+  flexible
+  moderate
+  strict
+}
+
+Enum booking_status {
+  pending
+  confirmed
+  in_progress
+  completed
+  cancelled
+  refunded
+}
+
+Enum payment_status {
+  pending
+  authorized
+  captured
+  refunded
+}
+
+Enum home_type {
+  apartment
+  house
+  condo
+  office
+}
+
+Enum review_status {
+  active
+  flagged
+  removed
+}
+
+Enum payment_type {
+  payment
+  refund
+  chargeback
+}
+
+Enum payment_transaction_status {
+  pending
+  succeeded
+  failed
+  canceled
+}
+
+Enum address_type {
+  home
+  work
+  service_location
+  billing
+  other
+}
+
+Enum country {
+  US
+  CA
+  UK
+  AU
+}
+
+//----------------------------------------------
+// CORE TABLES
+//----------------------------------------------
+
+Table users {
+  id uuid [pk]
+  firstname varchar(100) [not null]
+  lastname varchar(100) [not null]
+  phone varchar(20) [not null]
+  email varchar(255) [not null, unique]
+  clerkUserID varchar(255) [not null, unique]
+  profileImage text
+  roles user_role[] [not null, default: `ARRAY['client']`]
+  
+  // System Fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+  
+  // Location & Contact
+  timezone varchar(50)
+  preferredContactMethod preferred_contact_method [default: 'email']
+  language varchar(10) [default: 'en']
+  
+  // Account Status & Verification
+  accountStatus account_status [not null, default: 'pending_verification']
+  isEmailVerified boolean [not null, default: false]
+  isPhoneVerified boolean [not null, default: false]
+  isVerified boolean [not null, default: false]
+  
+  // Trust & Safety
+  agreedToTerms boolean [not null, default: false]
+  agreedToTermsAt timestamp
+  privacyPolicyAccepted boolean [not null, default: false]
+  
+  // Communication Preferences
+  emailNotifications boolean [not null, default: true]
+  smsNotifications boolean [not null, default: true]
+  marketingEmails boolean [not null, default: false]
+  
+  // Referral & Growth
+  referralCode varchar(20) [unique]
+  referredBy uuid
+  howDidYouHearAbout varchar(100)
+}
+
+Table provider_profiles {
+  id uuid [pk]
+  userId uuid [not null, unique]
+  
+  // Provider Profile & Business
+  bio text
+  isOnboarded boolean [not null, default: false]
+  workPhotos text[]
+  backgroundCheckStatus background_check_status [not null, default: 'not_required']
+  backgroundCheckCompletedAt timestamp
+  idVerificationStatus id_verification_status [not null, default: 'not_required']
+  idVerificationCompletedAt timestamp
+  
+  // Service Categories
+  categories text[]
+  
+  // Pricing
+  hourlyRate integer // Rate in cents
+  cancellationPolicy cancellation_policy [default: 'moderate']
+  offersFreeConsultation boolean [not null, default: false]
+  
+  // Professional Information
+  certifications text[]
+  yearsOfExperience integer
+  languages text[]
+  insuranceVerified boolean [not null, default: false]
+  
+  // Availability & Scheduling
+  availability json
+  
+  // Ratings & Reviews (calculated fields)
+  averageRating decimal(3,2) [default: '0.00']
+  totalReviews integer [not null, default: 0]
+  ratingBreakdown json
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+Table client_profiles {
+  id uuid [pk]
+  userId uuid [not null, unique]
+  
+  // Service Preferences
+  preferredServiceCategories text[]
+  preferredProviders uuid[]
+  blockedProviders uuid[]
+  
+  // Scheduling Preferences
+  timePreferences json
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+Table bookings {
+  id uuid [pk]
+  clientId uuid [not null]
+  providerId uuid [not null]
+  status booking_status [not null, default: 'pending']
+  
+  // Service Details
+  serviceCategory varchar(100)
+  serviceDescription text
+  
+  // Scheduling Information
+  serviceDate timestamp [not null]
+  timezone varchar(50)
+  
+  // Booking Lifecycle
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+  completedAt timestamp
+  cancelledAt timestamp
+  
+  // Location & Access (Address via junction table)
+  serviceArea varchar(100)
+  
+  // Pricing & Payment
+  hourlyRate integer [not null] // Rate in cents
+  totalPrice integer // Final amount in cents
+  paymentStatus payment_status [not null, default: 'pending']
+  paymentMethodId varchar(100)
+  
+  // Communication & Notes
+  clientNotes text
+  providerNotes text
+  internalNotes text
+  cancellationReason text
+  
+  // Additional Considerations
+  hasChildren boolean [not null, default: false]
+  hasPets boolean [not null, default: false]
+  homeType home_type
+  accessibilityNeeds text[]
+  emergencyContact json
+  
+  // Quality & Follow-up
+  photosBeforeService text[]
+  photosAfterService text[]
+  followUpRequired boolean [not null, default: false]
+  followUpDate timestamp
+  
+  // Business Logic
+  remindersSent json
+  reviewEligible boolean [not null, default: true]
+}
+
+Table reviews {
+  id uuid [pk]
+  bookingId uuid [not null, unique] // One review per booking
+  clientId uuid [not null]
+  providerId uuid [not null]
+  
+  // Review Content
+  rating integer [not null] // 1-5 scale
+  comment text [not null]
+  isVerified boolean [not null, default: true]
+  
+  // Review Lifecycle
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+  status review_status [not null, default: 'active']
+  
+  // Optional Enhancement Fields
+  categoryRatings json
+  
+  // Moderation
+  flaggedReason varchar(200)
+  moderatedBy uuid
+  moderatedAt timestamp
+}
+
+Table payment_transactions {
+  id uuid [pk]
+  bookingId uuid [not null]
+  
+  // Stripe Integration
+  stripePaymentIntentId varchar(255) [not null]
+  stripeChargeId varchar(255)
+  
+  // Transaction Details
+  amount integer [not null] // Amount in cents
+  type payment_type [not null, default: 'payment']
+  status payment_transaction_status [not null, default: 'pending']
+  
+  // System Fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+//----------------------------------------------
+// ADDRESS SYSTEM TABLES
+//----------------------------------------------
+
+Table addresses {
+  id uuid [pk]
+  
+  // Address Components
+  addressLine1 varchar(255) [not null]
+  addressLine2 varchar(255)
+  city varchar(100) [not null]
+  state varchar(50) [not null]
+  postalCode varchar(20) [not null]
+  country country [not null, default: 'US']
+  
+  // Geocoding
+  latitude decimal(10,8)
+  longitude decimal(11,8)
+  
+  // Address Metadata
+  type address_type [not null, default: 'home']
+  label varchar(50)
+  
+  // Validation & Quality
+  isVerified boolean [not null, default: false]
+  isDeliverable boolean [not null, default: true]
+  
+  // Access Information
+  accessInstructions text
+  parkingInformation text
+  buildingInfo text
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+Table user_addresses {
+  id uuid [pk]
+  userId uuid [not null]
+  addressId uuid [not null]
+  
+  // Relationship metadata
+  isPrimary boolean [not null, default: false]
+  label varchar(50)
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+Table booking_addresses {
+  id uuid [pk]
+  bookingId uuid [not null]
+  addressId uuid [not null]
+  
+  // Address role for this booking
+  role address_type [not null]
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+}
+
+//----------------------------------------------
+// RELATIONSHIPS
+//----------------------------------------------
+
+// User self-reference for referrals
+Ref: users.referredBy > users.id
+
+// User Profile relationships (1:1)
+Ref: provider_profiles.userId - users.id
+Ref: client_profiles.userId - users.id
+
+// Booking relationships (Many-to-One)
+Ref: bookings.clientId > users.id
+Ref: bookings.providerId > users.id
+
+// Review relationships
+Ref: reviews.bookingId - bookings.id
+Ref: reviews.clientId > users.id
+Ref: reviews.providerId > users.id
+Ref: reviews.moderatedBy > users.id
+
+// Payment relationships
+Ref: payment_transactions.bookingId > bookings.id
+
+// Address relationships (Many-to-Many via junction tables)
+Ref: user_addresses.userId > users.id
+Ref: user_addresses.addressId > addresses.id
+Ref: booking_addresses.bookingId > bookings.id
+Ref: booking_addresses.addressId > addresses.id
+
+//----------------------------------------------
+// TABLE GROUPS (for visual organization)
+//----------------------------------------------
+
+TableGroup "Core User System" {
+  users
+  provider_profiles
+  client_profiles
+}
+
+TableGroup "Booking System" {
+  bookings
+  reviews
+  payment_transactions
+}
+
+TableGroup "Address System" {
+  addresses
+  user_addresses
+  booking_addresses
+}
+
+//----------------------------------------------
+// NOTES
+//----------------------------------------------
+
+Note: '''
+# Professional Organizer Marketplace Database Schema
+
+This schema supports a two-sided marketplace connecting clients with professional organizers.
+
+## Key Features:
+- **Dual Role Users**: Users can be clients, providers, or both
+- **Flexible Address System**: Normalized addresses with geocoding support
+- **Comprehensive Booking Flow**: From search to payment to reviews
+- **Rating System**: Reviews update provider statistics automatically
+- **Audit Trail**: Created/updated timestamps on all entities
+
+## Relationship Patterns:
+- **1:1**: Users ↔ Provider/Client Profiles
+- **1:Many**: Users → Bookings, Bookings → Payments
+- **Many:Many**: Users ↔ Addresses (via junction tables)
+
+## Data Types:
+- **UUIDs**: All primary keys for distributed system compatibility
+- **JSON**: Flexible data like preferences, ratings breakdown
+- **Arrays**: Categories, photos, accessibility needs
+- **Decimals**: Precise geographic coordinates and ratings
+- **Integers**: Monetary amounts stored in cents
+
+Generated from Drizzle ORM schemas - see src/lib/db/ for implementation details.
+'''
