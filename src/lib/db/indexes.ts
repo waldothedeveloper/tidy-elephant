@@ -5,6 +5,8 @@ import { clientProfilesTable } from "./client-schema";
 import { bookingsTable } from "./booking-schema";
 import { reviewsTable } from "./review-schema";
 import { paymentTransactionsTable } from "./payment-schema";
+import { categoriesTable, providerCategoriesTable, clientPreferredCategoriesTable } from "./category-schema";
+import { addressesTable, userAddressesTable, bookingAddressesTable } from "./address-schema";
 
 // =============================================================================
 // USERS TABLE INDEXES
@@ -31,7 +33,6 @@ export const providerOnboardedIndex = index("idx_provider_onboarded").on(provide
 // Search and filtering indexes
 export const providerRatingIndex = index("idx_provider_avg_rating").on(providerProfilesTable.averageRating);
 export const providerHourlyRateIndex = index("idx_provider_hourly_rate").on(providerProfilesTable.hourlyRate);
-export const providerCategoriesGinIndex = index("idx_provider_categories_gin").using("gin", providerProfilesTable.categories);
 export const providerYearsExperienceIndex = index("idx_provider_years_experience").on(providerProfilesTable.yearsOfExperience);
 
 // Verification status indexes
@@ -54,7 +55,6 @@ export const providerSearchIndex = index("idx_provider_search")
 export const clientUserIdIndex = unique("idx_client_user_id").on(clientProfilesTable.userId);
 
 // Preference indexes for matching (GIN for array operations)
-export const clientPreferredCategoriesGinIndex = index("idx_client_preferred_categories_gin").using("gin", clientProfilesTable.preferredServiceCategories);
 export const clientPreferredProvidersGinIndex = index("idx_client_preferred_providers_gin").using("gin", clientProfilesTable.preferredProviders);
 export const clientBlockedProvidersGinIndex = index("idx_client_blocked_providers_gin").using("gin", clientProfilesTable.blockedProviders);
 
@@ -82,7 +82,7 @@ export const bookingProviderDashboardIndex = index("idx_booking_provider_dashboa
   .on(bookingsTable.providerId, bookingsTable.status, bookingsTable.serviceDate);
 
 // Service category index for analytics
-export const bookingServiceCategoryIndex = index("idx_booking_service_category").on(bookingsTable.serviceCategory);
+export const bookingServiceCategoryIndex = index("idx_booking_service_category").on(bookingsTable.serviceCategoryId);
 
 // Array field GIN indexes for booking features
 export const bookingAccessibilityNeedsGinIndex = index("idx_booking_accessibility_needs_gin").using("gin", bookingsTable.accessibilityNeeds);
@@ -126,6 +126,29 @@ export const paymentHistoryIndex = index("idx_payment_history")
   .on(paymentTransactionsTable.status, paymentTransactionsTable.type, paymentTransactionsTable.createdAt);
 
 // =============================================================================
+// CATEGORIES SYSTEM INDEXES
+// =============================================================================
+
+// Categories table indexes
+export const categoriesSlugIndex = unique("idx_categories_slug").on(categoriesTable.slug);
+export const categoriesNameIndex = unique("idx_categories_name").on(categoriesTable.name);
+export const categoriesActiveIndex = index("idx_categories_active").on(categoriesTable.isActive);
+export const categoriesPrimaryIndex = index("idx_categories_primary").on(categoriesTable.isPrimary);
+export const categoriesSortOrderIndex = index("idx_categories_sort_order").on(categoriesTable.sortOrder);
+
+// Provider categories junction table indexes
+export const providerCategoriesProviderIndex = index("idx_provider_categories_provider").on(providerCategoriesTable.providerId);
+export const providerCategoriesCategoryIndex = index("idx_provider_categories_category").on(providerCategoriesTable.categoryId);
+export const providerCategoriesMainSpecialtyIndex = index("idx_provider_categories_main_specialty").on(providerCategoriesTable.providerId, providerCategoriesTable.isMainSpecialty);
+export const providerCategoriesCompositeIndex = index("idx_provider_categories_composite").on(providerCategoriesTable.providerId, providerCategoriesTable.categoryId);
+
+// Client preferred categories junction table indexes
+export const clientPreferredCategoriesClientIndex = index("idx_client_preferred_categories_client").on(clientPreferredCategoriesTable.clientId);
+export const clientPreferredCategoriesCategoryIndex = index("idx_client_preferred_categories_category").on(clientPreferredCategoriesTable.categoryId);
+export const clientPreferredCategoriesPriorityIndex = index("idx_client_preferred_categories_priority").on(clientPreferredCategoriesTable.clientId, clientPreferredCategoriesTable.priority);
+export const clientPreferredCategoriesCompositeIndex = index("idx_client_preferred_categories_composite").on(clientPreferredCategoriesTable.clientId, clientPreferredCategoriesTable.categoryId);
+
+// =============================================================================
 // ADDRESS SYSTEM INDEXES
 // =============================================================================
 
@@ -157,8 +180,8 @@ export const bookingDateStatusIndex = index("idx_booking_date_status").on(bookin
 export const bookingStatusDateRangeIndex = index("idx_booking_status_date_range").on(bookingsTable.status, bookingsTable.serviceDate, bookingsTable.createdAt);
 
 // Service category filtering with other criteria
-export const bookingCategoryStatusIndex = index("idx_booking_category_status").on(bookingsTable.serviceCategory, bookingsTable.status);
-export const bookingCategoryDateIndex = index("idx_booking_category_date").on(bookingsTable.serviceCategory, bookingsTable.serviceDate);
+export const bookingCategoryStatusIndex = index("idx_booking_category_status").on(bookingsTable.serviceCategoryId, bookingsTable.status);
+export const bookingCategoryDateIndex = index("idx_booking_category_date").on(bookingsTable.serviceCategoryId, bookingsTable.serviceDate);
 
 // Provider availability and scheduling optimization
 export const bookingProviderDateStatusIndex = index("idx_booking_provider_date_status").on(bookingsTable.providerId, bookingsTable.serviceDate, bookingsTable.status);

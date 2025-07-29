@@ -1,7 +1,3 @@
-// Professional Organizer Marketplace Database Schema
-// Generated from Drizzle ORM schemas in src/lib/db/
-// Use this file with dbdiagram.io to visualize the database structure
-
 //----------------------------------------------
 // ENUMS
 //----------------------------------------------
@@ -103,6 +99,57 @@ Enum country {
 }
 
 //----------------------------------------------
+// CATEGORIES SYSTEM TABLES
+//----------------------------------------------
+
+Table categories {
+  id uuid [pk]
+  
+  // Category Information
+  name varchar(100) [not null, unique]
+  slug varchar(100) [not null, unique] // URL-friendly version
+  description text [not null]
+  
+  // Category Metadata
+  isPrimary boolean [not null, default: false] // Core Professional Organizers
+  sortOrder integer [not null, default: 0] // Display order
+  isActive boolean [not null, default: true]
+  
+  // SEO and Display
+  iconName varchar(50) // Icon identifier for UI
+  colorHex varchar(7) // Hex color code for UI theming
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+  updatedAt timestamp [not null, default: `now()`]
+}
+
+Table provider_categories {
+  id uuid [pk]
+  providerId uuid [not null] // References provider_profiles.user_id
+  categoryId uuid [not null]
+  
+  // Relationship metadata
+  isPrimary boolean [not null, default: false] // Provider's main category
+  experienceYears integer // Years of experience in this category
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+}
+
+Table client_preferred_categories {
+  id uuid [pk]
+  clientId uuid [not null] // References client_profiles.user_id
+  categoryId uuid [not null]
+  
+  // Preference metadata
+  priority integer [default: 1] // 1 = highest priority
+  
+  // System fields
+  createdAt timestamp [not null, default: `now()`]
+}
+
+//----------------------------------------------
 // CORE TABLES
 //----------------------------------------------
 
@@ -160,8 +207,6 @@ Table provider_profiles {
   idVerificationStatus id_verification_status [not null, default: 'not_required']
   idVerificationCompletedAt timestamp
   
-  // Service Categories
-  categories text[]
   
   // Pricing
   hourlyRate integer // Rate in cents
@@ -192,7 +237,6 @@ Table client_profiles {
   userId uuid [not null, unique]
   
   // Service Preferences
-  preferredServiceCategories text[]
   preferredProviders uuid[]
   blockedProviders uuid[]
   
@@ -211,7 +255,7 @@ Table bookings {
   status booking_status [not null, default: 'pending']
   
   // Service Details
-  serviceCategory varchar(100)
+  serviceCategoryId uuid
   serviceDescription text
   
   // Scheduling Information
@@ -387,6 +431,15 @@ Ref: reviews.moderatedBy > users.id
 // Payment relationships
 Ref: payment_transactions.bookingId > bookings.id
 
+// Categories relationships (Many-to-Many via junction tables)
+Ref: provider_categories.providerId > provider_profiles.userId
+Ref: provider_categories.categoryId > categories.id
+Ref: client_preferred_categories.clientId > client_profiles.userId
+Ref: client_preferred_categories.categoryId > categories.id
+
+// Booking category relationship (Many-to-One)
+Ref: bookings.serviceCategoryId > categories.id
+
 // Address relationships (Many-to-Many via junction tables)
 Ref: user_addresses.userId > users.id
 Ref: user_addresses.addressId > addresses.id
@@ -403,6 +456,12 @@ TableGroup "Core User System" {
   client_profiles
 }
 
+TableGroup "Categories System" {
+  categories
+  provider_categories
+  client_preferred_categories
+}
+
 TableGroup "Booking System" {
   bookings
   reviews
@@ -414,34 +473,3 @@ TableGroup "Address System" {
   user_addresses
   booking_addresses
 }
-
-//----------------------------------------------
-// NOTES
-//----------------------------------------------
-
-Note: '''
-# Professional Organizer Marketplace Database Schema
-
-This schema supports a two-sided marketplace connecting clients with professional organizers.
-
-## Key Features:
-- **Dual Role Users**: Users can be clients, providers, or both
-- **Flexible Address System**: Normalized addresses with geocoding support
-- **Comprehensive Booking Flow**: From search to payment to reviews
-- **Rating System**: Reviews update provider statistics automatically
-- **Audit Trail**: Created/updated timestamps on all entities
-
-## Relationship Patterns:
-- **1:1**: Users ↔ Provider/Client Profiles
-- **1:Many**: Users → Bookings, Bookings → Payments
-- **Many:Many**: Users ↔ Addresses (via junction tables)
-
-## Data Types:
-- **UUIDs**: All primary keys for distributed system compatibility
-- **JSON**: Flexible data like preferences, ratings breakdown
-- **Arrays**: Categories, photos, accessibility needs
-- **Decimals**: Precise geographic coordinates and ratings
-- **Integers**: Monetary amounts stored in cents
-
-Generated from Drizzle ORM schemas - see src/lib/db/ for implementation details.
-'''

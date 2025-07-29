@@ -14,7 +14,6 @@ export const clientProfilesTable = pgTable("client_profiles", {
   userId: uuid("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }).unique(),
   
   // Service Preferences
-  preferredServiceCategories: text("preferred_service_categories").array().default([]), // TODO: Reference to categories table when created
   preferredProviders: uuid("preferred_providers").array().default([]), // Array of provider profile IDs
   blockedProviders: uuid("blocked_providers").array().default([]), // Array of provider profile IDs
   
