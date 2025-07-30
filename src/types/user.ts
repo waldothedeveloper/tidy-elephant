@@ -1,352 +1,441 @@
-// Firebase User Document Interface
-export interface FirebaseUser {
-  id?: string; // Firestore document ID
+/**
+ * User-related types derived from Drizzle database schemas
+ * This file provides application-level types that extend the database types
+ */
+
+import type {
+  User,
+  ProviderProfile,
+  ClientProfile,
+  CompleteUser,
+  Category,
+  UserAccountStatus,
+  UserRole,
+} from "../lib/db/types";
+
+import type {
+  UserProfileFormData,
+  PhoneVerificationData,
+  ProviderSearchFilters,
+  ProviderOnboardingFormData,
+  ClientOnboardingFormData,
+} from "../lib/schemas";
+
+// =============================================================================
+// RE-EXPORT DATABASE TYPES
+// =============================================================================
+
+export type {
+  User,
+  ProviderProfile,
+  ClientProfile,
+  CompleteUser,
+  Category,
+  UserAccountStatus,
+  UserRole,
+} from "../lib/db/types";
+
+export type {
+  UserProfileFormData,
+  PhoneVerificationData,
+  ProviderSearchFilters,
+  ProviderOnboardingFormData,
+  ClientOnboardingFormData,
+} from "../lib/schemas";
+
+// =============================================================================
+// APPLICATION-LEVEL USER TYPES
+// =============================================================================
+
+/**
+ * Extended user profile with computed fields for UI
+ */
+export type UserProfileDisplay = User & {
+  displayName: string;
+  initials: string;
+  isVerified: boolean;
+};
+
+/**
+ * Provider display data for marketplace listings
+ */
+export type ProviderListingData = ProviderProfile & {
+  user: User;
+  categories: Array<{ category: Category; isMainSpecialty: boolean; experienceYears?: number | null }>;
+  displayCategories: string[];
+  mainSpecialty: string | null;
+  isAvailable: boolean;
+  ratingDisplay: string;
+  priceDisplay: string;
+};
+
+/**
+ * Client summary for provider dashboard
+ */
+export type ClientSummary = ClientProfile & {
+  user: User;
+  bookingCount: number;
+  lastBookingDate: Date | null;
+  totalSpent: number;
+  preferredCategories: string[];
+};
+
+// =============================================================================
+// FORM DATA TYPES
+// =============================================================================
+
+// UserProfileFormData imported from schemas
+
+// ProviderOnboardingFormData and ClientOnboardingFormData imported from schemas
+
+// =============================================================================
+// AUTHENTICATION TYPES
+// =============================================================================
+
+/**
+ * User session data (from Clerk)
+ */
+export type UserSession = {
+  userId: string;
+  clerkUserId: string;
+  email: string;
+  isProvider: boolean;
+  isOnboarded: boolean;
+  accountStatus: UserAccountStatus;
+  roles: UserRole[];
+};
+
+/**
+ * Auth context type
+ */
+export type AuthContextType = {
+  user: UserSession | null;
+  isLoading: boolean;
+  isSignedIn: boolean;
+  signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+};
+
+// =============================================================================
+// PROVIDER CATEGORY TYPES
+// =============================================================================
+
+/**
+ * Provider category selection for forms
+ */
+export type CategorySelection = {
+  categoryId: string;
+  isSelected: boolean;
+  isMainSpecialty: boolean;
+  experienceYears?: number;
+};
+
+/**
+ * Category with provider count for UI
+ */
+export type CategoryWithProviderCount = Category & {
+  providerCount: number;
+  averageRating: number | null;
+  averageHourlyRate: number | null;
+};
+
+// =============================================================================
+// SEARCH AND FILTERING TYPES
+// =============================================================================
+
+// ProviderSearchFilters imported from schemas
+
+/**
+ * Search result with computed fields
+ */
+export type ProviderSearchResult = ProviderListingData & {
+  distance?: number; // in miles, if location search
+  matchScore: number; // relevance score 0-1
+  availableSlots?: string[]; // if availability search
+};
+
+// =============================================================================
+// NOTIFICATION TYPES
+// =============================================================================
+
+/**
+ * User notification preferences
+ */
+export type NotificationPreferences = {
+  email: {
+    bookingUpdates: boolean;
+    reviewRequests: boolean;
+    promotions: boolean;
+    weeklyDigest: boolean;
+  };
+  sms: {
+    bookingReminders: boolean;
+    urgentUpdates: boolean;
+  };
+  push: {
+    bookingUpdates: boolean;
+    messages: boolean;
+    promotions: boolean;
+  };
+};
+
+// =============================================================================
+// DASHBOARD TYPES
+// =============================================================================
+
+/**
+ * Provider dashboard summary
+ */
+export type ProviderDashboardSummary = {
+  totalBookings: number;
+  completedBookings: number;
+  totalEarnings: number; // in cents
+  averageRating: number;
+  upcomingBookings: number;
+  pendingBookings: number;
+  monthlyStats: {
+    month: string;
+    bookings: number;
+    earnings: number;
+    rating: number;
+  }[];
+};
+
+/**
+ * Client dashboard summary
+ */
+export type ClientDashboardSummary = {
+  totalBookings: number;
+  completedBookings: number;
+  totalSpent: number; // in cents
+  favoriteProviders: string[]; // Provider IDs
+  upcomingBookings: number;
+  recentProviders: ProviderListingData[];
+};
+
+// =============================================================================
+// VALIDATION TYPES
+// =============================================================================
+
+// PhoneVerificationData imported from schemas
+
+/**
+ * ID verification data for providers
+ */
+export type IdVerificationData = {
+  documentType: "drivers_license" | "passport" | "state_id";
+  documentNumber: string;
+  verificationStatus: "pending" | "verified" | "rejected";
+  verificationDate?: Date;
+  rejectionReason?: string;
+};
+
+/**
+ * Background check data for providers
+ */
+export type BackgroundCheckData = {
+  status: "pending" | "passed" | "failed" | "expired";
+  checkDate?: Date;
+  expirationDate?: Date;
+  provider: string; // Background check service provider
+  reportId?: string;
+};
+
+// =============================================================================
+// TYPE GUARDS AND UTILITIES
+// =============================================================================
+
+/**
+ * Type guard to check if user is a provider
+ */
+export function isProvider(user: CompleteUser): user is CompleteUser & { providerProfile: ProviderProfile } {
+  return user.providerProfile !== null && user.roles.includes("provider");
+}
+
+/**
+ * Type guard to check if user is a client
+ */
+export function isClient(user: CompleteUser): user is CompleteUser & { clientProfile: ClientProfile } {
+  return user.clientProfile !== null && user.roles.includes("client");
+}
+
+/**
+ * Type guard to check if provider is onboarded
+ */
+export function isProviderOnboarded(provider: ProviderProfile): boolean {
+  return provider.isOnboarded === true;
+}
+
+/**
+ * Type guard to check if user account is active
+ */
+export function isAccountActive(user: User): boolean {
+  return user.accountStatus === "active";
+}
+
+/**
+ * Utility to get user display name
+ */
+export function getUserDisplayName(user: User): string {
+  if (user.firstName && user.lastName) {
+    return `${user.firstName} ${user.lastName}`;
+  }
+  if (user.firstName) {
+    return user.firstName;
+  }
+  return user.email.split("@")[0];
+}
+
+/**
+ * Utility to get user initials
+ */
+export function getUserInitials(user: User): string {
+  if (user.firstName && user.lastName) {
+    return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+  }
+  if (user.firstName) {
+    return user.firstName[0].toUpperCase();
+  }
+  return user.email[0].toUpperCase();
+}
+
+/**
+ * Utility to format hourly rate for display
+ */
+export function formatHourlyRate(rateInCents: number | null): string {
+  if (!rateInCents) return "Rate not set";
+  const rate = rateInCents / 100;
+  return `$${rate.toFixed(0)}/hour`;
+}
+
+/**
+ * Utility to format rating for display
+ */
+export function formatRating(rating: number | null, reviewCount: number = 0): string {
+  if (!rating || reviewCount === 0) return "No reviews";
+  return `${rating.toFixed(1)} (${reviewCount} review${reviewCount === 1 ? "" : "s"})`;
+}
+
+// =============================================================================
+// DEPRECATED TYPES (for migration reference)
+// =============================================================================
+
+/**
+ * @deprecated Use database-derived types instead
+ * Legacy Firebase user interface - kept for reference during migration
+ */
+export interface LegacyFirebaseUser {
+  id?: string;
   createdAt: Date;
   updatedAt: Date | null;
   clerkUserID: string;
   isAProvider: boolean;
-  profile: UserProfile;
-  roles: UserRoles;
-
-  // Provider-specific fields (only present when isAProvider = true)
-  providerDetails?: ProviderDetails;
-  providerRatings?: ProviderRatings;
-  providerReviews?: ProviderReview[];
-
-  // Client-specific fields (only present when isAProvider = false)
-  clientDetails?: ClientDetails;
-  bookingHistory?: BookingHistory[];
-  clientPreferences?: ClientPreferences;
+  profile: Record<string, unknown>;
+  roles: Record<string, unknown>;
+  providerDetails?: Record<string, unknown>;
+  clientDetails?: Record<string, unknown>;
 }
 
-export interface UserProfile {
-  firstName: string;
-  lastName: string;
-  about: string;
-  photo: string;
-  email: string;
-  phoneNumber?: string;
-  address?: UserAddress;
+// =============================================================================
+// CATEGORY CONSTANTS
+// =============================================================================
+
+/**
+ * Category types enum (matches database categories)
+ */
+export enum CategoryType {
+  CORE_PROFESSIONAL_ORGANIZERS = "core-professional-organizers",
+  HOME_STAGERS = "home-stagers",
+  FENG_SHUI_CONSULTANTS = "feng-shui-consultants",
+  MOVE_MANAGERS_DOWNSIZING = "move-managers-downsizing",
+  INTERIOR_DESIGNERS = "interior-designers",
+  OFFICE_ORGANIZERS = "office-organizers",
+  HOME_ORGANIZERS = "home-organizers",
+  PAPERWORK_DOCUMENT_ORGANIZERS = "paperwork-document-organizers",
+  DIGITAL_ORGANIZERS = "digital-organizers",
+  TIME_PRODUCTIVITY_COACHES = "time-productivity-coaches",
+  ESTATE_CLEANOUT_HOARDING = "estate-cleanout-hoarding",
 }
 
-export interface UserAddress {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-export interface UserRoles {
-  provider?: boolean;
-  client?: boolean;
-  admin?: boolean;
-}
-
-// Provider-specific interfaces
-export interface ProviderDetails {
-  isOnboarded: boolean;
-  isActive: boolean;
-  isPhoneVerified: boolean;
-  workPhotos?: string[]; // URLs of Firebase URLs of uploaded work photos
-  categories: string[]; // Service category IDs
-  serviceAreas?: string[]; // Geographic areas they serve
-  hourlyRate?: number; // Stored in cents (e.g., $75.00 = 7500 cents)
-  availability?: ProviderAvailability;
-  businessInfo?: BusinessInfo;
-  certifications?: Certification[];
-  experience?: number; // Years of experience
-  languages?: string[];
-}
-
-export interface ProviderAvailability {
-  monday?: TimeSlot[];
-  tuesday?: TimeSlot[];
-  wednesday?: TimeSlot[];
-  thursday?: TimeSlot[];
-  friday?: TimeSlot[];
-  saturday?: TimeSlot[];
-  sunday?: TimeSlot[];
-  timezone: string;
-  blackoutDates?: Date[]; // Unavailable dates
-}
-
-export interface TimeSlot {
-  startTime: string; // Format: "HH:mm"
-  endTime: string; // Format: "HH:mm"
-}
-
-export interface BusinessInfo {
-  businessName?: string;
-  businessLicense?: string;
-  insurance?: InsuranceInfo;
-  taxId?: string;
-  website?: string;
-  socialMedia?: SocialMediaLinks;
-}
-
-export interface InsuranceInfo {
-  provider: string;
-  policyNumber: string;
-  expirationDate: Date;
-  coverageAmount: number;
-}
-
-export interface SocialMediaLinks {
-  instagram?: string;
-  facebook?: string;
-  linkedin?: string;
-  website?: string;
-}
-
-export interface Certification {
-  name: string;
-  issuedBy: string;
-  issueDate: Date;
-  expirationDate?: Date;
-  credentialId?: string;
-  verificationUrl?: string;
-}
-
-export interface ProviderRatings {
-  averageRating: number;
-  totalReviews: number;
-  ratingBreakdown?: {
-    5: number;
-    4: number;
-    3: number;
-    2: number;
-    1: number;
-  };
-}
-
-export interface ProviderReview {
-  id: string;
-  clientId: string;
-  clientName: string;
-  rating: number;
-  comment: string;
-  createdAt: Date;
-  bookingId: string;
-  isVerified: boolean;
-  responseFromProvider?: ProviderResponse;
-}
-
-export interface ProviderResponse {
-  comment: string;
-  createdAt: Date;
-}
-
-// Client-specific interfaces
-export interface ClientDetails {
-  isActive: boolean;
-  isPhoneVerified: boolean;
-  communicationPreferences?: CommunicationPreferences;
-}
-
-export interface CommunicationPreferences {
-  emailNotifications: boolean;
-  smsNotifications: boolean;
-  pushNotifications: boolean;
-  marketingEmails: boolean;
-  bookingReminders: boolean;
-  reviewRequests: boolean;
-}
-
-export interface ClientPreferences {
-  preferredProviders?: string[]; // Provider IDs
-  blockedProviders?: string[]; // Provider IDs
-  servicePreferences?: ServicePreference[];
-  budgetRange?: {
-    min: number;
-    max: number;
-  };
-  timePreferences?: {
-    preferredDays: string[];
-    preferredTimes: string[];
-  };
-}
-
-export interface ServicePreference {
-  categoryId: string;
-  notes?: string;
-  priority: "low" | "medium" | "high";
-}
-
-// Booking-related interfaces
-export interface BookingHistory {
-  id: string;
-  providerId: string;
-  providerName: string;
-  serviceCategory: string;
-  status: "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
-  scheduledDate: Date;
-  duration: number; // Hours
-  totalCost: number;
-  address: UserAddress;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  completedAt?: Date;
-  cancelledAt?: Date;
-  cancellationReason?: string;
-  hasReview: boolean;
-}
-
-// Service Categories (used by providers)
-export interface ServiceCategory {
-  id: string;
-  name: string;
-  description: string;
-  isActive: boolean;
-}
-
-// Provider Category Types Enum
-export enum ProviderCategoryType {
-  CORE_PROFESSIONAL_ORGANIZERS = "Core Professional Organizers",
-  MOVE_MANAGERS_DOWNSIZING = "Move Managers and Downsizing Specialists",
-  TIME_PRODUCTIVITY_COACHES = "Time & Productivity Coaches",
-  HOME_STAGERS = "Home Stagers",
-  OFFICE_ORGANIZERS = "Office Organizers",
-  DIGITAL_ORGANIZERS = "Digital Organizers",
-  INTERIOR_DESIGNERS = "Interior Designers",
-  PAPERWORK_DOCUMENT_ORGANIZERS = "Paperwork/Document Organizers",
-  FENG_SHUI_CONSULTANTS = "Feng Shui Consultants",
-  HOME_ORGANIZERS = "Home Organizers",
-  ESTATE_CLEANOUT_HOARDING = "Estate Cleanout / Hoarding Specialists",
-}
-
-// Provider Categories Data Structure
-export const PROVIDER_CATEGORIES = [
-  {
-    type: ProviderCategoryType.CORE_PROFESSIONAL_ORGANIZERS,
+/**
+ * Category metadata for UI display
+ */
+export const CATEGORY_METADATA = {
+  [CategoryType.CORE_PROFESSIONAL_ORGANIZERS]: {
     name: "Core Professional Organizers",
-    description:
-      "General organizing services for homes and spaces (primary category)",
-    isActive: true,
+    description: "Comprehensive home and life organization services",
+    isPrimary: true,
+    icon: "home-organization",
+    color: "#2563eb",
   },
-  {
-    type: ProviderCategoryType.MOVE_MANAGERS_DOWNSIZING,
-    name: "Move Managers and Downsizing Specialists",
-    description: "Help with life transitions, relocations, and downsizing",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.TIME_PRODUCTIVITY_COACHES,
-    name: "Time & Productivity Coaches",
-    description:
-      "Help with calendar management, workflows, and task organization",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.HOME_STAGERS,
+  [CategoryType.HOME_STAGERS]: {
     name: "Home Stagers",
     description: "Prepare homes for sale by optimizing layout and presentation",
-    isActive: true,
+    isPrimary: false,
+    icon: "home-staging",
+    color: "#7c3aed",
   },
-  {
-    type: ProviderCategoryType.OFFICE_ORGANIZERS,
-    name: "Office Organizers",
-    description: "Organize home offices or corporate spaces for productivity",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.DIGITAL_ORGANIZERS,
-    name: "Digital Organizers",
-    description:
-      "Help clients organize digital files, photos, and online accounts",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.INTERIOR_DESIGNERS,
-    name: "Interior Designers",
-    description:
-      "Design and organize interior spaces for functionality and aesthetics",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.PAPERWORK_DOCUMENT_ORGANIZERS,
-    name: "Paperwork/Document Organizers",
-    description: "Create filing systems and organize important documents",
-    isActive: true,
-  },
-  {
-    type: ProviderCategoryType.FENG_SHUI_CONSULTANTS,
+  [CategoryType.FENG_SHUI_CONSULTANTS]: {
     name: "Feng Shui Consultants",
-    description:
-      "Focus on optimizing energy flow in spaces for harmony and balance",
-    isActive: true,
+    description: "Focus on optimizing energy flow and harmony in living spaces",
+    isPrimary: false,
+    icon: "feng-shui",
+    color: "#059669",
   },
-  {
-    type: ProviderCategoryType.HOME_ORGANIZERS,
+  [CategoryType.MOVE_MANAGERS_DOWNSIZING]: {
+    name: "Move Managers and Downsizing Specialists",
+    description: "Help with life transitions, relocations, and downsizing decisions",
+    isPrimary: false,
+    icon: "moving-boxes",
+    color: "#dc2626",
+  },
+  [CategoryType.INTERIOR_DESIGNERS]: {
+    name: "Interior Designers",
+    description: "Design and organize interior spaces for functionality and aesthetics",
+    isPrimary: false,
+    icon: "interior-design",
+    color: "#ea580c",
+  },
+  [CategoryType.OFFICE_ORGANIZERS]: {
+    name: "Office Organizers",
+    description: "Organize home offices or corporate spaces for maximum productivity",
+    isPrimary: false,
+    icon: "office-organization",
+    color: "#0891b2",
+  },
+  [CategoryType.HOME_ORGANIZERS]: {
     name: "Home Organizers",
-    description: "Specialize in organizing residential living spaces",
-    isActive: true,
+    description: "Specialize in residential organization for kitchens, closets, and living areas",
+    isPrimary: false,
+    icon: "home-clean",
+    color: "#65a30d",
   },
-  {
-    type: ProviderCategoryType.ESTATE_CLEANOUT_HOARDING,
+  [CategoryType.PAPERWORK_DOCUMENT_ORGANIZERS]: {
+    name: "Paperwork/Document Organizers",
+    description: "Organize physical and digital documents, filing systems, and paperwork",
+    isPrimary: false,
+    icon: "documents",
+    color: "#7c2d12",
+  },
+  [CategoryType.DIGITAL_ORGANIZERS]: {
+    name: "Digital Organizers",
+    description: "Help clients organize digital files, photos, accounts, and online presence",
+    isPrimary: false,
+    icon: "digital-files",
+    color: "#be185d",
+  },
+  [CategoryType.TIME_PRODUCTIVITY_COACHES]: {
+    name: "Time & Productivity Coaches",
+    description: "Help with calendar management, workflows, and productivity systems",
+    isPrimary: false,
+    icon: "time-management",
+    color: "#9333ea",
+  },
+  [CategoryType.ESTATE_CLEANOUT_HOARDING]: {
     name: "Estate Cleanout / Hoarding Specialists",
-    description:
-      "Handle estates after death or extreme clutter/hoarding situations with sensitivity",
-    isActive: true,
+    description: "Handle sensitive situations involving estate cleanouts and extreme clutter/hoarding",
+    isPrimary: false,
+    icon: "estate-cleanout",
+    color: "#991b1b",
   },
-] as const;
-
-// Type for a single provider category definition
-export interface ProviderCategoryDefinition {
-  type: ProviderCategoryType;
-  name: string;
-  description: string;
-  isActive: boolean;
-}
-
-// Utility type for active categories only
-export type ActiveProviderCategories = (typeof PROVIDER_CATEGORIES)[number] & {
-  isActive: true;
-};
-
-// Type guards for discriminating between provider and client users
-export const isProvider = (
-  user: FirebaseUser
-): user is FirebaseUser & {
-  providerDetails: ProviderDetails;
-  providerRatings: ProviderRatings;
-  providerReviews: ProviderReview[];
-} => {
-  return user.isAProvider === true;
-};
-
-export const isClient = (
-  user: FirebaseUser
-): user is FirebaseUser & {
-  clientDetails: ClientDetails;
-  bookingHistory: BookingHistory[];
-  clientPreferences: ClientPreferences;
-} => {
-  return user.isAProvider === false;
-};
-
-// Utility types for creating/updating users
-export type CreateProviderData = Omit<
-  FirebaseUser,
-  "id" | "createdAt" | "updatedAt" | "clerkUserID"
-> & {
-  isAProvider: true;
-  providerDetails: ProviderDetails;
-  providerRatings: ProviderRatings;
-  providerReviews: ProviderReview[];
-};
-
-export type CreateClientData = Omit<
-  FirebaseUser,
-  "id" | "createdAt" | "updatedAt" | "clerkUserID"
-> & {
-  isAProvider: false;
-  clientDetails: ClientDetails;
-  bookingHistory: BookingHistory[];
-  clientPreferences: ClientPreferences;
-};
-
-export type UpdateUserData = Partial<
-  Omit<FirebaseUser, "id" | "createdAt" | "clerkUserID">
->;
+} as const;
