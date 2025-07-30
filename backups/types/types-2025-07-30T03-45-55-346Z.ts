@@ -2,7 +2,7 @@
  * Generated types from Drizzle schemas for type-safe database operations
  * This file provides TypeScript types derived from our database schemas
  * 
- * Generated on: 2025-07-30T03:47:31.306Z
+ * Generated on: 2025-07-30T03:27:51.726Z
  * 
  * DO NOT EDIT MANUALLY - This file is auto-generated
  * To regenerate: npm run types:generate
@@ -25,56 +25,56 @@ import { usersTable } from "./user-schema";
 // =============================================================================
 
 // Types for address schema
-export type Address = InferSelectModel<typeof addressesTable>;
-export type InsertAddress = InferInsertModel<typeof addressesTable>;
-export type UpdateAddress = Partial<Omit<InsertAddress, "id" | "createdAt">>;
-export type UserAddress = InferSelectModel<typeof userAddressesTable>;
-export type InsertUserAddress = InferInsertModel<typeof userAddressesTable>;
-export type UpdateUserAddress = Partial<Omit<InsertUserAddress, "id" | "createdAt">>;
-export type BookingAddress = InferSelectModel<typeof bookingAddressesTable>;
-export type InsertBookingAddress = InferInsertModel<typeof bookingAddressesTable>;
-export type UpdateBookingAddress = Partial<Omit<InsertBookingAddress, "id" | "createdAt">>;
+export type Addresses = InferSelectModel<typeof addressesTable>;
+export type InsertAddresses = InferInsertModel<typeof addressesTable>;
+export type UpdateAddresses = Partial<Omit<InsertAddresses, "id" | "createdAt">>;
+export type UserAddresses = InferSelectModel<typeof userAddressesTable>;
+export type InsertUserAddresses = InferInsertModel<typeof userAddressesTable>;
+export type UpdateUserAddresses = Partial<Omit<InsertUserAddresses, "id" | "createdAt">>;
+export type BookingAddresses = InferSelectModel<typeof bookingAddressesTable>;
+export type InsertBookingAddresses = InferInsertModel<typeof bookingAddressesTable>;
+export type UpdateBookingAddresses = Partial<Omit<InsertBookingAddresses, "id" | "createdAt">>;
 
 // Types for booking schema
-export type Booking = InferSelectModel<typeof bookingsTable>;
-export type InsertBooking = InferInsertModel<typeof bookingsTable>;
-export type UpdateBooking = Partial<Omit<InsertBooking, "id" | "createdAt">>;
+export type Bookings = InferSelectModel<typeof bookingsTable>;
+export type InsertBookings = InferInsertModel<typeof bookingsTable>;
+export type UpdateBookings = Partial<Omit<InsertBookings, "id" | "createdAt">>;
 
 // Types for category schema
-export type Category = InferSelectModel<typeof categoriesTable>;
-export type InsertCategory = InferInsertModel<typeof categoriesTable>;
-export type UpdateCategory = Partial<Omit<InsertCategory, "id" | "createdAt">>;
-export type ProviderCategory = InferSelectModel<typeof providerCategoriesTable>;
-export type InsertProviderCategory = InferInsertModel<typeof providerCategoriesTable>;
-export type UpdateProviderCategory = Partial<Omit<InsertProviderCategory, "id" | "createdAt">>;
-export type ClientPreferredCategory = InferSelectModel<typeof clientPreferredCategoriesTable>;
-export type InsertClientPreferredCategory = InferInsertModel<typeof clientPreferredCategoriesTable>;
-export type UpdateClientPreferredCategory = Partial<Omit<InsertClientPreferredCategory, "id" | "createdAt">>;
+export type Categories = InferSelectModel<typeof categoriesTable>;
+export type InsertCategories = InferInsertModel<typeof categoriesTable>;
+export type UpdateCategories = Partial<Omit<InsertCategories, "id" | "createdAt">>;
+export type ProviderCategories = InferSelectModel<typeof providerCategoriesTable>;
+export type InsertProviderCategories = InferInsertModel<typeof providerCategoriesTable>;
+export type UpdateProviderCategories = Partial<Omit<InsertProviderCategories, "id" | "createdAt">>;
+export type ClientPreferredCategories = InferSelectModel<typeof clientPreferredCategoriesTable>;
+export type InsertClientPreferredCategories = InferInsertModel<typeof clientPreferredCategoriesTable>;
+export type UpdateClientPreferredCategories = Partial<Omit<InsertClientPreferredCategories, "id" | "createdAt">>;
 
 // Types for client schema
-export type ClientProfile = InferSelectModel<typeof clientProfilesTable>;
-export type InsertClientProfile = InferInsertModel<typeof clientProfilesTable>;
-export type UpdateClientProfile = Partial<Omit<InsertClientProfile, "id" | "createdAt">>;
+export type ClientProfiles = InferSelectModel<typeof clientProfilesTable>;
+export type InsertClientProfiles = InferInsertModel<typeof clientProfilesTable>;
+export type UpdateClientProfiles = Partial<Omit<InsertClientProfiles, "id" | "createdAt">>;
 
 // Types for payment schema
-export type PaymentTransaction = InferSelectModel<typeof paymentTransactionsTable>;
-export type InsertPaymentTransaction = InferInsertModel<typeof paymentTransactionsTable>;
-export type UpdatePaymentTransaction = Partial<Omit<InsertPaymentTransaction, "id" | "createdAt">>;
+export type PaymentTransactions = InferSelectModel<typeof paymentTransactionsTable>;
+export type InsertPaymentTransactions = InferInsertModel<typeof paymentTransactionsTable>;
+export type UpdatePaymentTransactions = Partial<Omit<InsertPaymentTransactions, "id" | "createdAt">>;
 
 // Types for provider schema
-export type ProviderProfile = InferSelectModel<typeof providerProfilesTable>;
-export type InsertProviderProfile = InferInsertModel<typeof providerProfilesTable>;
-export type UpdateProviderProfile = Partial<Omit<InsertProviderProfile, "id" | "createdAt">>;
+export type ProviderProfiles = InferSelectModel<typeof providerProfilesTable>;
+export type InsertProviderProfiles = InferInsertModel<typeof providerProfilesTable>;
+export type UpdateProviderProfiles = Partial<Omit<InsertProviderProfiles, "id" | "createdAt">>;
 
 // Types for review schema
-export type Review = InferSelectModel<typeof reviewsTable>;
-export type InsertReview = InferInsertModel<typeof reviewsTable>;
-export type UpdateReview = Partial<Omit<InsertReview, "id" | "createdAt">>;
+export type Reviews = InferSelectModel<typeof reviewsTable>;
+export type InsertReviews = InferInsertModel<typeof reviewsTable>;
+export type UpdateReviews = Partial<Omit<InsertReviews, "id" | "createdAt">>;
 
 // Types for user schema
-export type User = InferSelectModel<typeof usersTable>;
-export type InsertUser = InferInsertModel<typeof usersTable>;
-export type UpdateUser = Partial<Omit<InsertUser, "id" | "createdAt">>;
+export type Users = InferSelectModel<typeof usersTable>;
+export type InsertUsers = InferInsertModel<typeof usersTable>;
+export type UpdateUsers = Partial<Omit<InsertUsers, "id" | "createdAt">>;
 
 // =============================================================================
 // COMPOSITE TYPES (WITH RELATIONS)
@@ -246,5 +246,5 @@ export function isBookingCompleted(booking: Booking): boolean {
  * Type guard to check if payment is successful
  */
 export function isPaymentSuccessful(payment: PaymentTransaction): boolean {
-  return payment.status === "succeeded";
+  return payment.status === "completed";
 }

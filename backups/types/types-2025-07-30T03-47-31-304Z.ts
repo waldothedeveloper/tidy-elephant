@@ -2,7 +2,7 @@
  * Generated types from Drizzle schemas for type-safe database operations
  * This file provides TypeScript types derived from our database schemas
  * 
- * Generated on: 2025-07-30T03:47:31.306Z
+ * Generated on: 2025-07-30T03:46:10.945Z
  * 
  * DO NOT EDIT MANUALLY - This file is auto-generated
  * To regenerate: npm run types:generate
@@ -246,5 +246,5 @@ export function isBookingCompleted(booking: Booking): boolean {
  * Type guard to check if payment is successful
  */
 export function isPaymentSuccessful(payment: PaymentTransaction): boolean {
-  return payment.status === "succeeded";
+  return payment.status === "completed";
 }

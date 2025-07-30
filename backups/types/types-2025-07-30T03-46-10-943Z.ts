@@ -2,7 +2,7 @@
  * Generated types from Drizzle schemas for type-safe database operations
  * This file provides TypeScript types derived from our database schemas
  * 
- * Generated on: 2025-07-30T03:47:31.306Z
+ * Generated on: 2025-07-30T03:45:55.351Z
  * 
  * DO NOT EDIT MANUALLY - This file is auto-generated
  * To regenerate: npm run types:generate
@@ -52,9 +52,9 @@ export type InsertClientPreferredCategory = InferInsertModel<typeof clientPrefer
 export type UpdateClientPreferredCategory = Partial<Omit<InsertClientPreferredCategory, "id" | "createdAt">>;
 
 // Types for client schema
-export type ClientProfile = InferSelectModel<typeof clientProfilesTable>;
-export type InsertClientProfile = InferInsertModel<typeof clientProfilesTable>;
-export type UpdateClientProfile = Partial<Omit<InsertClientProfile, "id" | "createdAt">>;
+export type ClientProfil = InferSelectModel<typeof clientProfilesTable>;
+export type InsertClientProfil = InferInsertModel<typeof clientProfilesTable>;
+export type UpdateClientProfil = Partial<Omit<InsertClientProfil, "id" | "createdAt">>;
 
 // Types for payment schema
 export type PaymentTransaction = InferSelectModel<typeof paymentTransactionsTable>;
@@ -62,9 +62,9 @@ export type InsertPaymentTransaction = InferInsertModel<typeof paymentTransactio
 export type UpdatePaymentTransaction = Partial<Omit<InsertPaymentTransaction, "id" | "createdAt">>;
 
 // Types for provider schema
-export type ProviderProfile = InferSelectModel<typeof providerProfilesTable>;
-export type InsertProviderProfile = InferInsertModel<typeof providerProfilesTable>;
-export type UpdateProviderProfile = Partial<Omit<InsertProviderProfile, "id" | "createdAt">>;
+export type ProviderProfil = InferSelectModel<typeof providerProfilesTable>;
+export type InsertProviderProfil = InferInsertModel<typeof providerProfilesTable>;
+export type UpdateProviderProfil = Partial<Omit<InsertProviderProfil, "id" | "createdAt">>;
 
 // Types for review schema
 export type Review = InferSelectModel<typeof reviewsTable>;
@@ -246,5 +246,5 @@ export function isBookingCompleted(booking: Booking): boolean {
  * Type guard to check if payment is successful
  */
 export function isPaymentSuccessful(payment: PaymentTransaction): boolean {
-  return payment.status === "succeeded";
+  return payment.status === "completed";
 }

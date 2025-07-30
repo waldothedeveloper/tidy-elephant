@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(gh issue create:*)"
+      "Bash(gh issue create:*)",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
