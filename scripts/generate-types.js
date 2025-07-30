@@ -6,17 +6,25 @@
  * and ensures they're kept in sync with schema changes.
  */
 
-const fs = require('fs');
-const path = require('path');
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from "fs";
+
+import { join } from "path";
 
 // Configuration
-const SCHEMA_DIR = path.join(__dirname, '../src/lib/db');
-const TYPES_FILE = path.join(SCHEMA_DIR, 'types.ts');
-const BACKUP_DIR = path.join(__dirname, '../backups/types');
+const SCHEMA_DIR = join(__dirname, "../src/lib/db");
+const TYPES_FILE = join(SCHEMA_DIR, "types.ts");
+const BACKUP_DIR = join(__dirname, "../backups/types");
 
 // Ensure backup directory exists
-if (!fs.existsSync(BACKUP_DIR)) {
-  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+if (!existsSync(BACKUP_DIR)) {
+  mkdirSync(BACKUP_DIR, { recursive: true });
 }
 
 function log(message) {
@@ -24,42 +32,42 @@ function log(message) {
 }
 
 function createBackup() {
-  if (fs.existsSync(TYPES_FILE)) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `types-${timestamp}.ts`);
-    fs.copyFileSync(TYPES_FILE, backupFile);
+  if (existsSync(TYPES_FILE)) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupFile = join(BACKUP_DIR, `types-${timestamp}.ts`);
+    copyFileSync(TYPES_FILE, backupFile);
     log(`Created backup: ${backupFile}`);
   }
 }
 
 function getSchemaFiles() {
-  return fs.readdirSync(SCHEMA_DIR)
-    .filter(file => file.endsWith('-schema.ts') && file !== 'types.ts')
+  return readdirSync(SCHEMA_DIR)
+    .filter((file) => file.endsWith("-schema.ts") && file !== "types.ts")
     .sort();
 }
 
 function extractTableExports(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = readFileSync(filePath, "utf8");
   const tablePattern = /export const (\w+Table) = pgTable/g;
   const tables = [];
   let match;
-  
+
   while ((match = tablePattern.exec(content)) !== null) {
     tables.push(match[1]);
   }
-  
+
   return tables;
 }
 
 function generateTypesContent() {
   const schemaFiles = getSchemaFiles();
   const allTables = {};
-  
+
   // Extract table information from each schema file
-  schemaFiles.forEach(file => {
-    const filePath = path.join(SCHEMA_DIR, file);
+  schemaFiles.forEach((file) => {
+    const filePath = join(SCHEMA_DIR, file);
     const tables = extractTableExports(filePath);
-    const schemaName = file.replace('-schema.ts', '');
+    const schemaName = file.replace("-schema.ts", "");
     allTables[schemaName] = tables;
   });
 
@@ -77,36 +85,44 @@ function generateTypesContent() {
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 // Import all schema tables
-${schemaFiles.map(file => {
-  const schemaName = file.replace('-schema.ts', '');
-  const tables = allTables[schemaName];
-  if (tables.length === 0) return '';
-  
-  return `import { ${tables.join(', ')} } from "./${file.replace('.ts', '')}";`;
-}).filter(Boolean).join('\n')}
+${schemaFiles
+  .map((file) => {
+    const schemaName = file.replace("-schema.ts", "");
+    const tables = allTables[schemaName];
+    if (tables.length === 0) return "";
+
+    return `import { ${tables.join(", ")} } from "./${file.replace(".ts", "")}";`;
+  })
+  .filter(Boolean)
+  .join("\n")}
 
 // =============================================================================
 // GENERATED TYPES
 // =============================================================================
 
-${Object.entries(allTables).map(([schemaName, tables]) => {
-  if (tables.length === 0) return '';
-  
-  return `// Types for ${schemaName} schema
-${tables.map(table => {
-  // Convert camelCase table names to PascalCase
-  const typeName = table
-    .replace('Table', '') // Remove 'Table' suffix
-    .replace(/([A-Z])/g, (match, letter, index) => 
-      index === 0 ? letter.toUpperCase() : letter
-    )
-    .replace(/^[a-z]/, (match) => match.toUpperCase()); // Ensure first letter is uppercase
-  
-  return `export type ${typeName} = InferSelectModel<typeof ${table}>;
+${Object.entries(allTables)
+  .map(([schemaName, tables]) => {
+    if (tables.length === 0) return "";
+
+    return `// Types for ${schemaName} schema
+${tables
+  .map((table) => {
+    // Convert camelCase table names to PascalCase
+    const typeName = table
+      .replace("Table", "") // Remove 'Table' suffix
+      .replace(/([A-Z])/g, (match, letter, index) =>
+        index === 0 ? letter.toUpperCase() : letter
+      )
+      .replace(/^[a-z]/, (match) => match.toUpperCase()); // Ensure first letter is uppercase
+
+    return `export type ${typeName} = InferSelectModel<typeof ${table}>;
 export type Insert${typeName} = InferInsertModel<typeof ${table}>;
 export type Update${typeName} = Partial<Omit<Insert${typeName}, "id" | "createdAt">>;`;
-}).join('\n')}`;
-}).filter(Boolean).join('\n\n')}
+  })
+  .join("\n")}`;
+  })
+  .filter(Boolean)
+  .join("\n\n")}
 
 // =============================================================================
 // COMPOSITE TYPES (WITH RELATIONS)
@@ -286,22 +302,21 @@ export function isPaymentSuccessful(payment: PaymentTransaction): boolean {
 
 function main() {
   try {
-    log('Starting type generation...');
-    
+    log("Starting type generation...");
+
     // Create backup of existing types file
     createBackup();
-    
+
     // Generate new types content
     const typesContent = generateTypesContent();
-    
+
     // Write the new types file
-    fs.writeFileSync(TYPES_FILE, typesContent);
-    
+    writeFileSync(TYPES_FILE, typesContent);
+
     log(`Types generated successfully: ${TYPES_FILE}`);
-    log('✅ Type generation completed');
-    
+    log("✅ Type generation completed");
   } catch (error) {
-    console.error('[type-gen] Error:', error.message);
+    console.error("[type-gen] Error:", error.message);
     process.exit(1);
   }
 }
@@ -311,4 +326,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, generateTypesContent };
+export default { main, generateTypesContent };
