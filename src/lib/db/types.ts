@@ -2,7 +2,7 @@
  * Generated types from Drizzle schemas for type-safe database operations
  * This file provides TypeScript types derived from our database schemas
  * 
- * Generated on: 2025-07-30T03:47:31.306Z
+ * Generated on: 2025-07-30T04:01:31.181Z
  * 
  * DO NOT EDIT MANUALLY - This file is auto-generated
  * To regenerate: npm run types:generate

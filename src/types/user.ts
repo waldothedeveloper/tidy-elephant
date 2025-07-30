@@ -13,6 +13,14 @@ import type {
   UserRole,
 } from "../lib/db/types";
 
+import type {
+  UserProfileFormData,
+  PhoneVerificationData,
+  ProviderSearchFilters,
+  ProviderOnboardingFormData,
+  ClientOnboardingFormData,
+} from "../lib/schemas";
+
 // =============================================================================
 // RE-EXPORT DATABASE TYPES
 // =============================================================================
@@ -26,6 +34,14 @@ export type {
   UserAccountStatus,
   UserRole,
 } from "../lib/db/types";
+
+export type {
+  UserProfileFormData,
+  PhoneVerificationData,
+  ProviderSearchFilters,
+  ProviderOnboardingFormData,
+  ClientOnboardingFormData,
+} from "../lib/schemas";
 
 // =============================================================================
 // APPLICATION-LEVEL USER TYPES
@@ -68,64 +84,9 @@ export type ClientSummary = ClientProfile & {
 // FORM DATA TYPES
 // =============================================================================
 
-/**
- * User profile form data
- */
-export type UserProfileFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber?: string;
-  about?: string;
-};
+// UserProfileFormData imported from schemas
 
-/**
- * Provider onboarding form data
- */
-export type ProviderOnboardingFormData = {
-  // Basic info
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  about: string;
-  
-  // Provider-specific fields
-  hourlyRate: number; // In cents
-  yearsOfExperience?: number;
-  languages?: string[];
-  certifications?: string[];
-  
-  // Business info
-  businessName?: string;
-  businessLicense?: string;
-  website?: string;
-  
-  // Service areas
-  serviceAreas?: string[];
-  
-  // Categories (will be handled separately via junction table)
-  selectedCategories: string[]; // Category IDs
-  mainSpecialty?: string; // Category ID
-};
-
-/**
- * Client onboarding form data
- */
-export type ClientOnboardingFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber?: string;
-  about?: string;
-  
-  // Client preferences
-  preferredCategories?: string[]; // Category IDs with priorities
-  budgetRange?: {
-    min: number;
-    max: number;
-  };
-};
+// ProviderOnboardingFormData and ClientOnboardingFormData imported from schemas
 
 // =============================================================================
 // AUTHENTICATION TYPES
@@ -182,31 +143,7 @@ export type CategoryWithProviderCount = Category & {
 // SEARCH AND FILTERING TYPES
 // =============================================================================
 
-/**
- * Provider search filters
- */
-export type ProviderSearchFilters = {
-  categoryIds?: string[];
-  location?: {
-    latitude: number;
-    longitude: number;
-    radius: number; // in miles
-  };
-  priceRange?: {
-    min: number; // in cents
-    max: number; // in cents
-  };
-  rating?: number; // minimum rating
-  availability?: {
-    date: Date;
-    timeSlot?: string;
-  };
-  experienceYears?: number; // minimum years
-  languages?: string[];
-  search?: string; // text search
-  sortBy?: "rating" | "price" | "experience" | "distance";
-  sortOrder?: "asc" | "desc";
-};
+// ProviderSearchFilters imported from schemas
 
 /**
  * Search result with computed fields
@@ -280,14 +217,7 @@ export type ClientDashboardSummary = {
 // VALIDATION TYPES
 // =============================================================================
 
-/**
- * Phone verification data
- */
-export type PhoneVerificationData = {
-  phoneNumber: string; // E.164 format
-  verificationCode: string;
-  isVerified: boolean;
-};
+// PhoneVerificationData imported from schemas
 
 /**
  * ID verification data for providers

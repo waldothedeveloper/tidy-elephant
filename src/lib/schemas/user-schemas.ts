@@ -253,6 +253,54 @@ export const providerOnboardingCategoriesSchema = z.object({
   mainSpecialty: uuidSchema.optional(),
 });
 
+/**
+ * Complete provider onboarding form schema (all steps combined)
+ */
+export const providerOnboardingFormSchema = z.object({
+  // Basic info
+  firstName: z.string().min(1, "First name is required").max(50),
+  lastName: z.string().min(1, "Last name is required").max(50),
+  email: emailSchema,
+  phoneNumber: e164PhoneNumberSchema,
+  about: z.string().max(500, "About section must be less than 500 characters"),
+  
+  // Provider-specific fields
+  hourlyRate: hourlyRateSchema,
+  yearsOfExperience: yearsExperienceSchema.optional(),
+  languages: z.array(z.string().max(50)).max(10).optional(),
+  certifications: z.array(z.string().max(100)).max(20).optional(),
+  
+  // Business info
+  businessName: z.string().max(100).optional(),
+  businessLicense: z.string().max(50).optional(),
+  website: z.string().url("Invalid website URL").optional(),
+  
+  // Service areas
+  serviceAreas: z.array(z.string().max(100)).max(10).optional(),
+  
+  // Categories (handled separately via junction table)
+  selectedCategories: z.array(uuidSchema).min(1, "Must select at least one category").max(5),
+  mainSpecialty: uuidSchema.optional(),
+});
+
+/**
+ * Client onboarding form schema
+ */
+export const clientOnboardingFormSchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(50),
+  lastName: z.string().min(1, "Last name is required").max(50),
+  email: emailSchema,
+  phoneNumber: e164PhoneNumberSchema.optional(),
+  about: z.string().max(500, "About section must be less than 500 characters").optional(),
+  
+  // Client preferences
+  preferredCategories: z.array(uuidSchema).max(5, "Cannot select more than 5 categories").optional(),
+  budgetRange: z.object({
+    min: z.number().int().min(2500, "Minimum budget must be at least $25"),
+    max: z.number().int().max(50000, "Maximum budget cannot exceed $500"),
+  }).optional(),
+});
+
 // =============================================================================
 // CLIENT SCHEMAS
 // =============================================================================
@@ -474,6 +522,8 @@ export type UpdateProviderProfileData = z.infer<typeof updateProviderProfileSche
 export type ProviderOnboardingBasicInfo = z.infer<typeof providerOnboardingBasicInfoSchema>;
 export type ProviderOnboardingBusinessInfo = z.infer<typeof providerOnboardingBusinessInfoSchema>;
 export type ProviderOnboardingCategories = z.infer<typeof providerOnboardingCategoriesSchema>;
+export type ProviderOnboardingFormData = z.infer<typeof providerOnboardingFormSchema>;
+export type ClientOnboardingFormData = z.infer<typeof clientOnboardingFormSchema>;
 
 export type CreateClientProfileData = z.infer<typeof createClientProfileSchema>;
 export type UpdateClientProfileData = z.infer<typeof updateClientProfileSchema>;

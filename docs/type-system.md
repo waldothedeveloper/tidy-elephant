@@ -30,19 +30,19 @@ The generated types follow this pattern:
 
 ```typescript
 // Users
-export type Users = InferSelectModel<typeof usersTable>;
-export type InsertUsers = InferInsertModel<typeof usersTable>;
-export type UpdateUsers = Partial<Omit<InsertUsers, "id" | "createdAt">>;
+export type User = InferSelectModel<typeof usersTable>;
+export type InsertUser = InferInsertModel<typeof usersTable>;
+export type UpdateUser = Partial<Omit<InsertUser, "id" | "createdAt">>;
 
 // Providers
-export type ProviderProfiles = InferSelectModel<typeof providerProfilesTable>;
-export type InsertProviderProfiles = InferInsertModel<typeof providerProfilesTable>;
-export type UpdateProviderProfiles = Partial<Omit<InsertProviderProfiles, "userId" | "createdAt">>;
+export type ProviderProfile = InferSelectModel<typeof providerProfilesTable>;
+export type InsertProviderProfile = InferInsertModel<typeof providerProfilesTable>;
+export type UpdateProviderProfile = Partial<Omit<InsertProviderProfile, "userId" | "createdAt">>;
 
 // Categories
-export type Categories = InferSelectModel<typeof categoriesTable>;
-export type ProviderCategories = InferSelectModel<typeof providerCategoriesTable>;
-export type ClientPreferredCategories = InferSelectModel<typeof clientPreferredCategoriesTable>;
+export type Category = InferSelectModel<typeof categoriesTable>;
+export type ProviderCategory = InferSelectModel<typeof providerCategoriesTable>;
+export type ClientPreferredCategory = InferSelectModel<typeof clientPreferredCategoriesTable>;
 ```
 
 ### Composite Types
@@ -312,7 +312,7 @@ type User = z.infer<typeof userSchema>; // Derived type
 
 ### 2. Consistent Naming
 
-- Database types: `PascalCase` (e.g., `Users`, `ProviderProfiles`)
+- Database types: `PascalCase` singular (e.g., `User`, `ProviderProfile`)
 - Form types: `PascalCase` with descriptive suffix (e.g., `UserProfileFormData`)
 - Schemas: `camelCase` with `Schema` suffix (e.g., `userProfileSchema`)
 

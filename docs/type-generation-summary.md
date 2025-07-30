@@ -16,13 +16,13 @@ Successfully implemented automatic TypeScript type generation from Drizzle schem
 Key types generated:
 ```typescript
 // Core entities
-export type Users = InferSelectModel<typeof usersTable>;
-export type ProviderProfiles = InferSelectModel<typeof providerProfilesTable>;
-export type Categories = InferSelectModel<typeof categoriesTable>;
+export type User = InferSelectModel<typeof usersTable>;
+export type ProviderProfile = InferSelectModel<typeof providerProfilesTable>;
+export type Category = InferSelectModel<typeof categoriesTable>;
 
 // Insert/Update operations
-export type InsertUsers = InferInsertModel<typeof usersTable>;
-export type UpdateUsers = Partial<Omit<InsertUsers, "id" | "createdAt">>;
+export type InsertUser = InferInsertModel<typeof usersTable>;
+export type UpdateUser = Partial<Omit<InsertUser, "id" | "createdAt">>;
 
 // Composite types for relations
 export type CompleteUser = User & {
@@ -195,7 +195,7 @@ Now that types are in place, the next phase should:
 ## Technical Decisions
 
 ### Type Naming Convention
-- Database types: `PascalCase` (Users, ProviderProfiles) 
+- Database types: `PascalCase` singular (User, ProviderProfile) 
 - Schemas: `camelCase + Schema` (userProfileSchema)
 - Form types: `PascalCase + Data` (UserProfileFormData)
 
