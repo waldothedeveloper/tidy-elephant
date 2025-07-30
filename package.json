@@ -11,7 +11,10 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:drop": "drizzle-kit drop"
+    "db:drop": "drizzle-kit drop",
+    "types:generate": "node scripts/generate-types.js",
+    "db:types": "npm run db:generate && npm run types:generate",
+    "postinstall": "npm run db:generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.27.1",
