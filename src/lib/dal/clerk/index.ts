@@ -1,10 +1,5 @@
 import "server-only";
 
-import {
-  OperationResult,
-  createErrorResponse,
-  createSuccessResponse,
-} from "@/types/api-responses";
 import { User, auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 
 // Import Twilio functions from separate module
@@ -13,15 +8,6 @@ export {
   sendTwilioVerificationCodeDAL,
   verifyTwilioCodeDAL,
 } from "@/lib/dal/twilio";
-
-// Import Firebase functions from separate module
-export {
-  createFirebaseUserProviderDAL,
-  getFirebaseProviderCategoriesDAL,
-  getFirebaseUserByIdDAL,
-  saveFirebaseProviderCategoriesDAL,
-  saveFirebaseProviderHourlyRateDAL,
-} from "@/lib/dal/firebase";
 
 /*
 
@@ -70,7 +56,7 @@ export const enforceAuthProvider = async (): Promise<User["id"]> => {
 };
 
 // *** CLERK DAL FUNCTIONS ***
-export async function addClerkProviderMetadataDAL(): Promise<OperationResult> {
+export async function addClerkProviderMetadataDAL() {
   const userId = await enforceAuth();
   const client = await clerkClient();
 
@@ -81,15 +67,18 @@ export async function addClerkProviderMetadataDAL(): Promise<OperationResult> {
         onboardingComplete: false,
       },
     });
-    return createSuccessResponse("User metadata updated successfully.");
+    return {
+      success: true,
+      message: "User metadata updated successfully.",
+    };
   } catch (err) {
     const errorMessage =
       err instanceof Error
         ? err.message
         : "An unknown error occurred trying to update user metadata";
-    return createErrorResponse(
-      `There was an error updating the user metadata. ${errorMessage}`
-    );
+    return {
+      success: false,
+      message: `There was an error updating the user metadata. ${errorMessage}`,
+    };
   }
 }
-

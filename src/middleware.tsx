@@ -24,7 +24,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   // ROUTES
   const homeURL = new URL("/", req.url);
-  const onboardingUrl = new URL("/onboarding/basic-info", req.url);
+  const onboardingUrl = new URL("/onboarding/welcome", req.url);
 
   // 1. Non authenticated users can only visit public routes
   if (!userId && !isPublicRoute(req)) {

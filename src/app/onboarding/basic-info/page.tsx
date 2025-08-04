@@ -9,32 +9,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { SignedIn, UserButton } from "@clerk/nextjs";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Loader2Icon, UserRound } from "lucide-react";
-import { useCallback, useState, useTransition } from "react";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
-import { firebaseCreateProviderProfileAction } from "@/app/actions/onboarding/firebase-create-provider-profile-action";
-import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { storage } from "@/lib/firebase/clientApp";
-import { userProfileSchema } from "@/lib/schemas";
-import { useUser } from "@clerk/nextjs";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { createProviderProfileAction } from "@/app/actions/onboarding/create-provider-profile-action";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { useUser } from "@clerk/nextjs";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // TODO: Maybe add a character counter for the about section
 export default function ProviderOnboardingBasicInfo() {
-  const { authError, isAuthenticated } = useFirebaseAuth();
   const [isPending, startTransition] = useTransition();
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const { user } = useUser();
   const router = useRouter();
@@ -54,7 +47,7 @@ export default function ProviderOnboardingBasicInfo() {
   async function onSubmit(values: z.infer<typeof userProfileSchema>) {
     const successMessage = "Profile created successfully!";
 
-    const submitPromise = firebaseCreateProviderProfileAction(values).then(
+    const submitPromise = createProviderProfileAction(values).then(
       async (result) => {
         // Check profile creation result
         if (!result.success) {
@@ -62,7 +55,7 @@ export default function ProviderOnboardingBasicInfo() {
         }
 
         await user?.reload();
-        router.push("/onboarding/verify-phone");
+        // router.push("/onboarding/verify-phone");
         return { message: successMessage };
       }
     );
@@ -78,119 +71,6 @@ export default function ProviderOnboardingBasicInfo() {
     });
   }
 
-  const handleFileChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-
-      if (!file) return;
-
-      // Define accepted file types
-      const acceptedTypes = ["image/jpeg", "image/jpg", "image/webp"];
-      const acceptedExtensions = [".jpg", ".jpeg", ".webp"];
-
-      // Check if file type is accepted
-      const isValidType = acceptedTypes.includes(file.type);
-      const isValidExtension = acceptedExtensions.some((ext) =>
-        file.name.toLowerCase().endsWith(ext)
-      );
-
-      if (!isValidType || !isValidExtension) {
-        toast.error("Unsupported file format", {
-          description: "Please upload a JPG, JPEG or WebP image",
-        });
-        event.target.value = "";
-        return;
-      }
-
-      setIsUploading(true);
-
-      if (isAuthenticated) {
-        const uploadPromise = new Promise<string>((resolve, reject) => {
-          try {
-            // Determine correct content type based on file
-            const contentType = file.type || "image/jpeg";
-            const formData = new FormData();
-            formData.append("photo", file);
-
-            const storageRef = ref(
-              storage,
-              `profile-photos/${user?.id}/${file.name}`
-            );
-            const uploadTask = uploadBytesResumable(storageRef, file, {
-              contentType,
-            });
-
-            uploadTask.on(
-              "state_changed",
-              (snapshot) => {
-                const progress =
-                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-                setUploadProgress(Math.round(progress));
-              },
-              (error) => {
-                // A full list of error codes is available at
-                // https://firebase.google.com/docs/storage/web/handle-errors
-                let errorMessage = "An unknown error occurred while uploading";
-                switch (error.code) {
-                  case "storage/unauthorized":
-                    errorMessage = "You don't have permission to upload files";
-                    break;
-                  case "storage/canceled":
-                    errorMessage = "File upload was canceled";
-                    break;
-                  case "storage/unknown":
-                    errorMessage = `An unknown error occurred while uploading: ${error.serverResponse}`;
-                    break;
-                }
-                reject(new Error(errorMessage));
-              },
-              () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                  .then((downloadURL) => {
-                    form.setValue("photo", downloadURL);
-                    resolve(downloadURL);
-                  })
-                  .catch(reject);
-              }
-            );
-          } catch (err) {
-            const errorMessage =
-              err instanceof Error
-                ? err.message
-                : "An unknown error occurred trying to update user metadata";
-            reject(new Error(errorMessage));
-          }
-        });
-
-        uploadPromise
-          .then(() => {
-            // Cleanup on success
-            event.target.value = "";
-            setIsUploading(false);
-            setUploadProgress(0);
-          })
-          .catch(() => {
-            // Cleanup on error
-            event.target.value = "";
-            setIsUploading(false);
-            setUploadProgress(0);
-          });
-
-        toast.promise(uploadPromise, {
-          loading: "Uploading your profile photo...",
-          success: "Your profile photo uploaded successfully!",
-          error: (error) => `Something went wrong: ${error.message}`,
-        });
-      }
-    },
-    [form, user?.id, isAuthenticated]
-  );
-
-  if (authError) {
-    throw new Error(`Failed to sign in to Firebase: ${authError}`);
-  }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -201,7 +81,7 @@ export default function ProviderOnboardingBasicInfo() {
             </SignedIn>
             <Button
               variant={!isDirty ? "outline" : "default"}
-              disabled={isPending || !isDirty || isUploading}
+              disabled={isPending || !isDirty}
               type="submit"
             >
               {isPending && <Loader2Icon className="animate-spin" />}
@@ -302,7 +182,7 @@ export default function ProviderOnboardingBasicInfo() {
                           <FormLabel>Profile Photo</FormLabel>
                           <div className="mt-2 flex items-center gap-x-3">
                             <div>
-                              {value && !isUploading ? (
+                              {value ? (
                                 <Image
                                   width={80}
                                   height={80}
@@ -324,20 +204,14 @@ export default function ProviderOnboardingBasicInfo() {
                               <Input
                                 type="file"
                                 accept="image/jpeg,image/jpg,image/webp"
-                                onChange={handleFileChange}
-                                disabled={isUploading}
+                                // onChange={handleFileChange}
+                                // disabled={isUploading}
                                 className="max-w-[200px]"
                               />
                               <FormControl>
                                 {/* Hidden input to store the actual form value */}
                                 <input type="hidden" {...rest} />
                               </FormControl>
-
-                              {isUploading && (
-                                <p className="mt-2 text-sm text-muted-foreground">
-                                  Uploading photo {uploadProgress}% complete...
-                                </p>
-                              )}
                             </div>
                           </div>
 

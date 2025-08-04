@@ -18,18 +18,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { CircleCheckBig } from "lucide-react";
 import Link from "next/link";
-import { e164PhoneNumberSchema } from "@/lib/schemas";
 import { useCodeVerification } from "./useCodeVerification";
-import { z } from "zod";
 
 export function VerifyProviderPhoneSMSCode({
   clearPhoneNumber,
   sharedPhoneNumber,
 }: {
   clearPhoneNumber: () => void;
-  sharedPhoneNumber:
-    | z.infer<typeof e164PhoneNumberSchema>["phoneNumber"]
-    | null;
+  sharedPhoneNumber;
 }) {
   const {
     codeVerificationForm,

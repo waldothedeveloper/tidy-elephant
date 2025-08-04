@@ -41,25 +41,19 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 
 "use server";
 
-import {
-  createErrorResponse,
-  createSuccessResponse,
-} from "@/types/api-responses";
-
 import { auth } from "@clerk/nextjs/server";
 import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
 import { getFirestore } from "firebase/firestore";
 import { saveFirebaseProviderCategoriesDAL } from "@/lib/dal/clerk";
-import { userCategoriesSchema } from "@/lib/schemas";
-import { z } from "zod";
 
-export async function firebaseSaveProviderCategoriesAction(
-  formData: z.infer<typeof userCategoriesSchema>
-) {
+export async function firebaseSaveProviderCategoriesAction(formData) {
   // 1. AUTHENTICATE FIRST - Check auth before any logic
   const { userId } = await auth();
   if (!userId) {
-    return createErrorResponse("Authentication required to save categories");
+    return {
+      success: false,
+      error: "You must be logged in to save your categories.",
+    };
   }
 
   try {
@@ -73,13 +67,13 @@ export async function firebaseSaveProviderCategoriesAction(
     };
 
     // 3. VALIDATE ALL INPUTS - Use safeParse(), never parse()
-    const { success, data } = userCategoriesSchema.safeParse(sanitizedData);
-    if (!success) {
-      // 4. USE GENERIC ERROR MESSAGES - Don't leak validation details
-      return createErrorResponse(
-        "Invalid category selection. Please select at least one valid service category."
-      );
-    }
+    // const { success, data } = userCategoriesSchema.safeParse(sanitizedData);
+    // if (!success) {
+    //   // 4. USE GENERIC ERROR MESSAGES - Don't leak validation details
+    //   return createErrorResponse(
+    //     "Invalid category selection. Please select at least one valid service category."
+    //   );
+    // }
 
     // 5. TRY/CATCH EVERYTHING - Wrap all external calls
     let firebaseServerApp;

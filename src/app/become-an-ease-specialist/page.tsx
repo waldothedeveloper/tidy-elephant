@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
+const BEGIN_ONBOARDING_URL = "/onboarding/welcome";
+
 // TODO: Remove ALL the conditional process.env.NODE_ENV checks once we are ready to go live!!!!!!
 
 export default function BecomeAnArrangerPage() {
@@ -86,7 +88,7 @@ function EaseSpecialistHero() {
                 <div className="mt-10 flex flex-1 items-center gap-x-6 w-full">
                   {/* THIS WILL EVENTUALLY CHANGE, BUT IT IS OK FOR NOW */}
                   {process.env.NODE_ENV === "development" ? (
-                    <Link className="size-full" href="/onboarding/basic-info">
+                    <Link className="size-full" href={BEGIN_ONBOARDING_URL}>
                       <Button className="w-full py-6 text-xl font-semibold">
                         Become a Tidy Specialist
                       </Button>
@@ -514,9 +516,7 @@ function ReadyToDiveIn() {
         <div className="mt-10 flex items-center gap-x-6 lg:mt-0 lg:shrink-0">
           {process.env.NODE_ENV === "development" ? (
             <Button asChild>
-              <Link href="/onboarding/basic-info">
-                Become a Tidy Specialist
-              </Link>
+              <Link href={BEGIN_ONBOARDING_URL}>Become a Tidy Specialist</Link>
             </Button>
           ) : (
             <Button className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
