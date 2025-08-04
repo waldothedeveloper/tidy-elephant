@@ -6,16 +6,16 @@
  * and ensures they're kept in sync with schema changes.
  */
 
-const {
+import {
   copyFileSync,
   existsSync,
   mkdirSync,
   readFileSync,
   readdirSync,
   writeFileSync,
-} = require("fs");
+} from "fs";
 
-const { join } = require("path");
+import { join } from "path";
 
 // Configuration
 const SCHEMA_DIR = join(__dirname, "../src/lib/db");
@@ -37,35 +37,35 @@ function log(message) {
 function toSingular(name) {
   // Handle special cases first
   const specialCases = {
-    'categories': 'category',
-    'addresses': 'address', 
-    'userAddresses': 'userAddress',
-    'bookingAddresses': 'bookingAddress',
-    'clientPreferredCategories': 'clientPreferredCategory',
-    'providerCategories': 'providerCategory',
-    'clientProfiles': 'clientProfile',
-    'providerProfiles': 'providerProfile',
-    'users': 'user',
-    'bookings': 'booking',
-    'reviews': 'review',
-    'paymentTransactions': 'paymentTransaction'
+    categories: "category",
+    addresses: "address",
+    userAddresses: "userAddress",
+    bookingAddresses: "bookingAddress",
+    clientPreferredCategories: "clientPreferredCategory",
+    providerCategories: "providerCategory",
+    clientProfiles: "clientProfile",
+    providerProfiles: "providerProfile",
+    users: "user",
+    bookings: "booking",
+    reviews: "review",
+    paymentTransactions: "paymentTransaction",
   };
-  
+
   if (specialCases[name]) {
     return specialCases[name];
   }
-  
+
   // General rules for singular conversion
-  if (name.endsWith('ies')) {
-    return name.slice(0, -3) + 'y'; // categories -> category
+  if (name.endsWith("ies")) {
+    return name.slice(0, -3) + "y"; // categories -> category
   }
-  if (name.endsWith('es') && !name.endsWith('ses')) {
+  if (name.endsWith("es") && !name.endsWith("ses")) {
     return name.slice(0, -2); // addresses -> address
   }
-  if (name.endsWith('s') && !name.endsWith('ss')) {
+  if (name.endsWith("s") && !name.endsWith("ss")) {
     return name.slice(0, -1); // users -> user
   }
-  
+
   return name; // No change needed
 }
 
@@ -288,7 +288,10 @@ function extractTableExports(filePath) {
     log(`Found ${tables.length} tables in ${filePath}`);
     return tables;
   } catch (error) {
-    console.error(`[type-gen] Error reading schema file ${filePath}:`, error.message);
+    console.error(
+      `[type-gen] Error reading schema file ${filePath}:`,
+      error.message
+    );
     return []; // Return empty array to allow processing to continue
   }
 }
@@ -388,4 +391,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, generateTypesContent };
+export default { main, generateTypesContent };

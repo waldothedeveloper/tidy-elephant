@@ -52,7 +52,6 @@ interface BeginProviderOnboardingResult {
 }
 
 export async function beginProviderOnboardingAction(): Promise<BeginProviderOnboardingResult> {
-  // 1. Authentication check
   const { userId } = await auth();
   if (!userId) {
     return {
@@ -61,7 +60,6 @@ export async function beginProviderOnboardingAction(): Promise<BeginProviderOnbo
     };
   }
 
-  // 2. Set provider metadata with error handling
   try {
     const result = await addClerkProviderMetadataDAL();
 
@@ -77,7 +75,6 @@ export async function beginProviderOnboardingAction(): Promise<BeginProviderOnbo
       message: "Provider onboarding started successfully.",
     };
   } catch (error) {
-    // Log error without exposing internal details
     console.error("Begin provider onboarding error:", error);
 
     return {

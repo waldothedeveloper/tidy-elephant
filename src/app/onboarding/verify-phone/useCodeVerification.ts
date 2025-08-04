@@ -1,9 +1,5 @@
 "use client";
 
-import {
-  e164PhoneNumberSchema,
-  userProfileCodeVerificationSchema,
-} from "@/lib/schemas/index";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
@@ -12,7 +8,6 @@ import { twilioVerifyCodeAction } from "@/app/actions/onboarding/twilio-verify-c
 import { useForm } from "react-hook-form";
 import { useResendTimer } from "./useResendTimer";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type CodeVerificationState =
@@ -25,7 +20,7 @@ type CodeVerificationState =
 
 export function useCodeVerification(
   clearPhoneNumber: () => void,
-  sharedPhoneNumber: z.infer<typeof e164PhoneNumberSchema>["phoneNumber"] | null
+  sharedPhoneNumber
 ) {
   const router = useRouter();
   const [codeVerificationState, setCodeVerificationState] =

@@ -1,5 +1,6 @@
 import * as addressSchema from "./address-schema";
 import * as bookingSchema from "./booking-schema";
+import * as categorySchema from "./category-schema";
 import * as clientSchema from "./client-schema";
 import * as indexes from "./indexes";
 import * as paymentSchema from "./payment-schema";
@@ -8,13 +9,13 @@ import * as reviewSchema from "./review-schema";
 import * as userSchema from "./user-schema";
 
 import { drizzle } from "drizzle-orm/neon-http";
-import { env } from "@/lib/env";
 import { neon } from "@neondatabase/serverless";
 
 const schema = {
   ...userSchema,
   ...providerSchema,
   ...clientSchema,
+  ...categorySchema,
   ...bookingSchema,
   ...reviewSchema,
   ...paymentSchema,
@@ -22,12 +23,11 @@ const schema = {
   ...indexes,
 };
 
-
-const sql = neon(env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL!);
 
 export const db = drizzle(sql, {
   schema,
-  logger: env.NODE_ENV === "development",
+  logger: process.env.NODE_ENV === "development",
 });
 
 export type Database = typeof db;

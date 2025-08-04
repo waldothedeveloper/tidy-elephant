@@ -22,6 +22,7 @@ npm run db:types         # Generate Drizzle schemas and types
 ```
 
 The generated types follow this pattern:
+
 - `TableName` - Select model (read operations)
 - `InsertTableName` - Insert model (create operations)
 - `UpdateTableName` - Update model (partial update operations)
@@ -36,13 +37,19 @@ export type UpdateUser = Partial<Omit<InsertUser, "id" | "createdAt">>;
 
 // Providers
 export type ProviderProfile = InferSelectModel<typeof providerProfilesTable>;
-export type InsertProviderProfile = InferInsertModel<typeof providerProfilesTable>;
-export type UpdateProviderProfile = Partial<Omit<InsertProviderProfile, "userId" | "createdAt">>;
+export type InsertProviderProfile = InferInsertModel<
+  typeof providerProfilesTable
+>;
+export type UpdateProviderProfile = Partial<
+  Omit<InsertProviderProfile, "userId" | "createdAt">
+>;
 
 // Categories
 export type Category = InferSelectModel<typeof categoriesTable>;
 export type ProviderCategory = InferSelectModel<typeof providerCategoriesTable>;
-export type ClientPreferredCategory = InferSelectModel<typeof clientPreferredCategoriesTable>;
+export type ClientPreferredCategory = InferSelectModel<
+  typeof clientPreferredCategoriesTable
+>;
 ```
 
 ### Composite Types
@@ -117,7 +124,9 @@ Derived from validation schemas for type-safe form handling:
 
 ```typescript
 export type UserProfileFormData = z.infer<typeof userProfileSchema>;
-export type ProviderOnboardingBasicInfo = z.infer<typeof providerOnboardingBasicInfoSchema>;
+export type ProviderOnboardingBasicInfo = z.infer<
+  typeof providerOnboardingBasicInfoSchema
+>;
 export type BookingRequestData = z.infer<typeof bookingRequestSchema>;
 ```
 
@@ -159,14 +168,14 @@ export type ProviderSearchFilters = {
 
 ```typescript
 // ❌ Avoid
-function processUser(user: any) { }
+function processUser(user: any) {}
 
 // ✅ Use specific types
-function processUser(user: CompleteUser) { }
+function processUser(user: CompleteUser) {}
 
 // ✅ Use unknown for truly unknown data
 function processData(data: unknown) {
-  if (typeof data === 'object' && data !== null) {
+  if (typeof data === "object" && data !== null) {
     // Type narrowing
   }
 }
@@ -175,7 +184,9 @@ function processData(data: unknown) {
 ### 2. Use Type Guards
 
 ```typescript
-export function isProvider(user: CompleteUser): user is CompleteUser & { providerProfile: ProviderProfile } {
+export function isProvider(
+  user: CompleteUser
+): user is CompleteUser & { providerProfile: ProviderProfile } {
   return user.providerProfile !== null && user.roles.includes("provider");
 }
 
@@ -190,13 +201,13 @@ if (isProvider(user)) {
 
 ```typescript
 // Extract specific fields
-type UserBasicInfo = Pick<User, 'id' | 'firstName' | 'lastName' | 'email'>;
+type UserBasicInfo = Pick<User, "id" | "firstName" | "lastName" | "email">;
 
 // Make fields optional
 type PartialBooking = Partial<Booking>;
 
 // Omit sensitive fields
-type PublicUser = Omit<User, 'clerkUserID' | 'referralCode'>;
+type PublicUser = Omit<User, "clerkUserID" | "referralCode">;
 ```
 
 ## Integration Patterns
@@ -210,13 +221,13 @@ export async function createProviderProfile(
   try {
     // Validate input
     const validatedData = createProviderProfileSchema.parse(data);
-    
+
     // Database operation
     const [profile] = await db
       .insert(providerProfilesTable)
       .values(validatedData)
       .returning();
-    
+
     return { success: true, data: profile };
   } catch (error) {
     return { success: false, error: error.message };
@@ -227,19 +238,19 @@ export async function createProviderProfile(
 ### React Hook Form Integration
 
 ```typescript
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 function ProviderOnboardingForm() {
   const form = useForm<ProviderOnboardingBasicInfo>({
     resolver: zodResolver(providerOnboardingBasicInfoSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
+      firstName: "",
+      lastName: "",
+      email: "",
     },
   });
-  
+
   // Form is fully type-safe
 }
 ```
@@ -253,10 +264,16 @@ async function getProviderWithCategories(
   const result = await db
     .select()
     .from(providerProfilesTable)
-    .leftJoin(providerCategoriesTable, eq(providerProfilesTable.userId, providerCategoriesTable.providerId))
-    .leftJoin(categoriesTable, eq(providerCategoriesTable.categoryId, categoriesTable.id))
+    .leftJoin(
+      providerCategoriesTable,
+      eq(providerProfilesTable.userId, providerCategoriesTable.providerId)
+    )
+    .leftJoin(
+      categoriesTable,
+      eq(providerCategoriesTable.categoryId, categoriesTable.id)
+    )
     .where(eq(providerProfilesTable.userId, providerId));
-  
+
   // Transform raw result to typed object
   return transformToProviderWithCategories(result);
 }
@@ -321,7 +338,7 @@ type User = z.infer<typeof userSchema>; // Derived type
 Use discriminated unions for error handling:
 
 ```typescript
-type ApiResult<T> = 
+type ApiResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
