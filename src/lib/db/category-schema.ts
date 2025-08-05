@@ -1,72 +1,101 @@
 import {
   boolean,
   check,
+  index,
   integer,
   pgTable,
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 
 import { clientProfilesTable } from "./client-schema";
 import { providerProfilesTable } from "./provider-schema";
+import { sql } from "drizzle-orm";
 
 // Service categories table for professional organizer marketplace
-export const categoriesTable = pgTable("categories", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 100 }).notNull().unique(),
-  slug: varchar("slug", { length: 100 }).notNull().unique(),
-  description: text("description").notNull(),
+export const categoriesTable = pgTable(
+  "categories",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 100 }).notNull().unique(),
+    slug: varchar("slug", { length: 100 }).notNull().unique(),
+    description: text("description").notNull(),
 
-  // Category Metadata
-  isPrimary: boolean("is_primary").notNull().default(false), // Core Professional Organizers
-  sortOrder: integer("sort_order").notNull().default(0), // Display order
-  isActive: boolean("is_active").notNull().default(true),
+    // Category Metadata
+    isPrimary: boolean("is_primary").notNull().default(false), // Core Professional Organizers
+    sortOrder: integer("sort_order").notNull().default(0), // Display order
+    isActive: boolean("is_active").notNull().default(true),
 
-  // SEO and Display
-  iconName: varchar("icon_name", { length: 50 }), // Icon identifier for UI
-  colorHex: varchar("color_hex", { length: 7 }), // Hex color code for UI theming
+    // SEO and Display
+    iconName: varchar("icon_name", { length: 50 }), // Icon identifier for UI
+    colorHex: varchar("color_hex", { length: 7 }), // Hex color code for UI theming
 
-  // System fields
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-}, (table) => ({
-  // Validation constraints
-  validHexColor: check("valid_hex_color", sql`${table.colorHex} IS NULL OR ${table.colorHex} ~ '^#[0-9A-Fa-f]{6}$'`),
-}));
+    // System fields
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    // Check constraints
+    check(
+      "valid_hex_color",
+      sql`${table.colorHex} IS NULL OR ${table.colorHex} ~ '^#[0-9A-Fa-f]{6}$'`
+    ),
+
+    // Indexes
+    uniqueIndex("idx_categories_slug").on(table.slug),
+    uniqueIndex("idx_categories_name").on(table.name),
+    index("idx_categories_active").on(table.isActive),
+    index("idx_categories_primary").on(table.isPrimary),
+    index("idx_categories_sort_order").on(table.sortOrder),
+  ]
+);
 
 // Junction table for provider categories (Many-to-Many)
-export const providerCategoriesTable = pgTable("provider_categories", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  providerId: uuid("provider_id")
-    .notNull()
-    .references(() => providerProfilesTable.userId, { onDelete: "cascade" }),
-  categoryId: uuid("category_id")
-    .notNull()
-    .references(() => categoriesTable.id, { onDelete: "cascade" }),
+export const providerCategoriesTable = pgTable(
+  "provider_categories",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    providerId: uuid("provider_id")
+      .notNull()
+      .references(() => providerProfilesTable.userId, { onDelete: "cascade" }),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categoriesTable.id, { onDelete: "cascade" }),
 
-  // Relationship metadata
-  isMainSpecialty: boolean("is_main_specialty").notNull().default(false), // Provider's main specialty category
-  experienceYears: integer("experience_years"), // Years of experience in this category
+    // Relationship metadata
+    isMainSpecialty: boolean("is_main_specialty").notNull().default(false), // Provider's main specialty category
+    experienceYears: integer("experience_years"), // Years of experience in this category
 
-  // System fields
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-}, (table) => ({
-  // Unique constraints to prevent duplicate relationships
-  uniqueProviderCategory: unique("unique_provider_category").on(
-    table.providerId, 
-    table.categoryId
-  ),
-}));
+    // System fields
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    // Unique constraints
+    unique("unique_provider_category").on(table.providerId, table.categoryId),
+
+    // Indexes
+    index("idx_provider_categories_provider").on(table.providerId),
+    index("idx_provider_categories_category").on(table.categoryId),
+    index("idx_provider_categories_main_specialty").on(
+      table.providerId,
+      table.isMainSpecialty
+    ),
+    index("idx_provider_categories_composite").on(
+      table.providerId,
+      table.categoryId
+    ),
+  ]
+);
 
 // Junction table for client preferred categories (Many-to-Many)
 export const clientPreferredCategoriesTable = pgTable(
@@ -88,13 +117,22 @@ export const clientPreferredCategoriesTable = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => ({
-    // Unique constraints to prevent duplicate preferences
-    uniqueClientCategory: unique("unique_client_category").on(
-      table.clientId, 
+  (table) => [
+    // Unique constraints
+    unique("unique_client_category").on(table.clientId, table.categoryId),
+
+    // Indexes
+    index("idx_client_preferred_categories_client").on(table.clientId),
+    index("idx_client_preferred_categories_category").on(table.categoryId),
+    index("idx_client_preferred_categories_priority").on(
+      table.clientId,
+      table.priority
+    ),
+    index("idx_client_preferred_categories_composite").on(
+      table.clientId,
       table.categoryId
     ),
-  })
+  ]
 );
 
 // Initial category data - will be inserted via migration or seed script

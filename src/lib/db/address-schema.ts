@@ -1,6 +1,7 @@
 import { 
   boolean,
   decimal,
+  index,
   pgEnum,
   pgTable, 
   text, 
@@ -61,7 +62,19 @@ export const addressesTable = pgTable("addresses", {
   // System fields
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  // Indexes
+  // Geographic indexes for location-based queries
+  index("idx_address_geocode").on(table.latitude, table.longitude),
+  index("idx_address_latitude").on(table.latitude),
+  index("idx_address_longitude").on(table.longitude),
+  
+  // Address validation and lookup indexes
+  index("idx_address_type").on(table.type),
+  index("idx_address_city_state").on(table.city, table.state),
+  index("idx_address_postal_code").on(table.postalCode),
+  index("idx_address_verification").on(table.isVerified, table.isDeliverable),
+]);
 
 // User Addresses Junction Table (Many-to-Many)
 // Users can have multiple addresses (home, work, etc.)
@@ -77,7 +90,11 @@ export const userAddressesTable = pgTable("user_addresses", {
   // System fields
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  // Indexes
+  index("idx_user_address_primary").on(table.userId, table.isPrimary),
+  index("idx_user_address_lookup").on(table.userId, table.addressId),
+]);
 
 // Booking Addresses Junction Table (Many-to-Many)
 // Bookings can reference multiple addresses (service location, billing address)
@@ -91,4 +108,8 @@ export const bookingAddressesTable = pgTable("booking_addresses", {
   
   // System fields
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  // Indexes
+  index("idx_booking_address_role").on(table.bookingId, table.role),
+  index("idx_booking_address_lookup").on(table.bookingId, table.addressId),
+]);
