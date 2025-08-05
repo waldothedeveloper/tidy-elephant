@@ -34,12 +34,23 @@ export default function NavigationMenu() {
           </SignedIn>
 
           <SignedOut>
-            <Button variant="link" asChild className="text-base">
+            <Button
+              variant="link"
+              asChild
+              className="text-base text-foreground"
+            >
               <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button
+              variant="link"
+              asChild
+              className="text-base text-foreground"
+            >
+              <Link href="/sign-up">Sign Up</Link>
             </Button>
           </SignedOut>
 
-          <Button variant="link" asChild className="text-base">
+          <Button variant="link" asChild className="text-base text-foreground">
             <Link href="/become-an-ease-specialist">
               Become a Tidy Specialist
             </Link>

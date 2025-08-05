@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function AboutUs() {
   return (
@@ -8,7 +6,7 @@ export default function AboutUs() {
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <div className="max-w-4xl">
           <p className="text-base/7 font-semibold text-primary">
-            About Ease & Arrange
+            About Tidy Elephant
           </p>
           <h1 className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
             We Get It - Life Gets Messy <br />
@@ -33,7 +31,7 @@ export default function AboutUs() {
 
             <p className="mt-8 text-base/7 text-muted-foreground">
               We&apos;re building{" "}
-              <span className="text-primary font-semibold">Ease & Arrange</span>{" "}
+              <span className="text-primary font-semibold">Tidy Elephant</span>{" "}
               because everyone deserves to love their home again. Soon,
               you&apos;ll be able to connect with local experts who actually
               enjoy turning chaos into calm – no judgment, just results. Whether
@@ -41,15 +39,6 @@ export default function AboutUs() {
               our decluttering and organizing pros will have your back. Get on
               our launch list and be the first to transform your space!
             </p>
-            <div className="mt-10">
-              <Button
-                asChild
-                variant="link"
-                className="text-muted-foreground text-base hover:text-primary -ml-4"
-              >
-                <Link href="/waitlist/join-us">Join the waitlist &rarr;</Link>
-              </Button>
-            </div>
           </div>
           <div className="pt-16 lg:row-span-2 lg:-mr-16 xl:mr-auto">
             <div className="-mx-8 grid grid-cols-2 gap-4 sm:-mx-16 sm:grid-cols-4 lg:mx-0 lg:grid-cols-2 lg:gap-4 xl:gap-8">

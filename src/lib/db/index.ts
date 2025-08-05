@@ -2,7 +2,6 @@ import * as addressSchema from "./address-schema";
 import * as bookingSchema from "./booking-schema";
 import * as categorySchema from "./category-schema";
 import * as clientSchema from "./client-schema";
-import * as indexes from "./indexes";
 import * as paymentSchema from "./payment-schema";
 import * as providerSchema from "./provider-schema";
 import * as reviewSchema from "./review-schema";
@@ -20,7 +19,6 @@ const schema = {
   ...reviewSchema,
   ...paymentSchema,
   ...addressSchema,
-  ...indexes,
 };
 
 const sql = neon(process.env.DATABASE_URL!);

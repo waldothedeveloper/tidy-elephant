@@ -34,7 +34,7 @@ Do NOT use tailwindcss utility classes such e.g. "h-4 w-4", these height and wid
 
 - **Clerk** for authentication with custom onboarding flows
 - **Middleware** (`src/middleware.tsx`) enforces role-based access control:
-  - Public routes: home, sign-in, waitlist, become-an-ease-specialist
+  - Public routes: home, sign-in, become-an-ease-specialist
   - Provider routes: `/provider/*` (requires completed onboarding)
   - Onboarding routes: `/onboarding/*` (providers only, except welcome page)
 

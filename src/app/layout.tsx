@@ -1,13 +1,13 @@
 import "./globals.css";
 
-import { Toaster } from "@/components/ui/sonner";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import Footer from "./_custom_components/footer";
+import { IBM_Plex_Sans } from "next/font/google";
+import type { Metadata } from "next";
 import NavigationMenu from "./_custom_components/navigation-menu";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from "@/components/ui/sonner";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -31,7 +31,6 @@ export default function RootLayout({
       appearance={{
         cssLayerName: "clerk",
       }}
-      waitlistUrl="/waitlist/join-us"
     >
       <html lang="en">
         <body className={`${ibmPlexSans.className} antialiased`}>
