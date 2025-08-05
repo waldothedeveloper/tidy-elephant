@@ -37,7 +37,7 @@ const faqs = [
   {
     question: "What are video consultations?",
     answer:
-      "Video sessions will be perfect for online decluttering coaching and virtual organizing consultations. You'll be able to schedule them directly through providers' calendars. Join our waitlist to try this feature first!",
+      "Video sessions will be perfect for online decluttering coaching and virtual organizing consultations. You'll be able to schedule them directly through providers' calendars.",
   },
   {
     question: "What services will be available?",

@@ -8,10 +8,11 @@ import {
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
+  "/sign-up(.*)",
   "/terms",
   "/privacy",
-  "/waitlist(.*)",
   "/become-an-ease-specialist",
+  "/api/webhooks/clerk(.*)",
 ]);
 
 const isProviderRoute = createRouteMatcher(["/provider(.*)"]);

@@ -59,21 +59,6 @@ function EaseSpecialistHero() {
 
             <div className="relative px-6 pb-32 sm:pb-40 lg:px-8 lg:pb-56 lg:pr-0">
               <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
-                {process.env.NODE_ENV !== "development" && (
-                  <div className="hidden sm:mb-10 sm:flex">
-                    <div className="relative rounded-full px-3 py-1 text-sm/6 text-muted-foreground ring-1 ring-foreground/10 hover:ring-foreground/20">
-                      Get notified as soon as we launch.{" "}
-                      <Link
-                        href="/waitlist/join-us"
-                        className="font-semibold whitespace-nowrap text-primary"
-                      >
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        Join the waitlist
-                        <span aria-hidden="true">&rarr;</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
                 <h1 className="text-5xl font-semibold tracking-tight text-pretty text-foreground sm:text-7xl">
                   Turn Your Organizing Passion Into Profit
                 </h1>
@@ -86,21 +71,11 @@ function EaseSpecialistHero() {
                   <EarningsSection />
                 </div>
                 <div className="mt-10 flex flex-1 items-center gap-x-6 w-full">
-                  {/* THIS WILL EVENTUALLY CHANGE, BUT IT IS OK FOR NOW */}
-                  {process.env.NODE_ENV === "development" ? (
-                    <Link className="size-full" href={BEGIN_ONBOARDING_URL}>
-                      <Button className="w-full py-6 text-xl font-semibold">
-                        Become a Tidy Specialist
-                      </Button>
+                  <Button asChild size="lg" className="w-full">
+                    <Link href={BEGIN_ONBOARDING_URL}>
+                      Become a Tidy Specialist
                     </Link>
-                  ) : (
-                    <Button
-                      disabled
-                      className="w-full py-6 text-xl font-semibold"
-                    >
-                      Coming soon...
-                    </Button>
-                  )}
+                  </Button>
                 </div>
               </div>
             </div>
