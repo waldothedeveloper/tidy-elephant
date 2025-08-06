@@ -25,10 +25,14 @@ This is a Next.js 15 marketplace application connecting professional organizers 
   **react-hook-form** For Forms hooked with ShadCN
   **eslint**
 
+### Pull Request Standards
+
+All Pull Requests will add EVERY FILE, not just the files related to the branch. Make sure ALL files are ALWAYS added. This is NOT NEGOTIABLE.
+
 ### Styling Rules
 
 Always use ShadCN/UI and TailwindCSS v4 and above.
-Do NOT use tailwindcss utility classes such e.g. "h-4 w-4", these height and width sizes can be set easily like this e.g. "size-4" , "size-12" and so on.
+Make sure to ALWAYS USE consistent TailwindcSS v4 styling utilities. You keep using v3 utilities and that is NON NEGOTIABLE. Common examples of v3 are using height and width utilities such as h-4 w-4. These should always match v4 like this: size-4
 
 ### Authentication & User Management
 

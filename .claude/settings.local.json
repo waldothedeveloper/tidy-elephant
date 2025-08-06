@@ -11,7 +11,8 @@
       "Bash(node:*)",
       "Bash(npm run types:generate:*)",
       "Bash(npm install:*)",
-      "WebFetch(domain:orm.drizzle.team)"
+      "WebFetch(domain:orm.drizzle.team)",
+      "mcp__playwright"
     ],
     "deny": []
   },

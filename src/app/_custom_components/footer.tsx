@@ -12,7 +12,7 @@ export default function Footer() {
           ></Button>
         </div>
         <p className="text-center text-sm/6 text-muted-foreground md:order-1 md:mt-0">
-          &copy; {new Date().getUTCFullYear()} Ease & Arrange, LLC.
+          &copy; {new Date().getUTCFullYear()} Tidy Elephant, LLC
         </p>
       </div>
     </footer>
