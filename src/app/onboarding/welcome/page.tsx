@@ -15,7 +15,7 @@ async function handleBeginOnboarding() {
     notFound();
   }
 
-  redirect("/onboarding/basic-info");
+  redirect("/onboarding/type-of-business");
 }
 
 export default function OnboardingWelcomePage() {
