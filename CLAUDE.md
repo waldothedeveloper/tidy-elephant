@@ -18,7 +18,7 @@ This is a Next.js 15 marketplace application connecting professional organizers 
 - **Next.js 15** with App Router and Turbopack
 - **TypeScript** with strict configuration
 - **Tailwind CSS v4** for styling
-- **React 19** with React Hook Form and Zod validation
+- **React 19** with React Hook Form
   **lucide-react** for icons
   **motion** for subtle animations
   **ShadCN/UI** for styling
@@ -188,7 +188,7 @@ Completion sets `privateMetadata.onboardingComplete = true` allowing provider da
 - Use explicit typing where it aids clarity, but leverage inference where appropriate
 - Utilize utility types effectively (`Pick`, `Omit`, `Partial`, `Required`, etc.)
 - Create domain-specific types (e.g., `UserId`, `PaymentId`) for type safety
-- Use Zod to create types, by creating schemas first
+- Use Valibot to create types, by creating schemas first
 
 ```typescript
 // Good
@@ -200,64 +200,37 @@ type UserId = string;
 type PaymentAmount = number;
 ```
 
-#### Schema-First Development with Zod
+#### Schema-First Development with Drizzle-Valibot package
 
-Always define your schemas first, then derive types from them:
+Always define your schemas first with Drizzle, then derive types from them:
 
 ```typescript
-import { z } from "zod";
+import { pgTable, text, integer } from "drizzle-orm/pg-core";
+import { createSelectSchema } from "drizzle-valibot";
+import { parse } from "valibot";
 
-// Define schemas first - these provide runtime validation
-const AddressDetailsSchema = z.object({
-  houseNumber: z.string(),
-  houseName: z.string().optional(),
-  addressLine1: z.string().min(1),
-  addressLine2: z.string().optional(),
-  city: z.string().min(1),
-  postcode: z.string().regex(/^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i),
+const users = pgTable("users", {
+  id: integer().generatedAlwaysAsIdentity().primaryKey(),
+  name: text().notNull(),
+  age: integer().notNull(),
 });
 
-const PayingCardDetailsSchema = z.object({
-  cvv: z.string().regex(/^\d{3,4}$/),
-  token: z.string().min(1),
-});
+const userSelectSchema = createSelectSchema(users);
 
-const PostPaymentsRequestV3Schema = z.object({
-  cardAccountId: z.string().length(16),
-  amount: z.number().positive(),
-  source: z.enum(["Web", "Mobile", "API"]),
-  accountStatus: z.enum(["Normal", "Restricted", "Closed"]),
-  lastName: z.string().min(1),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  payingCardDetails: PayingCardDetailsSchema,
-  addressDetails: AddressDetailsSchema,
-  brand: z.enum(["Visa", "Mastercard", "Amex"]),
-});
+const rows = await db
+  .select({ id: users.id, name: users.name })
+  .from(users)
+  .limit(1);
+const parsed: { id: number; name: string; age: number } = parse(
+  userSelectSchema,
+  rows[0]
+); // Error: `age` is not returned in the above query
 
-// Derive types from schemas
-type AddressDetails = z.infer<typeof AddressDetailsSchema>;
-type PayingCardDetails = z.infer<typeof PayingCardDetailsSchema>;
-type PostPaymentsRequestV3 = z.infer<typeof PostPaymentsRequestV3Schema>;
-
-// Use schemas at runtime boundaries
-export const parsePaymentRequest = (data: unknown): PostPaymentsRequestV3 => {
-  return PostPaymentsRequestV3Schema.parse(data);
-};
-
-// Example of schema composition for complex domains
-const BaseEntitySchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-const CustomerSchema = BaseEntitySchema.extend({
-  email: z.string().email(),
-  tier: z.enum(["standard", "premium", "enterprise"]),
-  creditLimit: z.number().positive(),
-});
-
-type Customer = z.infer<typeof CustomerSchema>;
+const rows = await db.select().from(users).limit(1);
+const parsed: { id: number; name: string; age: number } = parse(
+  userSelectSchema,
+  rows[0]
+); // Will parse successfully
 ```
 
 ## Code Style
@@ -614,4 +587,4 @@ const processPayment = (payment: Payment): ProcessedPayment => {
 
 ### Development Memory
 
-- Stop making stupid code comments. ONLY add code comments when some code is NOT self explanatory. Code should be readable by itself without adding comments that don't add any value. 
+- Stop making stupid code comments. ONLY add code comments when some code is NOT self explanatory. Code should be readable by itself without adding comments that don't add any value.
