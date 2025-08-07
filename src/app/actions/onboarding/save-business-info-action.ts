@@ -34,34 +34,28 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 10. ✅ CHECK PERMISSIONS - Verify user can perform this action
     WHY: Authentication ≠ Authorization. User might be logged in but lack permission for specific actions
 
-
 11. ✅ USE ENVIRONMENT VARIABLES - Never hardcode sensitive data
     WHY: Environment variables keep secrets out of source code, allows different configs for dev/staging
     Use process.env.VARIABLE_NAME to access them
     Example: process.env.TWILIO_API_KEY
     Make sure to set these in your .env files or deployment environment
-}
 *** */
 
-import { lookupTwilioPhoneNumberDAL, e164PhoneNumberSchema } from "@/lib/dal/twilio";
-import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
-import { auth } from "@clerk/nextjs/server";
-import { type Duration } from "@upstash/ratelimit";
 import * as v from "valibot";
 
-interface LookupResult {
+import { auth } from "@clerk/nextjs/server";
+import { businessInfoFormSchema, type BusinessInfoFormInput } from "@/app/onboarding/business-info/business-info-schema";
+import { saveBusinessInfoDAL } from "@/lib/dal/business";
+
+interface BusinessInfoResult {
   success: boolean;
-  phoneLineType?: string;
-  e164Format?: string;
   message?: string;
   error?: string;
-  retryAfter?: number;
 }
 
-export async function lookupTwilioPhoneNumberAction(
-  phoneNumber: string
-): Promise<LookupResult> {
-  // 1. Authentication check
+export async function saveBusinessInfoAction(
+  formData: BusinessInfoFormInput
+): Promise<BusinessInfoResult> {
   const { userId } = await auth();
   if (!userId) {
     return {
@@ -70,72 +64,22 @@ export async function lookupTwilioPhoneNumberAction(
     };
   }
 
-  // 2. Input validation with sanitization - NO THROWING
-  const sanitizedPhoneNumber = phoneNumber?.toString().trim();
-  
-  if (!sanitizedPhoneNumber) {
+  const validationResult = v.safeParse(businessInfoFormSchema, formData);
+  if (!validationResult.success) {
     return {
       success: false,
-      error: "Phone number is required.",
+      error: "Invalid business information provided.",
     };
   }
 
-  const phoneValidation = v.safeParse(e164PhoneNumberSchema, sanitizedPhoneNumber);
-  if (!phoneValidation.success) {
-    return {
-      success: false,
-      error: "Invalid phone number format.",
-    };
-  }
-
-  // 3. Rate limiting - Phone lookup attempts (using lookup-specific limits)
-  const lookupLimits = getActionRateLimits("lookup");
-
-  const rateLimitResult = await rateLimiter(
-    `lookup-phone:${userId}`,
-    lookupLimits.attempts,
-    lookupLimits.window as Duration
-  );
-
-  const dailyLimitResult = await rateLimiter(
-    `lookup-daily:${userId}`,
-    lookupLimits.dailyAttempts,
-    lookupLimits.dailyWindow as Duration
-  );
-  if (!rateLimitResult.success || !dailyLimitResult.success) {
-    const failedResult = !rateLimitResult.success
-      ? rateLimitResult
-      : dailyLimitResult;
-    return {
-      success: false,
-      error: "Rate limit exceeded. Please try again later.",
-      retryAfter: Math.ceil((failedResult.reset - Date.now()) / 1000),
-    };
-  }
-
-  // 4. Perform phone lookup with error handling
   try {
-    const result = await lookupTwilioPhoneNumberDAL(phoneValidation.output);
-    
-    if (result.success) {
-      return {
-        success: true,
-        phoneLineType: result.phoneLineType,
-        e164Format: result.e164Format,
-        message: result.message,
-      };
-    } else {
-      return {
-        success: false,
-        error: result.message,
-      };
-    }
+    const result = await saveBusinessInfoDAL(validationResult.output);
+    return result;
   } catch (error) {
-    console.error("Twilio phone lookup error:", error);
+    console.error("Error saving business information:", error);
     return {
       success: false,
-      error:
-        "Phone lookup service temporarily unavailable. Please try again later.",
+      error: "Unable to save business information. Please try again later.",
     };
   }
 }

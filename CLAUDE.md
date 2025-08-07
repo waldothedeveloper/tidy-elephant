@@ -611,3 +611,7 @@ const processPayment = (payment: Payment): ProcessedPayment => {
 ## Development Guidelines
 
 - **MAKE SURE you are not adding stupid comments. Code should be self explanatory.**
+
+### Development Memory
+
+- Stop making stupid code comments. ONLY add code comments when some code is NOT self explanatory. Code should be readable by itself without adding comments that don't add any value. 
