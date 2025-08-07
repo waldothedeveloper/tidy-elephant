@@ -1,7 +1,25 @@
 import "server-only";
 
+import * as v from "valibot";
+
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import twilio from "twilio";
+
+// E.164 phone number format validation schema
+export const e164PhoneNumberSchema = v.pipe(
+  v.string(),
+  v.minLength(1, "Phone number is required"),
+  v.regex(
+    /^\+[1-9]\d{1,14}$/,
+    "Phone number must be in E.164 format (e.g., +1234567890)"
+  ),
+  v.maxLength(16, "Phone number cannot exceed 15 digits plus country code"),
+  v.check((phone) => {
+    // Remove the '+' and check total digit length (1-15 digits as per E.164)
+    const digits = phone.slice(1);
+    return digits.length >= 7 && digits.length <= 15;
+  }, "Phone number must have between 7-15 digits after country code")
+);
 
 // Retry delay constants for better maintainability
 const RETRY_DELAY_RATE_LIMIT = 60; // 1 minute for rate limiting
@@ -24,7 +42,9 @@ function isLineTypeIntelligence(obj: any): obj is { type: string } {
   return obj && typeof obj === "object" && typeof obj.type === "string";
 }
 
-export async function lookupTwilioPhoneNumberDAL(phoneNumber) {
+export async function lookupTwilioPhoneNumberDAL(
+  phoneNumber: v.InferInput<typeof e164PhoneNumberSchema>
+) {
   await enforceAuthProvider();
 
   try {
@@ -36,18 +56,17 @@ export async function lookupTwilioPhoneNumberDAL(phoneNumber) {
       throw new Error("Phone number not found or invalid.");
     }
 
-    if (
-      !isLineTypeIntelligence(verifiedPhoneNumber.lineTypeIntelligence) ||
-      verifiedPhoneNumber.lineTypeIntelligence.type !== "mobile"
-    ) {
-      throw new Error(
-        "This phone is doesn't appear to be a mobile phone. Please use a phone number capable of receiving SMS messages."
-      );
+    // Extract line type information
+    let phoneLineType: string = "unknown";
+    if (isLineTypeIntelligence(verifiedPhoneNumber.lineTypeIntelligence)) {
+      phoneLineType = verifiedPhoneNumber.lineTypeIntelligence.type;
     }
 
     return {
       success: true,
       message: "Phone number lookup successful.",
+      phoneLineType,
+      e164Format: verifiedPhoneNumber.phoneNumber, // Twilio returns normalized E.164 format
     };
   } catch (error) {
     const errorMessage =
@@ -63,7 +82,7 @@ export async function lookupTwilioPhoneNumberDAL(phoneNumber) {
 
 // *** Using Twilio we will send a verification code via SMS to an already previously verified phone number also by Twilio ***
 export async function sendTwilioVerificationCodeDAL(
-  phoneNumber: z.infer<typeof e164PhoneNumberSchema>
+  phoneNumber: v.InferInput<typeof e164PhoneNumberSchema>
 ) {
   await enforceAuthProvider();
 
@@ -104,6 +123,7 @@ export async function sendTwilioVerificationCodeDAL(
       message: verification.status,
     };
   } catch (error: unknown) {
+    console.error("Error on sendTwilioVerificationCodeDAL: ", error);
     return {
       success: false,
       error:
@@ -112,7 +132,10 @@ export async function sendTwilioVerificationCodeDAL(
   }
 }
 
-export async function verifyTwilioCodeDAL(code, phoneNumber) {
+export async function verifyTwilioCodeDAL(
+  code: string,
+  phoneNumber: v.InferInput<typeof e164PhoneNumberSchema>
+) {
   await enforceAuthProvider();
 
   try {
@@ -141,6 +164,7 @@ export async function verifyTwilioCodeDAL(code, phoneNumber) {
       message: "Phone number verified successfully.",
     };
   } catch (error: unknown) {
+    console.error("Error on verifyTwilioCodeDAL: ", error);
     return {
       success: false,
       error:

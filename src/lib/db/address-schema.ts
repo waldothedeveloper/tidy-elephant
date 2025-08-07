@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./user-schema";
 import { bookingsTable } from "./booking-schema";
+import { providerProfilesTable } from "./provider-schema";
 
 // Address-specific enums
 export const addressTypeEnum = pgEnum("address_type", [
@@ -22,11 +23,8 @@ export const addressTypeEnum = pgEnum("address_type", [
 ]);
 
 export const countryEnum = pgEnum("country", [
-  "US", 
-  "CA", 
-  "UK", 
-  "AU"
-  // Add more countries as needed
+  "US"
+  // Currently only supporting United States
 ]);
 
 // Addresses table - normalized address storage
@@ -112,4 +110,26 @@ export const bookingAddressesTable = pgTable("booking_addresses", {
   // Indexes
   index("idx_booking_address_role").on(table.bookingId, table.role),
   index("idx_booking_address_lookup").on(table.bookingId, table.addressId),
+]);
+
+// Business Addresses Junction Table (Many-to-Many)
+// Provider businesses can have multiple addresses (business location, billing, etc.)
+export const businessAddressesTable = pgTable("business_addresses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  providerProfileId: uuid("provider_profile_id").notNull().references(() => providerProfilesTable.id, { onDelete: "cascade" }),
+  addressId: uuid("address_id").notNull().references(() => addressesTable.id, { onDelete: "cascade" }),
+  
+  // Address role for this business
+  role: addressTypeEnum("role").notNull().default("work"), // "work", "billing", etc.
+  isPrimary: boolean("is_primary").notNull().default(false), // Primary business address
+  
+  // System fields
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  // Indexes
+  index("idx_business_address_provider").on(table.providerProfileId),
+  index("idx_business_address_role").on(table.providerProfileId, table.role),
+  index("idx_business_address_primary").on(table.providerProfileId, table.isPrimary),
+  index("idx_business_address_lookup").on(table.providerProfileId, table.addressId),
 ]);

@@ -11,6 +11,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 import { sql } from "drizzle-orm";
@@ -38,6 +39,55 @@ export const cancellationPolicyEnum = pgEnum("cancellation_policy", [
   "strict",
 ]);
 
+export const businessTypeEnum = pgEnum("business_type", [
+  "sole_proprietorship",
+  "partnership",
+  "llc",
+  "corporation",
+  "s_corporation",
+  "other",
+]);
+
+/* 
+
+    *** 
+
+    The following are the possible values for the type property.(From Twilio docs: https://www.twilio.com/docs/lookup/v2-api/line-type-intelligence)
+
+      - landline: A landline number that generally can't receive SMS messages
+      - mobile: A mobile number that generally can receive SMS messages
+      - fixedVoip: A virtual phone number associated with a physical device (e.g., Comcast or Vonage)
+      - nonFixedVoip: A virtual phone number obtained online without requiring a physical device (e.g., Google Voice or Enflick)
+      - personal: A phone number designated for personal use
+      - tollFree: A toll-free phone number where calls are free for the calling party
+      - premium: A premium-rate phone number with higher-than-normal rates
+      - sharedCost: A shared cost phone number where calling party and subscriber share charges
+      - uan: A universal access number that can route calls to different destinations
+      - voicemail: A phone number associated with a voicemail service
+      - pager: A phone number associated with a pager device
+      - unknown: A valid phone number, but the line type is unknown
+
+      The enum now matches Twilio's exact naming conventions and includes all possible line types they return from their lookup API. This ensures our database can
+      properly store any line type information returned by Twilio's service.
+
+    ***
+
+ */
+export const phoneLineTypeEnum = pgEnum("phone_line_type", [
+  "landline",
+  "mobile",
+  "fixedVoip",
+  "nonFixedVoip",
+  "personal",
+  "tollFree",
+  "premium",
+  "sharedCost",
+  "uan",
+  "voicemail",
+  "pager",
+  "unknown",
+]);
+
 // Provider profiles table
 export const providerProfilesTable = pgTable(
   "provider_profiles",
@@ -52,7 +102,14 @@ export const providerProfilesTable = pgTable(
     // Provider Profile & Business
     bio: text("bio"), // 50-1000 characters - validation in application layer
     isOnboarded: boolean("is_onboarded").notNull().default(false),
-    workPhotos: text("work_photos").array().default([]), // Array of URLs
+
+    // Business Information
+    businessType: businessTypeEnum("business_type"),
+    businessName: varchar("business_name", { length: 255 }),
+    businessPhone: varchar("business_phone", { length: 16 }),
+    businessPhoneLineType: phoneLineTypeEnum("business_phone_line_type"),
+    employerEin: varchar("employer_ein", { length: 10 }),
+    workPhotos: text("work_photos").array().default([]),
     backgroundCheckStatus: backgroundCheckStatusEnum("background_check_status")
       .notNull()
       .default("not_required"),
@@ -125,26 +182,35 @@ export const providerProfilesTable = pgTable(
       "years_of_experience_non_negative",
       sql`${table.yearsOfExperience} >= 0`
     ),
-    
+
     // Indexes
     // Core lookup indexes
     uniqueIndex("idx_provider_user_id").on(table.userId),
     index("idx_provider_onboarded").on(table.isOnboarded),
-    
+
     // Search and filtering indexes
     index("idx_provider_avg_rating").on(table.averageRating),
     index("idx_provider_hourly_rate").on(table.hourlyRate),
     index("idx_provider_years_experience").on(table.yearsOfExperience),
-    
+
     // Verification status indexes
     index("idx_provider_background_check").on(table.backgroundCheckStatus),
     index("idx_provider_id_verification").on(table.idVerificationStatus),
-    
+
     // Array field GIN indexes for provider searching
     index("idx_provider_languages_gin").using("gin", table.languages),
     index("idx_provider_certifications_gin").using("gin", table.certifications),
-    
+
+    // Business information indexes
+    index("idx_provider_business_name").on(table.businessName),
+    index("idx_provider_business_type").on(table.businessType),
+    index("idx_provider_phone_line_type").on(table.businessPhoneLineType),
+
     // Composite indexes for common search patterns
-    index("idx_provider_search").on(table.isOnboarded, table.averageRating, table.hourlyRate),
+    index("idx_provider_search").on(
+      table.isOnboarded,
+      table.averageRating,
+      table.hourlyRate
+    ),
   ]
 );
