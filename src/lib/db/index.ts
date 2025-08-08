@@ -7,8 +7,8 @@ import * as providerSchema from "./provider-schema";
 import * as reviewSchema from "./review-schema";
 import * as userSchema from "./user-schema";
 
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { Pool } from "@neondatabase/serverless";
 
 const schema = {
   ...userSchema,
@@ -21,9 +21,9 @@ const schema = {
   ...addressSchema,
 };
 
-const sql = neon(process.env.DATABASE_URL!);
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
 
-export const db = drizzle(sql, {
+export const db = drizzle(pool, {
   schema,
   logger: process.env.NODE_ENV === "development",
 });

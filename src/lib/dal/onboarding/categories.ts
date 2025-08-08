@@ -1,13 +1,13 @@
+import { and, eq, inArray } from "drizzle-orm";
 import {
   categoriesTable,
   providerCategoriesTable,
 } from "@/lib/db/category-schema";
-import { and, eq, inArray } from "drizzle-orm";
 
 import type { CategoriesFormOutput } from "@/app/onboarding/select-categories/categories-schema";
 import { db } from "@/lib/db";
-import { usersTable } from "@/lib/db/user-schema";
 import { enforceAuthProvider } from "../clerk";
+import { usersTable } from "@/lib/db/user-schema";
 
 export async function getCategoriesDAL(): Promise<{
   success: boolean;
@@ -59,7 +59,7 @@ export async function saveProviderCategoriesDAL(
       .limit(1);
 
     if (!user) {
-      throw new Error("User not found in database");
+      return { success: false, error: "User not found in database" };
     }
 
     // Verify all category IDs exist in the database
@@ -80,19 +80,24 @@ export async function saveProviderCategoriesDAL(
       };
     }
 
-    // Remove existing provider categories
-    await db
-      .delete(providerCategoriesTable)
-      .where(eq(providerCategoriesTable.providerId, user.id));
+    // Use transaction to ensure atomicity (now supported with neon-serverless driver)
+    await db.transaction(async (tx) => {
+      // Remove existing provider categories
+      await tx
+        .delete(providerCategoriesTable)
+        .where(eq(providerCategoriesTable.providerId, user.id));
 
-    // Insert new provider categories
-    const categoryInserts = categoriesData.categories.map((categoryId) => ({
-      providerId: user.id,
-      categoryId: categoryId,
-      isMainSpecialty: false, // Could be enhanced to allow setting main specialty
-    }));
+      // Insert new provider categories if any
+      if (categoriesData.categories.length > 0) {
+        const categoryInserts = categoriesData.categories.map((categoryId) => ({
+          providerId: user.id,
+          categoryId: categoryId,
+          isMainSpecialty: false, // Could be enhanced to allow setting main specialty
+        }));
 
-    await db.insert(providerCategoriesTable).values(categoryInserts);
+        await tx.insert(providerCategoriesTable).values(categoryInserts);
+      }
+    });
 
     return {
       success: true,

@@ -60,7 +60,7 @@ export function CategoriesWrapper({
           }
 
           await user?.reload();
-          // router.push("/onboarding/hourly-rate");
+          router.push("/onboarding/hourly-rate");
           return { message: successMessage };
         }
       );
