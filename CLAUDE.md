@@ -48,6 +48,14 @@ Make sure to ALWAYS USE consistent TailwindcSS v4 styling utilities. You keep us
 - **Drizzle ORM** for type-safe database operations and schema management
 - **Upstash Redis** with rate limiting
 
+#### Database Driver Configuration
+
+- **Current Setup**: Using `drizzle-orm/neon-serverless` with `@neondatabase/serverless` Pool
+- **Transaction Support**: Full transaction support available with `db.transaction()`
+- **Driver Choice**: 
+  - `neon-http`: Faster for single queries, NO transaction support
+  - `neon-serverless`: Session support, full transaction capabilities, WebSocket-based
+
 ### External Services
 
 - **Twilio** for SMS verification (lookup, send, verify)

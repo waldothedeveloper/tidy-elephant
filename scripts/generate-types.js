@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Type generation script for Drizzle schemas
  * This script automatically generates TypeScript types from our database schemas

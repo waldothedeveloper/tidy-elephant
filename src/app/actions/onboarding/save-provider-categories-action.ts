@@ -44,21 +44,21 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 import * as v from "valibot";
 
 import {
-  businessInfoFormSchema,
-  type BusinessInfoFormInput,
-} from "@/app/onboarding/business-info/business-info-schema";
-import { saveBusinessInfoDAL } from "@/lib/dal/onboarding";
+  categoriesFormSchema,
+  type CategoriesFormInput,
+} from "@/app/onboarding/select-categories/categories-schema";
+import { saveProviderCategoriesDAL } from "@/lib/dal/onboarding/categories";
 import { auth } from "@clerk/nextjs/server";
 
-interface BusinessInfoResult {
+interface ProviderCategoriesResult {
   success: boolean;
   message?: string;
   error?: string;
 }
 
-export async function saveBusinessInfoAction(
-  formData: BusinessInfoFormInput
-): Promise<BusinessInfoResult> {
+export async function saveProviderCategoriesAction(
+  formData: CategoriesFormInput
+): Promise<ProviderCategoriesResult> {
   const { userId } = await auth();
   if (!userId) {
     return {
@@ -67,22 +67,22 @@ export async function saveBusinessInfoAction(
     };
   }
 
-  const validationResult = v.safeParse(businessInfoFormSchema, formData);
+  const validationResult = v.safeParse(categoriesFormSchema, formData);
   if (!validationResult.success) {
     return {
       success: false,
-      error: "Invalid business information provided.",
+      error: "Invalid category selection provided.",
     };
   }
 
   try {
-    const result = await saveBusinessInfoDAL(validationResult.output);
+    const result = await saveProviderCategoriesDAL(validationResult.output);
     return result;
   } catch (error) {
-    console.error("Error saving business information:", error);
+    console.error("Error saving provider categories:", error);
     return {
       success: false,
-      error: "Unable to save business information. Please try again later.",
+      error: "Unable to save categories. Please try again later.",
     };
   }
 }
