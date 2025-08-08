@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:drop": "drizzle-kit drop",
+    "db:seed:categories": "node scripts/seed-categories.js",
     "types:generate": "node scripts/generate-types.js",
     "db:types": "npm run db:generate && npm run types:generate",
     "postinstall": "npm run db:generate"

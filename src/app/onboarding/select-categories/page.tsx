@@ -1,12 +1,16 @@
+import { getCategoriesDAL } from "@/lib/dal/onboarding/categories";
 import { CategoriesWrapper } from "./categories-wrapper";
-import { getAuthenticatedAppForUser } from "@/lib/firebase/serverApp";
-import { getFirebaseProviderCategoriesDAL } from "@/lib/dal/clerk";
-import { getFirestore } from "firebase/firestore";
+
 export default async function ProviderOnboardingSelectCategoriesPage() {
-  const { firebaseServerApp } = await getAuthenticatedAppForUser();
-  const db = getFirestore(firebaseServerApp);
+  const categoriesResult = await getCategoriesDAL();
 
-  const fetchedCategories = await getFirebaseProviderCategoriesDAL(db);
+  if (!categoriesResult.success) {
+    return (
+      <CategoriesWrapper
+        categories={{ success: false, error: categoriesResult.error }}
+      />
+    );
+  }
 
-  return <CategoriesWrapper categories={fetchedCategories} />;
+  return <CategoriesWrapper categories={categoriesResult.data || []} />;
 }

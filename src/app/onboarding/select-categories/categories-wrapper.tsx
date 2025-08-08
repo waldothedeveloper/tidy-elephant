@@ -8,37 +8,38 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2Icon, Package } from "lucide-react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { Loader2Icon, Package } from "lucide-react";
 import { useCallback, useTransition } from "react";
 
+import { saveProviderCategoriesAction } from "@/app/actions/onboarding/save-provider-categories-action";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
-import { ServiceCategory } from "@/types/user";
-import { firebaseSaveProviderCategoriesAction } from "@/app/actions/onboarding/firebase-save-provider-categories-action";
-import { toast } from "sonner";
-import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { userCategoriesSchema } from "@/lib/schemas";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import {
+  categoriesFormSchema,
+  type CategoriesFormInput,
+  type CategoryData,
+} from "./categories-schema";
 
 export function CategoriesWrapper({
   categories,
 }: {
-  categories: ServiceCategory[] | { success: boolean; error?: string };
+  categories: CategoryData[] | { success: boolean; error?: string };
 }) {
-  const { authError } = useFirebaseAuth();
   const [isPending, startTransition] = useTransition();
 
   const { user } = useUser();
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof userCategoriesSchema>>({
-    resolver: zodResolver(userCategoriesSchema),
+  const form = useForm<CategoriesFormInput>({
+    resolver: valibotResolver(categoriesFormSchema),
     defaultValues: {
       categories: [],
     },
@@ -48,10 +49,10 @@ export function CategoriesWrapper({
   const selectedCategories = form.watch("categories");
 
   const onSubmit = useCallback(
-    async (values: z.infer<typeof userCategoriesSchema>) => {
+    async (values: CategoriesFormInput) => {
       const successMessage = "Categories saved successfully!";
 
-      const submitPromise = firebaseSaveProviderCategoriesAction(values).then(
+      const submitPromise = saveProviderCategoriesAction(values).then(
         async (result) => {
           // Check categories save result
           if (!result.success) {
@@ -59,7 +60,7 @@ export function CategoriesWrapper({
           }
 
           await user?.reload();
-          router.push("/onboarding/hourly-rate");
+          // router.push("/onboarding/hourly-rate");
           return { message: successMessage };
         }
       );
@@ -76,10 +77,6 @@ export function CategoriesWrapper({
     },
     [user, router]
   );
-
-  if (authError) {
-    throw new Error(`Failed to sign in to Firebase: ${authError}`);
-  }
 
   if (!Array.isArray(categories)) {
     throw new Error("Something went wrong trying to retrieve the categories");

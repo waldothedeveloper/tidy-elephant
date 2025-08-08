@@ -1,12 +1,16 @@
 import "server-only";
 
-import { eq, and, isNull } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { providerProfilesTable } from "@/lib/db/provider-schema";
-import { addressesTable, businessAddressesTable } from "@/lib/db/address-schema";
-import { usersTable } from "@/lib/db/user-schema";
-import { enforceAuthProvider } from "@/lib/dal/clerk";
+import {
+  addressesTable,
+  businessAddressesTable,
+} from "@/lib/db/address-schema";
+import { and, eq, isNull } from "drizzle-orm";
+
 import type { BusinessInfoFormOutput } from "@/app/onboarding/business-info/business-info-schema";
+import { db } from "@/lib/db";
+import { enforceAuthProvider } from "@/lib/dal/clerk";
+import { providerProfilesTable } from "@/lib/db/provider-schema";
+import { usersTable } from "@/lib/db/user-schema";
 
 type AddressInfo = {
   addressLine1: string;
