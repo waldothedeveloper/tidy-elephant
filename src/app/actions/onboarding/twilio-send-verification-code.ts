@@ -4,9 +4,9 @@ import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 
 import { Duration } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
-import { e164PhoneNumberSchema } from "@/lib/schemas";
 import { sendTwilioVerificationCodeDAL } from "@/lib/dal/twilio";
-import { z } from "zod";
+import * as v from "valibot";
+import { e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
 
 interface SendVerificationResult {
   success: boolean;
@@ -16,7 +16,7 @@ interface SendVerificationResult {
 }
 
 export async function twilioSendVerificationCodeAction(
-  phoneNumber: z.infer<typeof e164PhoneNumberSchema>["phoneNumber"] | null
+  phoneNumber: string | null
 ): Promise<SendVerificationResult> {
   // 1. Authentication check
   const { userId } = await auth();
@@ -42,7 +42,7 @@ export async function twilioSendVerificationCodeAction(
       .replace(/[^\d+]/g, ""),
   };
 
-  const phoneValidation = e164PhoneNumberSchema.safeParse(sanitizedPhoneNumber);
+  const phoneValidation = v.safeParse(e164USPhoneNumberSchema, sanitizedPhoneNumber);
   if (!phoneValidation.success) {
     return {
       success: false,
@@ -54,13 +54,13 @@ export async function twilioSendVerificationCodeAction(
   const sendVerificationLimits = getActionRateLimits("send-verification");
 
   const rateLimitResult = await rateLimiter(
-    `send-verification:${userId}:${phoneValidation.data.phoneNumber}`,
+    `send-verification:${userId}:${phoneValidation.output.phoneNumber}`,
     sendVerificationLimits.attempts,
     sendVerificationLimits.window as Duration
   );
 
   const dailyLimitResult = await rateLimiter(
-    `send-verification-daily:${userId}:${phoneValidation.data.phoneNumber}`,
+    `send-verification-daily:${userId}:${phoneValidation.output.phoneNumber}`,
     sendVerificationLimits.dailyAttempts,
     sendVerificationLimits.dailyWindow as Duration
   );
@@ -79,7 +79,7 @@ export async function twilioSendVerificationCodeAction(
   // 4. Send verification code with error handling
   try {
     const result = await sendTwilioVerificationCodeDAL(
-      phoneValidation.data.phoneNumber
+      phoneValidation.output.phoneNumber
     );
 
     return result;

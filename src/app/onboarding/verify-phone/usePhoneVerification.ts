@@ -1,12 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 
-import { formatPhoneNumber } from "@/app/utils";
 import { lookupTwilioPhoneNumberAction } from "@/app/actions/onboarding/twilio-lookup-phone";
-import { toast } from "sonner";
+import { formatPhoneNumber } from "@/app/utils";
+import {
+  usPhoneInputSchema,
+  type USPhoneInput,
+} from "@/lib/schemas/phone-verification-schemas";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
-import { userProfilePhoneVerificationSchema } from "@/lib/schemas/index";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 type PhoneVerificationState =
   | { step: "idle" }
@@ -26,10 +28,8 @@ export function usePhoneVerification(
       step: "idle",
     });
 
-  const phoneVerificationForm = useForm<
-    z.infer<typeof userProfilePhoneVerificationSchema>
-  >({
-    resolver: zodResolver(userProfilePhoneVerificationSchema),
+  const phoneVerificationForm = useForm<USPhoneInput>({
+    resolver: valibotResolver(usPhoneInputSchema),
     defaultValues: {
       phoneNumber: "",
     },
@@ -86,9 +86,7 @@ export function usePhoneVerification(
           const lookUpValidationResponse: Promise<TwilioVerifyType | Error> =
             new Promise(async (resolve, reject) => {
               try {
-                const res = await lookupTwilioPhoneNumberAction({
-                  phoneNumber,
-                });
+                const res = await lookupTwilioPhoneNumberAction(phoneNumber);
 
                 if (!res.success) {
                   throw new Error(res.error || "Phone number lookup failed");
@@ -137,19 +135,8 @@ export function usePhoneVerification(
     [phoneVerificationForm, setVerificationState]
   );
 
-  async function onSubmit(
-    values: z.infer<typeof userProfilePhoneVerificationSchema>
-  ) {
-    const phoneNumber = values.phoneNumber.replace(/\D/g, "");
-    if (phoneNumber.length !== 10) {
-      phoneVerificationForm.setError("phoneNumber", {
-        type: "manual",
-        message: "Phone number must be exactly 10 digits",
-      });
-      return;
-    }
-    updatePhoneNumber(`+1${phoneNumber}`);
-    // send the actual verification code
+  async function onSubmit(values: USPhoneInput) {
+    updatePhoneNumber(values.phoneNumber);
   }
 
   const canSubmit = verificationState.step === "phone-valid";

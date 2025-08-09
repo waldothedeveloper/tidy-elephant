@@ -35,7 +35,7 @@ export const usersTable = pgTable(
     // Core Identity Fields (Required)
     firstname: varchar("firstname", { length: 100 }).notNull(),
     lastname: varchar("lastname", { length: 100 }).notNull(),
-    phone: varchar("phone", { length: 20 }),
+    phone: varchar("phone", { length: 12 }),
     email: varchar("email", { length: 255 }).notNull().unique(),
     clerkUserID: varchar("clerk_user_id", { length: 255 }).notNull().unique(),
     profileImage: text("profile_image"),
@@ -78,10 +78,9 @@ export const usersTable = pgTable(
     howDidYouHearAbout: varchar("how_did_you_hear_about", { length: 100 }),
   },
   (table) => [
-    // Check constraints
     check(
       "phone_format",
-      sql`${table.phone} IS NULL OR ${table.phone} ~ '^\+[1-9]\d{1,14}$'`
+      sql`${table.phone} IS NULL OR (${table.phone} ~ '^\+1\d{10}$' AND length(${table.phone}) = 12)`
     ),
     check(
       "email_format",
