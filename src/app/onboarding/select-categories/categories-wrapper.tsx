@@ -16,7 +16,6 @@ import { useCallback, useTransition } from "react";
 import { saveProviderCategoriesAction } from "@/app/actions/onboarding/save-provider-categories-action";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useUser } from "@clerk/nextjs";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,7 +34,6 @@ export function CategoriesWrapper({
 }) {
   const [isPending, startTransition] = useTransition();
 
-  const { user } = useUser();
   const router = useRouter();
 
   const form = useForm<CategoriesFormInput>({
@@ -59,7 +57,6 @@ export function CategoriesWrapper({
             throw new Error(result.error);
           }
 
-          await user?.reload();
           router.push("/onboarding/hourly-rate");
           return { message: successMessage };
         }
@@ -75,7 +72,7 @@ export function CategoriesWrapper({
         await submitPromise;
       });
     },
-    [user, router]
+    [router]
   );
 
   if (!Array.isArray(categories)) {
