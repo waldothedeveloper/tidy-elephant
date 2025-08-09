@@ -22,8 +22,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
-  updateHourlyRateSchema,
-  type HourlyRateFormInput,
+  createHourlyRateSchema,
+  type CreateHourlyRateInput,
 } from "./hourly-rate-schema";
 
 export function HourlyRateWrapper() {
@@ -31,17 +31,18 @@ export function HourlyRateWrapper() {
 
   const router = useRouter();
 
-  const form = useForm<HourlyRateFormInput>({
-    resolver: valibotResolver(updateHourlyRateSchema),
+  const form = useForm<CreateHourlyRateInput>({
+    resolver: valibotResolver(createHourlyRateSchema),
     defaultValues: {
       hourlyRate: null,
     },
   });
 
-  const { isDirty } = form.formState;
+  const { isDirty, errors } = form.formState;
+  console.log("errors: ", errors);
 
   const onSubmit = useCallback(
-    async (values: HourlyRateFormInput) => {
+    async (values: CreateHourlyRateInput) => {
       const successMessage = "Hourly rate saved successfully!";
 
       const submitPromise = saveProviderHourlyRateAction(values).then(

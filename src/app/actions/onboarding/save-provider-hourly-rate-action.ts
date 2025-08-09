@@ -3,14 +3,15 @@
 import * as v from "valibot";
 
 import {
-  HourlyRateFormInput,
-  updateHourlyRateSchema,
+  CreateHourlyRateInput,
+  createHourlyRateSchema,
 } from "@/app/onboarding/hourly-rate/hourly-rate-schema";
-import { saveProviderHourlyRateDAL } from "@/lib/dal/onboarding/hourly-rate";
+
 import { auth } from "@clerk/nextjs/server";
+import { saveProviderHourlyRateDAL } from "@/lib/dal/onboarding/hourly-rate";
 
 export async function saveProviderHourlyRateAction(
-  formData: HourlyRateFormInput
+  formData: CreateHourlyRateInput
 ) {
   // 1. AUTHENTICATE FIRST - Check auth before any logic
   const { userId } = await auth();
@@ -21,7 +22,7 @@ export async function saveProviderHourlyRateAction(
     };
   }
   try {
-    const validationResult = v.safeParse(updateHourlyRateSchema, formData);
+    const validationResult = v.safeParse(createHourlyRateSchema, formData);
     if (!validationResult.success) {
       const firstError = validationResult.issues?.[0]?.message;
       return {
