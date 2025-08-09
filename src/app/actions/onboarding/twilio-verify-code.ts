@@ -1,15 +1,12 @@
 "use server";
 
-import {
-  e164PhoneNumberSchema,
-  userProfileCodeVerificationSchema,
-} from "@/lib/schemas";
 import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 
 import { Duration } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
 import { verifyTwilioCodeDAL } from "@/lib/dal/twilio";
-import { z } from "zod";
+import * as v from "valibot";
+import { verificationCodeSchema, e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
 
 interface VerificationResult {
   success: boolean;
@@ -19,8 +16,8 @@ interface VerificationResult {
 }
 
 export async function twilioVerifyCodeAction(
-  code: z.infer<typeof userProfileCodeVerificationSchema>["verificationCode"],
-  phoneNumber: z.infer<typeof e164PhoneNumberSchema>["phoneNumber"] | null
+  code: string,
+  phoneNumber: string | null
 ): Promise<VerificationResult> {
   // 1. Authentication check
   const { userId } = await auth();
@@ -32,10 +29,10 @@ export async function twilioVerifyCodeAction(
   }
 
   // 2. Input validation - NO THROWING, only return errors
-  const codeValidation =
-    userProfileCodeVerificationSchema.shape.verificationCode.safeParse(
-      code?.toString().trim().replace(/\D/g, "")
-    );
+  const codeValidation = v.safeParse(
+    verificationCodeSchema,
+    { verificationCode: code?.toString().trim().replace(/\D/g, "") || "" }
+  );
 
   if (!codeValidation.success) {
     return {
@@ -51,9 +48,10 @@ export async function twilioVerifyCodeAction(
     };
   }
 
-  const phoneValidation = e164PhoneNumberSchema.safeParse({
-    phoneNumber: phoneNumber.trim(),
-  });
+  const phoneValidation = v.safeParse(
+    e164USPhoneNumberSchema,
+    { phoneNumber: phoneNumber.trim() }
+  );
 
   if (!phoneValidation.success) {
     return {
@@ -66,13 +64,13 @@ export async function twilioVerifyCodeAction(
   const verificationLimits = getActionRateLimits("verification");
 
   const rateLimitResult = await rateLimiter(
-    `verify-code:${userId}:${phoneValidation.data.phoneNumber}`,
+    `verify-code:${userId}:${phoneValidation.output.phoneNumber}`,
     verificationLimits.attempts,
     verificationLimits.window as Duration
   );
 
   const dailyLimitResult = await rateLimiter(
-    `verify-daily:${userId}:${phoneValidation.data.phoneNumber}`,
+    `verify-daily:${userId}:${phoneValidation.output.phoneNumber}`,
     verificationLimits.dailyAttempts,
     verificationLimits.dailyWindow as Duration
   );
@@ -91,8 +89,8 @@ export async function twilioVerifyCodeAction(
   // 4. Perform verification
   try {
     const result = await verifyTwilioCodeDAL(
-      codeValidation.data,
-      phoneValidation.data.phoneNumber
+      codeValidation.output.verificationCode,
+      phoneValidation.output.phoneNumber
     );
 
     return result;

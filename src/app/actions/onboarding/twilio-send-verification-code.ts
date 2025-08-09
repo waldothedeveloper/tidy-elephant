@@ -1,12 +1,13 @@
 "use server";
 
+import * as v from "valibot";
+
 import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
 
 import { Duration } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
-import { e164PhoneNumberSchema } from "@/lib/schemas";
+import { e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
 import { sendTwilioVerificationCodeDAL } from "@/lib/dal/twilio";
-import { z } from "zod";
 
 interface SendVerificationResult {
   success: boolean;
@@ -16,9 +17,8 @@ interface SendVerificationResult {
 }
 
 export async function twilioSendVerificationCodeAction(
-  phoneNumber: z.infer<typeof e164PhoneNumberSchema>["phoneNumber"] | null
+  phoneNumber: string | null
 ): Promise<SendVerificationResult> {
-  // 1. Authentication check
   const { userId } = await auth();
   if (!userId) {
     return {
@@ -27,40 +27,25 @@ export async function twilioSendVerificationCodeAction(
     };
   }
 
-  // 2. Input validation with sanitization - NO THROWING
-  if (!phoneNumber?.trim()) {
-    return {
-      success: false,
-      error: "Phone number is required to send verification code.",
-    };
-  }
-
-  const sanitizedPhoneNumber = {
-    phoneNumber: phoneNumber
-      .toString()
-      .trim()
-      .replace(/[^\d+]/g, ""),
-  };
-
-  const phoneValidation = e164PhoneNumberSchema.safeParse(sanitizedPhoneNumber);
+  const phoneValidation = v.safeParse(e164USPhoneNumberSchema, phoneNumber);
   if (!phoneValidation.success) {
     return {
       success: false,
-      error: "Invalid phone number format.",
+      error:
+        "Invalid phone number format. Please try again or verify the the phone number",
     };
   }
 
-  // 3. Rate limiting - Send verification attempts (strictest limits - SMS costs money!)
   const sendVerificationLimits = getActionRateLimits("send-verification");
 
   const rateLimitResult = await rateLimiter(
-    `send-verification:${userId}:${phoneValidation.data.phoneNumber}`,
+    `send-verification:${userId}:${phoneValidation.output.phoneNumber}`,
     sendVerificationLimits.attempts,
     sendVerificationLimits.window as Duration
   );
 
   const dailyLimitResult = await rateLimiter(
-    `send-verification-daily:${userId}:${phoneValidation.data.phoneNumber}`,
+    `send-verification-daily:${userId}:${phoneValidation.output.phoneNumber}`,
     sendVerificationLimits.dailyAttempts,
     sendVerificationLimits.dailyWindow as Duration
   );
@@ -76,15 +61,13 @@ export async function twilioSendVerificationCodeAction(
     };
   }
 
-  // 4. Send verification code with error handling
   try {
     const result = await sendTwilioVerificationCodeDAL(
-      phoneValidation.data.phoneNumber
+      phoneValidation.output.phoneNumber
     );
 
     return result;
   } catch (error) {
-    // Log error without exposing internal details
     console.error("Send verification error:", error);
 
     return {

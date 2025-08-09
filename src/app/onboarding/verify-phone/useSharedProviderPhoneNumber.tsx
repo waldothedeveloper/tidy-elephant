@@ -1,9 +1,11 @@
 import { useState } from "react";
 
 export const useSharedProviderPhoneNumber = () => {
-  const [sharedPhoneNumber, setSharedPhoneNumber] = useState(null);
+  const [sharedPhoneNumber, setSharedPhoneNumber] = useState<string | null>(
+    null
+  );
 
-  const updatePhoneNumber = (phoneNumber) => {
+  const updatePhoneNumber = (phoneNumber: string) => {
     setSharedPhoneNumber(phoneNumber);
   };
 

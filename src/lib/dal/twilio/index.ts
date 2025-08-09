@@ -5,21 +5,11 @@ import * as v from "valibot";
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import twilio from "twilio";
 
-// E.164 phone number format validation schema
-export const e164PhoneNumberSchema = v.pipe(
-  v.string(),
-  v.minLength(1, "Phone number is required"),
-  v.regex(
-    /^\+[1-9]\d{1,14}$/,
-    "Phone number must be in E.164 format (e.g., +1234567890)"
-  ),
-  v.maxLength(16, "Phone number cannot exceed 15 digits plus country code"),
-  v.check((phone) => {
-    // Remove the '+' and check total digit length (1-15 digits as per E.164)
-    const digits = phone.slice(1);
-    return digits.length >= 7 && digits.length <= 15;
-  }, "Phone number must have between 7-15 digits after country code")
-);
+// Import the shared US E.164 phone number schema
+import { e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
+
+// Re-export for backward compatibility - extracts just the phone number validation
+export const e164PhoneNumberSchema = e164USPhoneNumberSchema.entries.phoneNumber;
 
 // Retry delay constants for better maintainability
 const RETRY_DELAY_RATE_LIMIT = 60; // 1 minute for rate limiting

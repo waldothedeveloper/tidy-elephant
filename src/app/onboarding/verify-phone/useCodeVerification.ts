@@ -8,7 +8,8 @@ import { twilioVerifyCodeAction } from "@/app/actions/onboarding/twilio-verify-c
 import { useForm } from "react-hook-form";
 import { useResendTimer } from "./useResendTimer";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { verificationCodeSchema, type VerificationCode } from "@/lib/schemas/phone-verification-schemas";
 
 type CodeVerificationState =
   | { step: "idle" }
@@ -30,10 +31,8 @@ export function useCodeVerification(
 
   const step = codeVerificationState.step;
 
-  const codeVerificationForm = useForm<
-    z.infer<typeof userProfileCodeVerificationSchema>
-  >({
-    resolver: zodResolver(userProfileCodeVerificationSchema),
+  const codeVerificationForm = useForm<VerificationCode>({
+    resolver: valibotResolver(verificationCodeSchema),
     defaultValues: {
       verificationCode: "",
     },
