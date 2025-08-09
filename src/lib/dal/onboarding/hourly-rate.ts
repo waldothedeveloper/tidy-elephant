@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { HourlyRateFormOutput } from "@/app/onboarding/hourly-rate/hourly-rate-schema";
+import type { CreateHourlyRateOutput } from "@/app/onboarding/hourly-rate/hourly-rate-schema";
 import { db } from "@/lib/db";
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import { eq } from "drizzle-orm";
@@ -8,7 +8,7 @@ import { providerProfilesTable } from "@/lib/db/provider-schema";
 import { usersTable } from "@/lib/db/user-schema";
 
 export async function saveProviderHourlyRateDAL(
-  hourlyRateData: HourlyRateFormOutput
+  hourlyRateData: CreateHourlyRateOutput
 ): Promise<{
   success: boolean;
   message?: string;
