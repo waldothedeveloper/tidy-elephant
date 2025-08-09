@@ -52,7 +52,7 @@ Make sure to ALWAYS USE consistent TailwindcSS v4 styling utilities. You keep us
 
 - **Current Setup**: Using `drizzle-orm/neon-serverless` with `@neondatabase/serverless` Pool
 - **Transaction Support**: Full transaction support available with `db.transaction()`
-- **Driver Choice**: 
+- **Driver Choice**:
   - `neon-http`: Faster for single queries, NO transaction support
   - `neon-serverless`: Session support, full transaction capabilities, WebSocket-based
 
@@ -106,14 +106,13 @@ Located in `src/app/actions/**` with subdirectories for feature areas:
 1. **NEVER THROW EXCEPTIONS** - Always return error objects
 2. **AUTHENTICATE FIRST** - Check auth before any logic
 3. **VALIDATE ALL INPUTS** - Use `safeParse()`, never `parse()`
-4. **SANITIZE INPUTS** - Clean data before validation
-5. **RATE LIMIT EARLY** - Check limits before expensive operations (ASK USER FIRST)
-6. **TRY/CATCH EVERYTHING** - Wrap all external calls
-7. **LOG ERRORS SAFELY** - Never expose internal details to client
-8. **RETURN CONSISTENT TYPES** - Use types from `src/types/api-responses.ts`
-9. **USE GENERIC ERROR MESSAGES** - Don't leak validation details
-10. **CHECK PERMISSIONS** - Verify user can perform this action
-11. **NO HARDCODED SENSITIVE DATA OR ENVIRONMENT VARIABLES** - Never hardcode sensitive data, Never use environments variables. ONLY DAL functions can use environment variables
+4. **RATE LIMIT EARLY** - Check limits before expensive operations (ASK USER FIRST)
+5. **TRY/CATCH EVERYTHING** - Wrap all external calls
+6. **LOG ERRORS SAFELY** - Never expose internal details to client
+7. **RETURN CONSISTENT TYPES** - Use types from `src/types/api-responses.ts`
+8. **USE GENERIC ERROR MESSAGES** - Don't leak validation details
+9. **CHECK PERMISSIONS** - Verify user can perform this action
+10. **NO HARDCODED SENSITIVE DATA OR ENVIRONMENT VARIABLES** - Never hardcode sensitive data, Never use environments variables. ONLY DAL functions can use environment variables
 
 **Important**: Always ask user if server action should be rate limited before implementing. Use helper functions from `src/types/api-responses.ts` for consistent response types.
 

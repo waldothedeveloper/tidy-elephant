@@ -8,16 +8,15 @@ export const usPhoneInputSchema = v.object({
   phoneNumber: v.pipe(
     v.string(),
     v.minLength(1, "Phone number is required"),
-    v.transform(input => {
-      // Extract only digits and ensure it's a 10-digit US number
+    v.transform((input) => {
       const digits = input.replace(/\D/g, "");
       return digits.length === 10 ? `+1${digits}` : input;
     }),
-    v.regex(
-      /^\+1\d{10}$/,
-      "Please enter a valid 10-digit US phone number"
-    ),
-    v.length(12, "US phone number must be exactly 12 characters (+1 + 10 digits)")
+    v.regex(/^\+1\d{10}$/, "Phone number must contain exactly 10 digits"),
+    v.length(
+      12,
+      "US phone number must be exactly 12 characters (+1 + 10 digits)"
+    )
   ),
 });
 
@@ -34,7 +33,10 @@ export const e164USPhoneNumberSchema = v.object({
       /^\+1\d{10}$/,
       "Phone number must be a US number in E.164 format (e.g., +17865213075)"
     ),
-    v.length(12, "US phone number must be exactly 12 characters (+1 + 10 digits)")
+    v.length(
+      12,
+      "US phone number must be exactly 12 characters (+1 + 10 digits)"
+    )
   ),
 });
 
