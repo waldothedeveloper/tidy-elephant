@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowLeft, DollarSign, Loader2Icon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -11,48 +10,47 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { ArrowLeft, DollarSign, Loader2Icon } from "lucide-react";
 import { useCallback, useTransition } from "react";
 
+import { saveProviderHourlyRateAction } from "@/app/actions/onboarding/save-provider-hourly-rate-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import Link from "next/link";
-import { firebaseSaveProviderHourlyRateAction } from "@/app/actions/onboarding/firebase-save-provider-hourly-rate-action";
-import { toast } from "sonner";
-import { useFirebaseAuth } from "@/app/onboarding/_hooks/use-firebase-client-auth";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
-import { userHourlyRateInputSchema } from "@/lib/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import {
+  updateHourlyRateSchema,
+  type HourlyRateFormInput,
+} from "./hourly-rate-schema";
 
 export function HourlyRateWrapper() {
-  const { authError } = useFirebaseAuth();
   const [isPending, startTransition] = useTransition();
 
-  const { user } = useUser();
   const router = useRouter();
 
-  const form = useForm<{ hourlyRate: string }>({
-    resolver: zodResolver(userHourlyRateInputSchema),
+  const form = useForm<HourlyRateFormInput>({
+    resolver: valibotResolver(updateHourlyRateSchema),
     defaultValues: {
-      hourlyRate: "",
+      hourlyRate: null,
     },
   });
 
   const { isDirty } = form.formState;
 
   const onSubmit = useCallback(
-    async (values: { hourlyRate: string }) => {
+    async (values: HourlyRateFormInput) => {
       const successMessage = "Hourly rate saved successfully!";
 
-      const submitPromise = firebaseSaveProviderHourlyRateAction(values).then(
+      const submitPromise = saveProviderHourlyRateAction(values).then(
         async (result) => {
           // Check hourly rate save result
           if (!result.success) {
-            throw new Error(result.error);
+            throw new Error(result.message);
           }
 
-          await user?.reload();
           router.push("/onboarding/upload-work-photos");
           return { message: successMessage };
         }
@@ -68,12 +66,8 @@ export function HourlyRateWrapper() {
         await submitPromise;
       });
     },
-    [user, router]
+    [router]
   );
-
-  if (authError) {
-    throw new Error(`Failed to sign in to Firebase: ${authError}`);
-  }
 
   return (
     <Form {...form}>
@@ -108,10 +102,7 @@ export function HourlyRateWrapper() {
               Create Profile
             </span>
             <h2 className="mt-2 text-3xl font-semibold text-foreground">
-              <div className="flex items-center gap-2">
-                <DollarSign className="size-5" />
-                Hourly Rate
-              </div>
+              Hourly Rate
             </h2>
             <p className="mt-2 max-w-4xl text-sm text-foreground">
               Set your hourly rate to help clients understand your pricing. You
@@ -145,6 +136,16 @@ export function HourlyRateWrapper() {
                               className="pl-10"
                               maxLength={3}
                               {...field}
+                              value={field.value?.toString() ?? ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                // Only allow numeric input
+                                if (value === "" || /^\d+$/.test(value)) {
+                                  const numericValue =
+                                    value === "" ? null : Number(value);
+                                  field.onChange(numericValue);
+                                }
+                              }}
                             />
                           </FormControl>
                         </div>
