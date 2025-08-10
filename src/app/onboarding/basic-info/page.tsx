@@ -22,18 +22,18 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useUser } from "@clerk/nextjs";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { userProfileSchema } from "./profile-schema";
+import { InferInput } from "valibot";
 
 // TODO: Maybe add a character counter for the about section
 export default function ProviderOnboardingBasicInfo() {
   const [isPending, startTransition] = useTransition();
 
   const { user } = useUser();
-  const router = useRouter();
 
-  const form = useForm<z.infer<typeof userProfileSchema>>({
-    resolver: zodResolver(userProfileSchema),
+  const form = useForm<InferInput<typeof userProfileSchema>>({
+    resolver: valibotResolver(userProfileSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -44,7 +44,7 @@ export default function ProviderOnboardingBasicInfo() {
 
   const { isDirty } = form.formState;
 
-  async function onSubmit(values: z.infer<typeof userProfileSchema>) {
+  async function onSubmit(values: InferInput<typeof userProfileSchema>) {
     const successMessage = "Profile created successfully!";
 
     const submitPromise = createProviderProfileAction(values).then(
