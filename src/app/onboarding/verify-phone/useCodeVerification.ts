@@ -2,14 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { toast } from "sonner";
 import { twilioSendVerificationCodeAction } from "@/app/actions/onboarding/twilio-send-verification-code";
 import { twilioVerifyCodeAction } from "@/app/actions/onboarding/twilio-verify-code";
-import { useForm } from "react-hook-form";
-import { useResendTimer } from "./useResendTimer";
-import { useRouter } from "next/navigation";
+import {
+  verificationCodeSchema,
+  type VerificationCode,
+} from "@/lib/schemas/phone-verification-schemas";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { verificationCodeSchema, type VerificationCode } from "@/lib/schemas/phone-verification-schemas";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useResendTimer } from "./useResendTimer";
 
 type CodeVerificationState =
   | { step: "idle" }
@@ -21,7 +24,7 @@ type CodeVerificationState =
 
 export function useCodeVerification(
   clearPhoneNumber: () => void,
-  sharedPhoneNumber
+  sharedPhoneNumber: string
 ) {
   const router = useRouter();
   const [codeVerificationState, setCodeVerificationState] =

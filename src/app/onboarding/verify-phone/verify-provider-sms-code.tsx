@@ -25,7 +25,7 @@ export function VerifyProviderPhoneSMSCode({
   sharedPhoneNumber,
 }: {
   clearPhoneNumber: () => void;
-  sharedPhoneNumber;
+  sharedPhoneNumber: string;
 }) {
   const {
     codeVerificationForm,
