@@ -36,11 +36,9 @@ export async function POST(req: NextRequest) {
       };
 
       await db.insert(usersTable).values(newUser);
-      console.log(`✅ Created user in database: ${userData.id}`);
       return new Response("User created successfully", { status: 200 });
     }
 
-    // Return success for other event types (but don't process them)
     return new Response("Event ignored", { status: 200 });
   } catch (err) {
     console.error("Webhook processing error:", err);
