@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1754237130727,
-      "tag": "0000_empty_wendigo",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1754852341193,
-      "tag": "0001_icy_hydra",
+      "when": 1754853900000,
+      "tag": "0000_initial_sync",
       "breakpoints": true
     }
   ]

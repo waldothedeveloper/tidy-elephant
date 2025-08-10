@@ -1,0 +1,2 @@
+-- This file marks the initial database state as synchronized with Drizzle migrations
+-- The database already contains all schema objects, so no operations are needed
