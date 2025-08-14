@@ -595,3 +595,7 @@ const processPayment = (payment: Payment): ProcessedPayment => {
 ### Development Memory
 
 - Stop making stupid code comments. ONLY add code comments when some code is NOT self explanatory. Code should be readable by itself without adding comments that don't add any value.
+
+## Stripe
+
+- To do anything related to Stripe make sure you follow all the rules at the document named stripe.md in docs/stripe.md

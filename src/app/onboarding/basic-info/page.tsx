@@ -14,17 +14,16 @@ import { SignedIn, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { InferInput } from "valibot";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createProviderProfileAction } from "@/app/actions/onboarding/create-provider-profile-action";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useUser } from "@clerk/nextjs";
-import { valibotResolver } from "@hookform/resolvers/valibot";
 import { userProfileSchema } from "./profile-schema";
-import { InferInput } from "valibot";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
 // TODO: Maybe add a character counter for the about section
 export default function ProviderOnboardingBasicInfo() {
