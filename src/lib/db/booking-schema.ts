@@ -13,8 +13,8 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { categoriesTable } from "./category-schema";
 import { sql } from "drizzle-orm";
+import { categoriesTable } from "./category-schema";
 import { usersTable } from "./user-schema";
 
 // Booking-specific enums
@@ -83,7 +83,15 @@ export const bookingsTable = pgTable(
     paymentStatus: paymentStatusEnum("payment_status")
       .notNull()
       .default("pending"),
-    paymentMethodId: varchar("payment_method_id", { length: 100 }), // TODO: Reference to payment methods table
+    paymentMethodId: varchar("payment_method_id", { length: 100 }), // Reference to payment methods table
+
+    // Stripe Integration
+    stripeInvoiceId: varchar("stripe_invoice_id", { length: 100 }),
+    stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 100 }),
+    stripeCustomerId: varchar("stripe_customer_id", { length: 100 }),
+    stripeSubscriptionId: varchar("stripe_subscription_id", { length: 100 }),
+    amountRefunded: integer("amount_refunded").default(0),
+    refundedAt: timestamp("refunded_at", { withTimezone: true }),
 
     // Communication & Notes
     clientNotes: text("client_notes"),
@@ -127,7 +135,7 @@ export const bookingsTable = pgTable(
       "positive_total_price",
       sql`${table.totalPrice} IS NULL OR ${table.totalPrice} > 0`
     ),
-    
+
     // Unique constraints
     unique("unique_client_provider_datetime").on(
       table.clientId,
@@ -135,43 +143,44 @@ export const bookingsTable = pgTable(
       table.serviceDate
     ),
 
-    // Basic booking indexes
+    // Core indexes (highly used columns)
     // Foreign key indexes (critical for joins)
     index("idx_booking_client_id").on(table.clientId),
     index("idx_booking_provider_id").on(table.providerId),
-    
-    // Status and lifecycle indexes
-    index("idx_booking_status").on(table.status),
-    index("idx_booking_service_date").on(table.serviceDate),
-    index("idx_booking_created_at").on(table.createdAt),
-    
-    // Payment status index
-    index("idx_booking_payment_status").on(table.paymentStatus),
-    
-    // Composite indexes for dashboard queries
-    index("idx_booking_client_dashboard").on(table.clientId, table.status, table.serviceDate),
-    index("idx_booking_provider_dashboard").on(table.providerId, table.status, table.serviceDate),
-    
-    // Service category index for analytics
-    index("idx_booking_service_category").on(table.serviceCategoryId),
-    
-    // Array field GIN indexes for booking features
-    index("idx_booking_accessibility_needs_gin").using("gin", table.accessibilityNeeds),
 
-    // Enhanced booking indexes for complex queries
-    // Date range queries with status filtering
-    index("idx_booking_date_status").on(table.serviceDate, table.status),
-    index("idx_booking_status_date_range").on(table.status, table.serviceDate, table.createdAt),
-    
-    // Service category filtering with other criteria
-    index("idx_booking_category_status").on(table.serviceCategoryId, table.status),
-    index("idx_booking_category_date").on(table.serviceCategoryId, table.serviceDate),
-    
-    // Provider availability and scheduling optimization
-    index("idx_booking_provider_date_status").on(table.providerId, table.serviceDate, table.status),
-    index("idx_booking_client_date_status").on(table.clientId, table.serviceDate, table.status),
-    
-    // Geographic proximity composite indexes (for use with address joins)
-    index("idx_booking_provider_service_area").on(table.providerId, table.serviceArea),
+    // Status and lifecycle indexes (most common filters)
+    index("idx_booking_status_created").on(table.status, table.createdAt.desc()),
+    index("idx_booking_service_date").on(table.serviceDate.desc()),
+
+    // Payment processing indexes
+    index("idx_booking_payment_status_created").on(table.paymentStatus, table.createdAt.desc()),
+    index("idx_booking_stripe_payment_intent").on(table.stripePaymentIntentId),
+    index("idx_booking_stripe_invoice").on(table.stripeInvoiceId),
+
+    // Dashboard and reporting indexes (composite for common queries)
+    index("idx_booking_client_dashboard").on(
+      table.clientId, 
+      table.status, 
+      table.serviceDate.desc()
+    ),
+    index("idx_booking_provider_dashboard").on(
+      table.providerId, 
+      table.status, 
+      table.serviceDate.desc()
+    ),
+
+    // Customer and subscription management
+    index("idx_booking_stripe_customer").on(table.stripeCustomerId),
+    index("idx_booking_stripe_subscription").on(table.stripeSubscriptionId),
+
+    // Specialized indexes for specific features
+    index("idx_booking_service_category_status").on(
+      table.serviceCategoryId, 
+      table.status, 
+      table.serviceDate.desc()
+    ),
+
+    // GIN index for array searches (if frequently queried)
+    index("idx_booking_accessibility_needs_gin").using("gin", table.accessibilityNeeds),
   ]
 );
