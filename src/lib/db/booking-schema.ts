@@ -135,6 +135,17 @@ export const bookingsTable = pgTable(
       "positive_total_price",
       sql`${table.totalPrice} IS NULL OR ${table.totalPrice} > 0`
     ),
+    check(
+      "refund_amount_valid",
+      sql`${table.amountRefunded} IS NULL OR 
+          (${table.amountRefunded} >= 0 AND 
+           (${table.totalPrice} IS NULL OR ${table.amountRefunded} <= ${table.totalPrice}))`
+    ),
+    check(
+      "refund_timestamp_logic",
+      sql`(${table.amountRefunded} IS NULL OR ${table.amountRefunded} = 0) OR 
+          ${table.refundedAt} IS NOT NULL`
+    ),
 
     // Unique constraints
     unique("unique_client_provider_datetime").on(
