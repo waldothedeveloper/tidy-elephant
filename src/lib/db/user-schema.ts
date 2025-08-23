@@ -29,7 +29,6 @@ export const preferredContactMethodEnum = pgEnum("preferred_contact_method", [
 export const usersTable = pgTable(
   "users",
   {
-    // Primary key
     id: uuid("id").primaryKey().defaultRandom(),
 
     // Core Identity Fields (Required)
@@ -97,7 +96,6 @@ export const usersTable = pgTable(
   ]
 );
 
-// Relations - handles foreign key relationships properly
 export const usersRelations = relations(usersTable, ({ one, many }) => ({
   // Self-reference for referrals
   referrer: one(usersTable, {
