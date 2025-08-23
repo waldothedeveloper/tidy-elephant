@@ -8,6 +8,13 @@
       "when": 1754853900000,
       "tag": "0000_initial_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755924347830,
+      "tag": "0001_flashy_gideon",
+      "breakpoints": true
     }
   ]
 }

@@ -39,14 +39,26 @@ export default function NavigationMenu() {
               asChild
               className="text-base text-foreground"
             >
-              <Link href="/sign-in">Sign In</Link>
+              <Link
+                href={{
+                  pathname: "/sign-in",
+                }}
+              >
+                Sign In
+              </Link>
             </Button>
             <Button
               variant="link"
               asChild
               className="text-base text-foreground"
             >
-              <Link href="/sign-up">Sign Up</Link>
+              <Link
+                href={{
+                  pathname: "/sign-up",
+                }}
+              >
+                Sign Up
+              </Link>
             </Button>
           </SignedOut>
 
