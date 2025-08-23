@@ -27,7 +27,6 @@ import { saveAvailabilityAction } from "@/app/actions/onboarding/save-availabili
 import { toast } from "sonner";
 import { tzOffset } from "@date-fns/tz";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 
@@ -62,7 +61,6 @@ export default function AvailabilityClientPage({
   daysOfWeek,
   pageData,
 }: AvailabilityClientPageProps) {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const getDetectedTimezone = (): (typeof US_TIMEZONE_IDENTIFIERS)[number] => {
@@ -137,7 +135,7 @@ export default function AvailabilityClientPage({
 
         if (result.success) {
           toast.success(result.message || "Availability saved successfully!");
-          router.push(`/onboarding/select-availability/success`);
+          // router.push(`/onboarding/select-availability/success`);
         } else {
           toast.error(
             result.error || "Failed to save availability. Please try again."

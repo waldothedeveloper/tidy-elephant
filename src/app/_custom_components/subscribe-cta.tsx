@@ -23,7 +23,13 @@ export default function SubscribeCTA() {
                 variant="link"
                 className="text-foreground text-xl hover:text-primary"
               >
-                <Link href="/waitlist/join-us">Join the waitlist &rarr;</Link>
+                <Link
+                  href={{
+                    pathname: "/waitlist/join-us",
+                  }}
+                >
+                  Join the waitlist &rarr;
+                </Link>
               </Button>
             </div>
           </div>
