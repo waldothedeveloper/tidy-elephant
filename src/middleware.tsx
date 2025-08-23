@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import {
   clerkClient,
   clerkMiddleware,
   createRouteMatcher,
 } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   "/privacy",
   "/become-an-ease-specialist",
   "/api/webhooks/clerk(.*)",
+  "/api/inngest(.*)",
 ]);
 
 const isProviderRoute = createRouteMatcher(["/provider(.*)"]);

@@ -1,4 +1,5 @@
 import {
+  bigint,
   boolean,
   check,
   index,
@@ -92,7 +93,6 @@ export const phoneLineTypeEnum = pgEnum("phone_line_type", [
 export const providerProfilesTable = pgTable(
   "provider_profiles",
   {
-    // Primary key and foreign key to users
     id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id")
       .notNull()
@@ -140,6 +140,19 @@ export const providerProfilesTable = pgTable(
 
     // Availability & Scheduling
     availability: json("availability"), // JSON object for schedule information
+
+    // Cal.com Integration
+    calAtomsUserId: varchar("cal_atoms_user_id", { length: 255 }),
+    calAtomsDefaultScheduleId: integer("cal_atoms_default_schedule_id"),
+    calAtomsAccessToken: text("cal_atoms_access_token"),
+    calAtomsAccessTokenExpiresAt: bigint("cal_atoms_access_token_expires_at", {
+      mode: "number",
+    }),
+    calAtomsRefreshToken: text("cal_atoms_refresh_token"),
+    calAtomsRefreshTokenExpiresAt: bigint(
+      "cal_atoms_refresh_token_expires_at",
+      { mode: "number" }
+    ),
 
     // Ratings & Reviews (auto-calculated via database triggers)
     averageRating: numeric("average_rating", {

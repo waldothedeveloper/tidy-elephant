@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createProviderProfileAction } from "@/app/actions/onboarding/create-provider-profile-action";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useUser } from "@clerk/nextjs";
 import { userProfileSchema } from "./profile-schema";
@@ -28,7 +29,7 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 // TODO: Maybe add a character counter for the about section
 export default function ProviderOnboardingBasicInfo() {
   const [isPending, startTransition] = useTransition();
-
+  const router = useRouter();
   const { user } = useUser();
 
   const form = useForm<InferInput<typeof userProfileSchema>>({
@@ -54,7 +55,7 @@ export default function ProviderOnboardingBasicInfo() {
         }
 
         await user?.reload();
-        // router.push("/onboarding/verify-phone");
+        router.push("/onboarding/verify-phone");
         return { message: successMessage };
       }
     );

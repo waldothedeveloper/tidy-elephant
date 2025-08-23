@@ -20,6 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.864.0",
     "@clerk/nextjs": "^6.28.1",
+    "@date-fns/tz": "^1.4.1",
     "@dicebear/collection": "^9.2.3",
     "@dicebear/core": "^9.2.3",
     "@headlessui/react": "^2.2.7",
@@ -40,8 +41,10 @@
     "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.4",
     "drizzle-valibot": "^0.4.2",
+    "inngest": "^3.40.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
     "motion": "^12.23.12",
