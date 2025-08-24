@@ -55,7 +55,7 @@ export default function ProviderOnboardingBasicInfo() {
         }
 
         await user?.reload();
-        router.push("/onboarding/verify-phone");
+        router.push("/onboarding/select-categories");
         return { message: successMessage };
       }
     );

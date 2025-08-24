@@ -52,12 +52,12 @@ export function VerifyProviderPhoneSMSCode({
     <Form {...codeVerificationForm}>
       <form onSubmit={codeVerificationForm.handleSubmit(onSubmit)}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mt-6 flex items-center justify-between gap-x-6">
-            <Button asChild variant="outline">
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            {/* <Button asChild variant="outline">
               <Link href="/onboarding/basic-info" type="button">
                 Previous
               </Link>
-            </Button>
+            </Button> */}
 
             <Button
               asChild

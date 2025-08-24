@@ -150,7 +150,7 @@ export function useCodeVerification(
             setCodeVerificationState({ step: "code-verified" });
             toast.success("Phone number verified successfully!");
 
-            router.push("/onboarding/select-categories");
+            router.push("/onboarding/type-of-business");
           } else {
             // ONLY cache invalid codes
             const errorMsg = response.error || "Invalid verification code";

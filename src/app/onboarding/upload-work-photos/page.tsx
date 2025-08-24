@@ -1,14 +1,14 @@
 "use client";
 
-import { ArrowLeft, Upload, X, Loader2Icon } from "lucide-react";
+import { ArrowLeft, Loader2Icon, Upload, X } from "lucide-react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { useCallback, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useTransition, useCallback } from "react";
-import { uploadWorkPhotosAction } from "@/app/actions/onboarding/upload-work-photos-action";
 import { toast } from "sonner";
+import { uploadWorkPhotosAction } from "@/app/actions/onboarding/upload-work-photos-action";
 import { useRouter } from "next/navigation";
 
 export default function ProviderOnboardingUploadWorkPhotos() {
@@ -16,25 +16,31 @@ export default function ProviderOnboardingUploadWorkPhotos() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPending, startTransition] = useTransition();
-  
+
   const router = useRouter();
 
-  const handleFileUpload = useCallback((files: FileList) => {
-    const validFiles: File[] = [];
-    const newPreviews: string[] = [];
+  const handleFileUpload = useCallback(
+    (files: FileList) => {
+      const validFiles: File[] = [];
+      const newPreviews: string[] = [];
 
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith("image/") && selectedFiles.length + validFiles.length < 8) {
-        validFiles.push(file);
-        // Create preview URL
-        const previewUrl = URL.createObjectURL(file);
-        newPreviews.push(previewUrl);
-      }
-    });
+      Array.from(files).forEach((file) => {
+        if (
+          file.type.startsWith("image/") &&
+          selectedFiles.length + validFiles.length < 8
+        ) {
+          validFiles.push(file);
+          // Create preview URL
+          const previewUrl = URL.createObjectURL(file);
+          newPreviews.push(previewUrl);
+        }
+      });
 
-    setSelectedFiles((prev) => [...prev, ...validFiles]);
-    setPreviewUrls((prev) => [...prev, ...newPreviews]);
-  }, [selectedFiles.length]);
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+      setPreviewUrls((prev) => [...prev, ...newPreviews]);
+    },
+    [selectedFiles.length]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -45,25 +51,34 @@ export default function ProviderOnboardingUploadWorkPhotos() {
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    handleFileUpload(e.dataTransfer.files);
-  }, [handleFileUpload]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+      handleFileUpload(e.dataTransfer.files);
+    },
+    [handleFileUpload]
+  );
 
-  const removePhoto = useCallback((index: number) => {
-    // Revoke the object URL to prevent memory leaks
-    URL.revokeObjectURL(previewUrls[index]);
-    
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
-  }, [previewUrls]);
+  const removePhoto = useCallback(
+    (index: number) => {
+      // Revoke the object URL to prevent memory leaks
+      URL.revokeObjectURL(previewUrls[index]);
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFileUpload(e.target.files);
-    }
-  }, [handleFileUpload]);
+      setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+      setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    },
+    [previewUrls]
+  );
+
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        handleFileUpload(e.target.files);
+      }
+    },
+    [handleFileUpload]
+  );
 
   const handleSubmit = useCallback(async () => {
     if (selectedFiles.length < 3) {
@@ -84,8 +99,7 @@ export default function ProviderOnboardingUploadWorkPhotos() {
           throw new Error(result.message);
         }
 
-        // Navigate to next step (you can change this URL)
-        router.push("/provider/dashboard"); // or wherever the next step should be
+        router.push("/onboarding/select-availability");
         return { message: successMessage };
       }
     );
@@ -157,8 +171,12 @@ export default function ProviderOnboardingUploadWorkPhotos() {
                       ? "border-primary bg-primary/5"
                       : "border-muted-foreground/25 hover:border-muted-foreground/50"
                 }`}
-                onDragOver={canAddMore && !isPending ? handleDragOver : undefined}
-                onDragLeave={canAddMore && !isPending ? handleDragLeave : undefined}
+                onDragOver={
+                  canAddMore && !isPending ? handleDragOver : undefined
+                }
+                onDragLeave={
+                  canAddMore && !isPending ? handleDragLeave : undefined
+                }
                 onDrop={canAddMore && !isPending ? handleDrop : undefined}
               >
                 <div className="space-y-2">
@@ -196,8 +214,8 @@ export default function ProviderOnboardingUploadWorkPhotos() {
                       {isPending
                         ? "Please wait while photos are being uploaded"
                         : canAddMore
-                        ? "PNG, JPG, WEBP up to 4MB each"
-                        : "Remove a photo to add more"}
+                          ? "PNG, JPG, WEBP up to 4MB each"
+                          : "Remove a photo to add more"}
                     </p>
                   </div>
                 </div>
