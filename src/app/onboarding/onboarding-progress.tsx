@@ -4,7 +4,6 @@ type StepsState = {
   id: string;
   name: string;
   description: string;
-  href: string;
   status: "complete" | "current" | "upcoming";
 };
 
@@ -13,21 +12,18 @@ const steps: StepsState[] = [
     id: "Step 1",
     name: "Build Profile",
     description: "Add your info, services, and photos.",
-    href: "#",
-    status: "complete",
+    status: "current",
   },
   {
     id: "Step 2",
     name: "Trust & Safety",
     description: "Verify your identity & submit the background check.",
-    href: "#",
-    status: "current",
+    status: "upcoming",
   },
   {
     id: "Step 3",
     name: "Onboarding Fee",
     description: "Pay your setup fee to go live.",
-    href: "#",
     status: "upcoming",
   },
 ];
@@ -40,10 +36,7 @@ export function OnboardingProgress() {
           <li key={step.name} className="relative flex-1">
             {step.status === "complete" ? (
               <>
-                <a
-                  href={step.href}
-                  className="group relative flex flex-col items-center"
-                >
+                <div className="group relative flex flex-col items-center">
                   <span className="flex h-9 items-center mb-2">
                     <span className="relative z-10 flex size-8 items-center justify-center rounded-full bg-primary group-hover:bg-primary/80">
                       <Check
@@ -60,7 +53,7 @@ export function OnboardingProgress() {
                       {step.description}
                     </span>
                   </span>
-                </a>
+                </div>
                 {stepIdx !== steps.length - 1 ? (
                   <div
                     aria-hidden="true"
@@ -70,8 +63,7 @@ export function OnboardingProgress() {
               </>
             ) : step.status === "current" ? (
               <>
-                <a
-                  href={step.href}
+                <div
                   aria-current="step"
                   className="group relative flex flex-col items-center"
                 >
@@ -91,7 +83,7 @@ export function OnboardingProgress() {
                       {step.description}
                     </span>
                   </span>
-                </a>
+                </div>
                 {stepIdx !== steps.length - 1 ? (
                   <div
                     aria-hidden="true"
@@ -101,10 +93,7 @@ export function OnboardingProgress() {
               </>
             ) : (
               <>
-                <a
-                  href={step.href}
-                  className="group relative flex flex-col items-center"
-                >
+                <div className="group relative flex flex-col items-center">
                   <span
                     aria-hidden="true"
                     className="flex h-9 items-center mb-2"
@@ -121,7 +110,7 @@ export function OnboardingProgress() {
                       {step.description}
                     </span>
                   </span>
-                </a>
+                </div>
                 {stepIdx !== steps.length - 1 ? (
                   <div
                     aria-hidden="true"
