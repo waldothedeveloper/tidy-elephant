@@ -1,14 +1,24 @@
 # Onboarding Sequence
 
-This document outlines the complete onboarding flow for providers in the correct order as implemented in the codebase.
+This document outlines the complete onboarding flow for providers in the correct order as implemented in the codebase, grouped into **3 major steps**: Profile, Background Check, and Activation Fee.
+
+---
 
 ## Complete Flow Overview
 
 The onboarding process follows this sequence:
 
-welcome → type-of-business → [basic-info OR business-info] → verify-phone → select-categories → hourly-rate → upload-work-photos → provider/dashboard
+welcome → verify-phone → type-of-business → [basic-info OR business-info] → select-categories → hourly-rate → upload-work-photos → select-availability → background-check → onboarding-fee → setup-payment-account → provider/dashboard
 
-Note: There are also `select-availability` and `setup-payment-account` routes that appear to be additional/optional steps, but they are not currently integrated into the main flow.
+---
+
+## Progress Bar Helper Text
+
+- **Step 1: Build Your Profile** – “Add your info, services, and photos.”
+- **Step 2: Background Check** – “Verify your identity for client trust.”
+- **Step 3: Activation Fee** – “Pay your setup fee to go live.”
+
+---
 
 ## Detailed Step-by-Step Flow
 
@@ -16,46 +26,54 @@ Note: There are also `select-availability` and `setup-payment-account` routes th
 
 - **File**: `src/app/onboarding/welcome/page.tsx`
 - **Action**: `handleBeginOnboarding()` calls `beginProviderOnboardingAction`
-- **Navigation**: Redirects to `/onboarding/type-of-business` (line 18)
+- **Navigation**: Redirects to `/onboarding/verify-phone`
 - **Purpose**: Introduction page with onboarding overview
 
-### 2. Type of Business (`/onboarding/type-of-business/`)
+---
 
-- **File**: `src/app/onboarding/type-of-business/page.tsx`
-- **Navigation**: Two paths:
-  - **Freelancer**: Goes to `/onboarding/basic-info` (line 51)
-  - **Business**: Goes to `/onboarding/business-info` (line 77)
-- **Purpose**: Choose between individual freelancer or business entity
-
-### 3A. Basic Info (`/onboarding/basic-info/`) - Freelancer Path
-
-- **File**: `src/app/onboarding/basic-info/page.tsx`
-- **Action**: `createProviderProfileAction` (currently TODO implementation)
-- **Navigation**: Comment suggests goes to `/onboarding/verify-phone` (line 57)
-- **Purpose**: Basic profile information for individual freelancers
-- **Form Fields**: firstName, lastName, about, photo
-
-### 3B. Business Info (`/onboarding/business-info/`) - Business Path
-
-- **File**: `src/app/onboarding/business-info/page.tsx`
-- **Action**: `saveBusinessInfoAction`
-- **Navigation**: Goes to `/onboarding/select-categories` (line 145)
-- **Purpose**: Business information for registered businesses
-- **Form Fields**: businessType, businessName, businessPhone, employerEin, address fields
-
-### 4. Verify Phone (`/onboarding/verify-phone/`)
+### 2. Verify Phone (`/onboarding/verify-phone/`)
 
 - **Files**:
   - `src/app/onboarding/verify-phone/page.tsx`
   - `src/app/onboarding/verify-phone/phone-verification-wrapper.tsx`
   - `src/app/onboarding/verify-phone/verify-provider-sms-code.tsx`
-- **Flow**: Two-step phone verification process
+- **Flow**:
   1. Enter phone number (`VerifyProviderPhone`)
   2. Verify SMS code (`VerifyProviderPhoneSMSCode`)
-- **Navigation**:
-  - Previous: Goes to `/onboarding/basic-info` (line 57)
-  - Next: Goes to `/onboarding/select-categories` (line 68)
-- **Purpose**: SMS verification for security
+- **Purpose**: Ensure real phone numbers, prevent orphaned data, enable SMS onboarding reminders
+- **Consent**: Explicit consent for SMS communications with opt-out language
+
+---
+
+### 3. Type of Business (`/onboarding/type-of-business/`)
+
+- **File**: `src/app/onboarding/type-of-business/page.tsx`
+- **Navigation**: Two paths:
+  - **Freelancer**: Goes to `/onboarding/basic-info`
+  - **Business**: Goes to `/onboarding/business-info`
+- **Purpose**: Choose between individual freelancer or business entity
+
+---
+
+### 4A. Basic Info (`/onboarding/basic-info/`) - Freelancer Path
+
+- **File**: `src/app/onboarding/basic-info/page.tsx`
+- **Action**: `createProviderProfileAction`
+- **Navigation**: Goes to `/onboarding/select-categories`
+- **Purpose**: Basic profile information for individual freelancers
+- **Form Fields**: firstName, lastName, about, photo
+
+---
+
+### 4B. Business Info (`/onboarding/business-info/`) - Business Path
+
+- **File**: `src/app/onboarding/business-info/page.tsx`
+- **Action**: `saveBusinessInfoAction`
+- **Navigation**: Goes to `/onboarding/select-categories`
+- **Purpose**: Business information for registered businesses
+- **Form Fields**: businessType, businessName, businessPhone, employerEin, address fields
+
+---
 
 ### 5. Select Categories (`/onboarding/select-categories/`)
 
@@ -63,11 +81,11 @@ Note: There are also `select-availability` and `setup-payment-account` routes th
   - `src/app/onboarding/select-categories/page.tsx`
   - `src/app/onboarding/select-categories/categories-wrapper.tsx`
 - **Action**: `saveProviderCategoriesAction`
-- **Navigation**:
-  - Previous: Goes to `/onboarding/verify-phone` (line 87)
-  - Next: Goes to `/onboarding/hourly-rate` (line 60)
+- **Navigation**: Next → `/onboarding/hourly-rate`
 - **Purpose**: Choose service categories provider will offer
 - **Data Source**: `getCategoriesDAL()`
+
+---
 
 ### 6. Hourly Rate (`/onboarding/hourly-rate/`)
 
@@ -75,59 +93,81 @@ Note: There are also `select-availability` and `setup-payment-account` routes th
   - `src/app/onboarding/hourly-rate/page.tsx`
   - `src/app/onboarding/hourly-rate/hourly-rate-wrapper.tsx`
 - **Action**: `saveProviderHourlyRateAction`
-- **Navigation**:
-  - Previous: Goes to `/onboarding/select-categories` (line 79)
-  - Next: Goes to `/onboarding/upload-work-photos` (line 55)
+- **Navigation**: Next → `/onboarding/upload-work-photos`
 - **Purpose**: Set hourly rate for services
-- **Range**: $25-$250 (suggested $75-125)
+- **Range**: $25–$250 (suggested $75–125)
+
+---
 
 ### 7. Upload Work Photos (`/onboarding/upload-work-photos/`)
 
 - **File**: `src/app/onboarding/upload-work-photos/page.tsx`
 - **Action**: `uploadWorkPhotosAction`
-- **Navigation**:
-  - Previous: Goes to `/onboarding/hourly-rate` (line 112)
-  - Next: Goes to `/provider/dashboard` (line 88) - **FINAL STEP**
-- **Purpose**: Upload 3-8 work photos to showcase services
+- **Navigation**: Next → `/onboarding/select-availability`
+- **Purpose**: Upload 3–8 work photos to showcase services
 - **Requirements**: Minimum 3 photos, maximum 8 photos
 
-## Additional Routes (Not in Main Flow)
+---
 
-### Select Availability (`/onboarding/select-availability/`)
+### 8. Select Availability (`/onboarding/select-availability/`)
 
 - **Files**:
   - `src/app/onboarding/select-availability/page.tsx`
   - `src/app/onboarding/select-availability/availability-client-page.tsx`
 - **Action**: `saveAvailabilityAction`
-- **Navigation**: Goes to `/onboarding/select-availability/success` (line 140)
+- **Navigation**: Next → `/onboarding/background-check`
 - **Purpose**: Set weekly availability schedule and timezone
-- **Status**: Appears to be implemented but not integrated into main flow
 
-### Setup Payment Account (`/onboarding/setup-payment-account/`)
+---
+
+### 9. Background Check (`/onboarding/background-check/`)
+
+- **Purpose**: Submit required info for Checkr (or equivalent) background screening
+- **Data Fields**: SSN, DOB, address
+- **Navigation**: Next → `/onboarding/onboarding-fee`
+- **UX**: Allow dashboard access while check is pending, but mark profile as incomplete
+
+---
+
+### 10. Onboarding Fee (`/onboarding/onboarding-fee/`)
+
+- **Purpose**: Collect non-refundable onboarding fee
+- **Integration**: Stripe
+- **UX Copy**: “Covers your background check and setup costs. Unlocks your profile so you can start getting bookings.”
+
+---
+
+### 11. Setup Payment Account (`/onboarding/setup-payment-account/`)
 
 - **File**: `src/app/onboarding/setup-payment-account/page.tsx`
-- **Purpose**: Stripe Connect integration for payment processing
-- **Status**: Appears to be implemented but not integrated into main flow
+- **Purpose**: Stripe Connect integration for receiving payments
+- **Navigation**: Final → `/provider/dashboard`
 
-## Navigation Discrepancies
+---
 
-Based on the code analysis, there are some inconsistencies in the flow:
+### 12. Provider Dashboard (`/provider/dashboard`)
 
-1. **Business Info Path**: The `business-info` page skips phone verification and goes directly to `select-categories`
-2. **Missing Integration**: `select-availability` and `setup-payment-account` are not integrated into the main onboarding flow
+- **Purpose**: Central hub for providers
+- **Progress Indicators**:
+  - ✅ Profile Complete
+  - ⏳ Background Check Pending
+  - ❌ Activation Fee Pending
+  - ❌ Payment Account Not Connected
+
+---
 
 ## Form Schemas and Validation
 
-Each step uses Valibot schemas for form validation:
+- `userProfileSchema` – Basic info form
+- `businessInfoFormSchema` – Business info form
+- `userProfilePhoneVerificationSchema` – Phone verification
+- `userProfileCodeVerificationSchema` – SMS code verification
+- `categoriesFormSchema` – Categories selection
+- `createHourlyRateSchema` – Hourly rate form
+- `availabilitySchema` – Availability form
+- Background check + onboarding fee will need new schemas
 
-- `userProfileSchema` - Basic info form
-- `businessInfoFormSchema` - Business info form
-- `userProfilePhoneVerificationSchema` - Phone verification
-- `userProfileCodeVerificationSchema` - SMS code verification
-- `categoriesFormSchema` - Categories selection
-- `createHourlyRateSchema` - Hourly rate form
-- No specific schema found for work photos upload
-- `availabilitySchema` - Availability form
+---
 
 ## Server Actions
 
@@ -138,3 +178,5 @@ All forms submit via server actions following security rules:
 - Validate inputs with `safeParse()`
 - Return consistent response types
 - Located in `src/app/actions/onboarding/`
+
+---
