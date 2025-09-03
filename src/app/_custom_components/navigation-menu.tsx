@@ -5,6 +5,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeModeToggle } from "@/components/ui/theme-mode-toggle";
 import { usePathname } from "next/navigation";
 
 export default function NavigationMenu() {
@@ -67,6 +68,8 @@ export default function NavigationMenu() {
               Become a Tidy Specialist
             </Link>
           </Button>
+
+          <ThemeModeToggle />
         </div>
       </div>
     </div>
