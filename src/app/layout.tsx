@@ -7,6 +7,7 @@ import { IBM_Plex_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import NavigationMenu from "./_custom_components/navigation-menu";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -32,19 +33,26 @@ export default function RootLayout({
         cssLayerName: "clerk",
       }}
     >
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${ibmPlexSans.className} antialiased`}>
-          <NavigationMenu />
-          {children}
-          <Analytics />
-          <SpeedInsights />
-          <Footer />
-          <Toaster
-            richColors
-            position="bottom-right"
-            closeButton
-            duration={10000}
-          />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NavigationMenu />
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            <Footer />
+            <Toaster
+              richColors
+              position="bottom-right"
+              closeButton
+              duration={10000}
+            />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
