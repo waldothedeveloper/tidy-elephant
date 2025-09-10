@@ -1,10 +1,18 @@
 "use client";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import { ThemeModeToggle } from "@/components/ui/theme-mode-toggle";
 import { usePathname } from "next/navigation";
 
@@ -24,12 +32,13 @@ export default function NavigationMenu() {
             height={56}
             width={56}
             className="h-10 md:h-14 w-auto"
-            src="https://firebasestorage.googleapis.com/v0/b/ease-and-arrange-prod.firebasestorage.app/o/media%2Ftidy-elephant.svg?alt=media&token=f8d6b255-3984-4e41-b121-f1f774932d12"
+            src="/images/tidy-logo-no-bg.png"
             alt="Tidy Elephant Logo"
           />
         </Link>
 
-        <div className="flex items-center justify-center">
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-2">
           <SignedIn>
             <UserButton />
           </SignedIn>
@@ -40,26 +49,14 @@ export default function NavigationMenu() {
               asChild
               className="text-base text-foreground"
             >
-              <Link
-                href={{
-                  pathname: "/sign-in",
-                }}
-              >
-                Sign In
-              </Link>
+              <Link href={{ pathname: "/sign-in" }}>Sign In</Link>
             </Button>
             <Button
               variant="link"
               asChild
               className="text-base text-foreground"
             >
-              <Link
-                href={{
-                  pathname: "/sign-up",
-                }}
-              >
-                Sign Up
-              </Link>
+              <Link href={{ pathname: "/sign-up" }}>Sign Up</Link>
             </Button>
           </SignedOut>
 
@@ -70,6 +67,38 @@ export default function NavigationMenu() {
           </Button>
 
           <ThemeModeToggle />
+        </div>
+
+        {/* Mobile nav */}
+        <div className="flex md:hidden items-center gap-2">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <ThemeModeToggle />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" aria-label="Open menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <SignedOut>
+                <DropdownMenuItem asChild>
+                  <Link href={{ pathname: "/sign-in" }}>Sign In</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={{ pathname: "/sign-up" }}>Sign Up</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </SignedOut>
+              <DropdownMenuItem asChild>
+                <Link href="/become-an-ease-specialist">
+                  Become a Tidy Specialist
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
