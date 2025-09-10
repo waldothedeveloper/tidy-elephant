@@ -249,20 +249,20 @@ function WhoAreWe() {
           </div>
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
             <h2 className="text-base/8 font-semibold text-primary">
-              What is Ease & Arrange?
+              What is Tidy Elephant?
             </h2>
-            <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-background sm:text-5xl">
+            <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-background dark:text-foreground sm:text-5xl">
               We are the Premier Marketplace for Organizing Professionals
             </p>
-            <p className="mt-6 text-lg/8 text-background">
-              Ease & Arrange connects skilled organizing professionals with
+            <p className="mt-6 text-lg/8 text-background dark:text-foreground">
+              Tidy Elephant connects skilled organizing professionals with
               clients who need help creating order in their lives. Whether
               you&apos;re a certified professional organizer, home stager, move
               manager, or productivity coach, our platform helps you build a
               thriving business serving clients who value your expertise.
             </p>
           </div>
-          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-background sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-background dark:text-foreground sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
             {stats.map((stat) => (
               <div
                 key={stat.id}
@@ -387,7 +387,7 @@ const organizerCategories = [
   {
     name: "Home Stagers",
     imageIcon: MapPinHouse,
-    bio: "Transforming houses into irresistible homes is your specialty. Join Ease & Arrange as a home stager and connect with real estate professionals and homeowners looking to maximize their property's market appeal.",
+    bio: "Transforming houses into irresistible homes is your specialty. Join Tidy Elephant as a home stager and connect with real estate professionals and homeowners looking to maximize their property's market appeal.",
   },
   {
     name: "Feng Shui Consultants",
@@ -402,7 +402,7 @@ const organizerCategories = [
   {
     name: "Interior Designers",
     imageIcon: Palette,
-    bio: "Are you a visionary who brings beauty, function, and personality to every room? As an interior designer on Ease & Arrange, you'll find clients eager to transform their living and working spaces.",
+    bio: "Are you a visionary who brings beauty, function, and personality to every room? As an interior designer on Tidy Elephant, you'll find clients eager to transform their living and working spaces.",
   },
   {
     name: "Office Organizers (Home & Corporate Spaces)",
@@ -422,7 +422,7 @@ const organizerCategories = [
   {
     name: "Digital Organizers",
     imageIcon: Laptop,
-    bio: "In a world of digital clutter, your skills are invaluable. Become a digital organizer with Ease & Arrange and help clients tame their digital files, photos, and online accounts for a streamlined virtual life.",
+    bio: "In a world of digital clutter, your skills are invaluable. Become a digital organizer with Tidy Elephant and help clients tame their digital files, photos, and online accounts for a streamlined virtual life.",
   },
   {
     name: "Time & Productivity Coaches",
@@ -536,7 +536,7 @@ function Testimonial() {
               </svg>
               <blockquote className="text-xl/8 font-semibold text-background sm:text-2xl/9">
                 <p>
-                  As a move manager, I love how Ease & Arrange connects me with
+                  As a move manager, I love how Tidy Elephant connects me with
                   families who need genuine help during major life transitions.
                   It&apos;s rewarding work that pays well.
                 </p>
@@ -544,7 +544,7 @@ function Testimonial() {
               <figcaption className="mt-8 text-base">
                 <div className="font-semibold text-background">Michael R.</div>
                 <div className="mt-1 text-muted-foreground">
-                  Move Manager, Orlando
+                  Move Manager, Orlando FL
                 </div>
               </figcaption>
             </figure>

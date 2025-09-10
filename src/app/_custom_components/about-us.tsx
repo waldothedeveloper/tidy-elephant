@@ -2,19 +2,15 @@ import Image from "next/image";
 
 export default function AboutUs() {
   return (
-    <div className="overflow-hidden bg-white py-24 sm:py-32">
+    <div className="overflow-hidden bg-white dark:bg-background py-24 sm:py-32">
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <div className="max-w-4xl">
           <p className="text-base/7 font-semibold text-primary">
             About Tidy Elephant
           </p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-background dark:text-foreground sm:text-5xl">
             We Get It - Life Gets Messy <br />
           </h1>
-          <p className="mt-6 text-xl/8 text-balance text-foreground">
-            Turning &ldquo;I&apos;ll Deal With This Later&rdquo; Into
-            &ldquo;Wow, I Actually Love My Home Again&rdquo;
-          </p>
         </div>
         <section className="mt-20 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 lg:gap-y-16">
           <div className="lg:pr-8">

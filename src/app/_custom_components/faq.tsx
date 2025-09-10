@@ -8,12 +8,12 @@ import { Minus, Plus } from "lucide-react";
 const faqs = [
   // Getting Started
   {
-    question: "How will Ease & Arrange work?",
+    question: "How will Tidy Elephant work?",
     answer:
       "Once we launch, you'll be able to enter your zip code or browse our map to find decluttering, organizing, and cleaning experts in your area. Browse profiles, read reviews, and submit booking requests directly through our platform. Join our email list to be notified when we go live!",
   },
   {
-    question: "Will Ease & Arrange be free to use?",
+    question: "Will Tidy Elephant be free to use?",
     answer:
       "Yes! Browsing providers and submitting booking requests will be completely free for clients. You'll only pay the service provider directly for their services. Subscribe to our updates to be first to know when registration opens.",
   },
@@ -48,10 +48,10 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <div className="bg-foreground">
+    <div className="bg-foreground dark:bg-accent">
       <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-4xl font-semibold tracking-tight text-background sm:text-5xl">
+          <h2 className="text-4xl font-semibold tracking-tight text-background dark:text-foreground sm:text-5xl">
             Frequently asked questions
           </h2>
           <dl className="mt-16 divide-y divide-muted-foreground/40">
@@ -62,7 +62,7 @@ export default function FAQ() {
                 className="py-6 first:pt-0 last:pb-0"
               >
                 <dt>
-                  <DisclosureButton className="group flex w-full items-start justify-between text-left text-background">
+                  <DisclosureButton className="group flex w-full items-start justify-between text-left text-background dark:text-foreground">
                     <span className="text-base/7 font-semibold">
                       {faq.question}
                     </span>
