@@ -8,6 +8,7 @@ import type { CategoriesFormOutput } from "@/app/onboarding/select-categories/ca
 import { db } from "@/lib/db";
 import { enforceAuthProvider } from "../clerk";
 import { usersTable } from "@/lib/db/user-schema";
+import { providerProfilesTable } from "@/lib/db/provider-schema";
 
 export async function getCategoriesDAL(): Promise<{
   success: boolean;
@@ -62,6 +63,22 @@ export async function saveProviderCategoriesDAL(
       return { success: false, error: "User not found in database" };
     }
 
+    // Check if provider profile exists, if not create it
+    const [providerProfile] = await db
+      .select({ userId: providerProfilesTable.userId })
+      .from(providerProfilesTable)
+      .where(eq(providerProfilesTable.userId, user.id))
+      .limit(1);
+    
+    if (!providerProfile) {
+      // Create provider profile if it doesn't exist
+      await db
+        .insert(providerProfilesTable)
+        .values({
+          userId: user.id,
+        });
+    }
+
     // Verify all category IDs exist in the database
     const validCategories = await db
       .select({ id: categoriesTable.id })
@@ -82,7 +99,7 @@ export async function saveProviderCategoriesDAL(
 
     // Use transaction to ensure atomicity (now supported with neon-serverless driver)
     await db.transaction(async (tx) => {
-      // Remove existing provider categories
+      // Remove existing provider categories using the correct provider profile ID
       await tx
         .delete(providerCategoriesTable)
         .where(eq(providerCategoriesTable.providerId, user.id));

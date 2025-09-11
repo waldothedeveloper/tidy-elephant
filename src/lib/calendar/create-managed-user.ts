@@ -100,22 +100,26 @@ export async function createCalendarManagedUser(
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Cal.com API error:", response.status, errorData);
-      
+
       // Don't retry for ConflictException (user already exists)
-      if (response.status === 409 && errorData.error?.code === "ConflictException") {
+      if (
+        response.status === 409 &&
+        errorData.error?.code === "ConflictException"
+      ) {
         return createErrorResponse({
           code: "USER_ALREADY_EXISTS",
-          message: errorData.error?.message || "User with this email already exists.",
+          message:
+            errorData.error?.message || "User with this email already exists.",
         });
       }
-      
+
       // Throw for all other errors to trigger Inngest retries
-      throw new Error(`Cal.com API error: ${response.status} - ${JSON.stringify(errorData)}`);
+      throw new Error(
+        `Cal.com API error: ${response.status} - ${JSON.stringify(errorData)}`
+      );
     }
 
     const result: CreateManagedUserResult = await response.json();
-    
-    console.log("Cal.com API response:", JSON.stringify(result, null, 2));
 
     if (result.status !== "success") {
       return createErrorResponse({

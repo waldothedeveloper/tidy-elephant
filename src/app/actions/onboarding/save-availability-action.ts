@@ -103,7 +103,6 @@ export async function saveAvailabilityAction(
       },
     });
 
-    console.log(`resultFromInngest: ${JSON.stringify(resultFromInngest)}`);
     return {
       success: true,
       message: "Availability saved successfully!",

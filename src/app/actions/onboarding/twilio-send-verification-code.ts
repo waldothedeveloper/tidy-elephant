@@ -27,7 +27,8 @@ export async function twilioSendVerificationCodeAction(
     };
   }
 
-  const phoneValidation = v.safeParse(e164USPhoneNumberSchema, phoneNumber);
+  const phoneValidation = v.safeParse(e164USPhoneNumberSchema, { phoneNumber });
+
   if (!phoneValidation.success) {
     return {
       success: false,

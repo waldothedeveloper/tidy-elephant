@@ -38,8 +38,7 @@ export function HourlyRateWrapper() {
     },
   });
 
-  const { isDirty, errors } = form.formState;
-  console.log("errors: ", errors);
+  const { isDirty } = form.formState;
 
   const onSubmit = useCallback(
     async (values: CreateHourlyRateInput) => {
