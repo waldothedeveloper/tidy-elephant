@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { ThemeModeToggle } from "@/components/ui/theme-mode-toggle";
+import logo from "@/images/tidy-logo-no-bg.png";
 import { usePathname } from "next/navigation";
 
 export default function NavigationMenu() {
@@ -32,7 +33,7 @@ export default function NavigationMenu() {
             height={56}
             width={56}
             className="h-10 md:h-14 w-auto"
-            src="/images/tidy-logo-no-bg.png"
+            src={logo}
             alt="Tidy Elephant Logo"
           />
         </Link>

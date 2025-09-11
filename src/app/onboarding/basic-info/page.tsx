@@ -115,6 +115,7 @@ export default function ProviderOnboardingBasicInfo() {
                           <FormLabel>First name</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="given-name"
                               placeholder="John"
@@ -136,6 +137,7 @@ export default function ProviderOnboardingBasicInfo() {
                           <FormLabel>Last name</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="family-name"
                               placeholder="Doe"

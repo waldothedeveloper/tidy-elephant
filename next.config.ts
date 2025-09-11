@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   experimental: {
     devtoolSegmentExplorer: true,
     typedEnv: true,
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
   },
   images: {
     remotePatterns: [

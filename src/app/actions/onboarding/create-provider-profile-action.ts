@@ -15,9 +15,10 @@ COPY/PASTE THIS TO ALL SERVER ACTIONS:
 *** */
 
 import * as v from "valibot";
+
+import { InferInput } from "valibot";
 import { auth } from "@clerk/nextjs/server";
 import { userProfileSchema } from "@/app/onboarding/basic-info/profile-schema";
-import { InferInput } from "valibot";
 
 interface ProfileResult {
   success: boolean;
@@ -47,8 +48,7 @@ export async function createProviderProfileAction(
   try {
     // TODO: Implement actual profile creation logic
     // This should create both user profile and provider profile records
-    console.log("Creating profile with data:", validationResult.output);
-    
+
     return {
       success: true,
       message: "Profile created successfully!",
