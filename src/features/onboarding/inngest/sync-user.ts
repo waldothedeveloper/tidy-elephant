@@ -1,14 +1,24 @@
 import "server-only";
 
-import type { WebhookEvent } from "@clerk/nextjs/server";
+import type { ClerkUserCreatedData } from "@/types/clerk-webhook";
 import { db } from "@/lib/db";
 import { inngest } from "@/lib/inngest/client";
 import { usersTable } from "@/lib/db/user-schema";
+import { parseISO, isValid } from "date-fns";
 
 function toDateOrNull(value: unknown): Date | null {
   if (value instanceof Date) return value;
-  if (typeof value === "number" || typeof value === "string")
-    return new Date(value);
+  
+  if (typeof value === "number") {
+    const date = new Date(value);
+    return isValid(date) ? date : null;
+  }
+  
+  if (typeof value === "string") {
+    const isoDate = parseISO(value);
+    return isValid(isoDate) ? isoDate : null;
+  }
+  
   return null;
 }
 
@@ -17,17 +27,9 @@ export const syncSignUpUser = inngest.createFunction(
   { event: "clerk/user.created" },
   async ({ event }) => {
     try {
-      const payload = event as unknown as WebhookEvent;
-      if (payload.type !== "user.created") {
-        throw new Error(
-          `sync-user: Unexpected Clerk event type: ${payload.type}`
-        );
-      }
+      const payload: ClerkUserCreatedData = event.data;
 
-      const userData = payload.data;
-
-      // Prefer external account email (e.g., Google) when available
-      const externalAccounts = userData.external_accounts ?? [];
+      const externalAccounts = payload.external_accounts ?? [];
       const googleAccount = externalAccounts.find(
         (a) =>
           a?.provider === "oauth_google" || (a?.object ?? "").includes("google")
@@ -35,10 +37,9 @@ export const syncSignUpUser = inngest.createFunction(
       const extAccount = googleAccount || externalAccounts[0];
       const externalEmail: string | undefined = extAccount?.email_address;
 
-      // Fallbacks to Clerk email addresses
-      const emailAddresses = userData.email_addresses ?? [];
+      const emailAddresses = payload.email_addresses ?? [];
       const primaryEmailObj = emailAddresses.find(
-        (e) => e.id === userData.primary_email_address_id
+        (e) => e.id === payload.primary_email_address_id
       );
       const verifiedEmailObj = emailAddresses.find(
         (e) => e.verification?.status === "verified"
@@ -54,7 +55,7 @@ export const syncSignUpUser = inngest.createFunction(
 
       if (!chosenEmail) {
         throw new Error(
-          `sync-user: No email address available in Clerk event payload (userId=${userData?.id})`
+          `sync-user: No email address available in Clerk event payload (userId=${payload?.id})`
         );
       }
 
@@ -65,46 +66,28 @@ export const syncSignUpUser = inngest.createFunction(
           firstEmailObj?.verification?.status === "verified"
       );
 
-      // Normalize phone (store only valid E.164 +1XXXXXXXXXX or null)
       const chosenPhone: string | null = null;
 
       const newUser = {
-        clerkUserID: userData.id,
+        clerkUserID: payload.id,
         email: chosenEmail,
-        firstname: userData.first_name || "",
-        lastname: userData.last_name || "",
+        firstname: payload.first_name || "",
+        lastname: payload.last_name || "",
         phone: chosenPhone,
-        profileImage: userData.image_url || extAccount?.image_url || null,
+        profileImage: payload.image_url || extAccount?.image_url || null,
         isEmailVerified,
         agreedToTerms: true,
         agreedToTermsAt:
-          toDateOrNull(userData.legal_accepted_at) ??
-          toDateOrNull(userData.created_at) ??
+          toDateOrNull(payload.legal_accepted_at) ??
+          toDateOrNull(payload.created_at) ??
           new Date(),
         privacyPolicyAccepted: true,
-        createdAt: toDateOrNull(userData.created_at) ?? new Date(),
+        createdAt: toDateOrNull(payload.created_at) ?? new Date(),
       };
-
-      // console.info("sync-user: inserting user", {
-      //   userId: userData.id,
-      //   chosenEmail,
-      //   emailSource: extAccount
-      //     ? "external_account"
-      //     : primaryEmailObj
-      //       ? "primary_email"
-      //       : verifiedEmailObj
-      //         ? "verified_email"
-      //         : firstEmailObj
-      //           ? "first_email"
-      //           : "unknown",
-      //   isEmailVerified,
-      //   emailAddressesCount: emailAddresses.length,
-      //   externalAccountsCount: externalAccounts.length,
-      // });
 
       await db.insert(usersTable).values(newUser).onConflictDoNothing();
 
-      return { success: true, userId: userData.id };
+      return { success: true, userId: payload.id };
     } catch (error) {
       console.error("Error syncing user from Clerk:", error);
       throw error;
