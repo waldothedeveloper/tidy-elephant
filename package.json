@@ -34,7 +34,6 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@stripe/connect-js": "^3.3.27",
     "@stripe/react-connect-js": "^3.3.25",
-    "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^1.1.1",
