@@ -1,12 +1,14 @@
 "use server";
 
-import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
-
-import { Duration } from "@upstash/ratelimit";
-import { auth } from "@clerk/nextjs/server";
-import { verifyTwilioCodeDAL } from "@/lib/dal/twilio";
 import * as v from "valibot";
-import { verificationCodeSchema, e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
+
+import {
+  e164USPhoneNumberSchema,
+  verificationCodeSchema,
+} from "@/lib/schemas/phone-verification-schemas";
+
+import { verifyTwilioCodeDAL } from "@/lib/dal/twilio";
+import { auth } from "@clerk/nextjs/server";
 
 interface VerificationResult {
   success: boolean;
@@ -29,10 +31,9 @@ export async function twilioVerifyCodeAction(
   }
 
   // 2. Input validation - NO THROWING, only return errors
-  const codeValidation = v.safeParse(
-    verificationCodeSchema,
-    { verificationCode: code?.toString().trim().replace(/\D/g, "") || "" }
-  );
+  const codeValidation = v.safeParse(verificationCodeSchema, {
+    verificationCode: code?.toString().trim().replace(/\D/g, "") || "",
+  });
 
   if (!codeValidation.success) {
     return {
@@ -48,10 +49,9 @@ export async function twilioVerifyCodeAction(
     };
   }
 
-  const phoneValidation = v.safeParse(
-    e164USPhoneNumberSchema,
-    { phoneNumber: phoneNumber.trim() }
-  );
+  const phoneValidation = v.safeParse(e164USPhoneNumberSchema, {
+    phoneNumber: phoneNumber.trim(),
+  });
 
   if (!phoneValidation.success) {
     return {
@@ -60,33 +60,6 @@ export async function twilioVerifyCodeAction(
     };
   }
 
-  // 3. Rate limiting - check result without throwing (using verification-specific limits)
-  const verificationLimits = getActionRateLimits("verification");
-
-  const rateLimitResult = await rateLimiter(
-    `verify-code:${userId}:${phoneValidation.output.phoneNumber}`,
-    verificationLimits.attempts,
-    verificationLimits.window as Duration
-  );
-
-  const dailyLimitResult = await rateLimiter(
-    `verify-daily:${userId}:${phoneValidation.output.phoneNumber}`,
-    verificationLimits.dailyAttempts,
-    verificationLimits.dailyWindow as Duration
-  );
-
-  if (!rateLimitResult.success || !dailyLimitResult.success) {
-    const failedResult = !rateLimitResult.success
-      ? rateLimitResult
-      : dailyLimitResult;
-    return {
-      success: false,
-      error: "Rate limit exceeded. Please try again later.",
-      retryAfter: Math.ceil((failedResult.reset - Date.now()) / 1000),
-    };
-  }
-
-  // 4. Perform verification
   try {
     const result = await verifyTwilioCodeDAL(
       codeValidation.output.verificationCode,

@@ -100,9 +100,6 @@ export function useCodeVerification(
     }
   }, [sharedPhoneNumber, resetTimer]);
 
-  const codeVerificationCache = useRef<
-    Map<string, { success: boolean; error?: string }>
-  >(new Map());
 
   const handleCodeChange = useCallback(
     async (value: string) => {
@@ -111,33 +108,8 @@ export function useCodeVerification(
         shouldValidate: true,
       });
 
-      // Step 2: Verify the code when 6 digits are entered
       if (value.length === 6) {
         setCodeVerificationState({ step: "verifying-code" });
-
-        // Check if this invalid code has been tried before
-        const cachedInvalidCode = codeVerificationCache.current.get(value);
-        if (cachedInvalidCode && !cachedInvalidCode.success) {
-          // This code was already tried and was invalid - don't hit API again
-          setCodeVerificationState({
-            step: "code-invalid",
-            error:
-              "You already entered this code and it was invalid. Contact Support if you need assistance.",
-          });
-
-          toast.error(
-            "You already entered this code and it was invalid. Contact Support if you need assistance."
-          );
-          // this is such a funny hack!
-          setTimeout(() => {
-            codeVerificationForm.setError("verificationCode", {
-              type: "manual",
-              message:
-                "You already entered this code and it was invalid. Contact Support if you need assistance.",
-            });
-          }, 0);
-          return; // Exit early - don't make API call
-        }
 
         try {
           const response = await twilioVerifyCodeAction(
@@ -146,18 +118,12 @@ export function useCodeVerification(
           );
 
           if (response.success) {
-            // DON'T cache successful codes - just proceed
             setCodeVerificationState({ step: "code-verified" });
             toast.success("Phone number verified successfully!");
 
             router.push("/onboarding/type-of-business");
           } else {
-            // ONLY cache invalid codes
             const errorMsg = response.error || "Invalid verification code";
-            codeVerificationCache.current.set(value, {
-              success: false,
-              error: errorMsg,
-            });
 
             setCodeVerificationState({
               step: "code-invalid",
@@ -173,12 +139,6 @@ export function useCodeVerification(
           const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
 
-          // Cache API errors as invalid codes too
-          codeVerificationCache.current.set(value, {
-            success: false,
-            error: errorMessage,
-          });
-
           setCodeVerificationState({
             step: "code-invalid",
             error: errorMessage,
@@ -191,8 +151,8 @@ export function useCodeVerification(
         }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sharedPhoneNumber]
+
+    [sharedPhoneNumber, codeVerificationForm, router]
   );
 
   const resendCode = useCallback(async () => {

@@ -1,13 +1,13 @@
 "use server";
 
+import * as v from "valibot";
+
 import {
   e164PhoneNumberSchema,
   lookupTwilioPhoneNumberDAL,
 } from "@/lib/dal/twilio";
-import { getActionRateLimits, rateLimiter } from "@/lib/upstash-rate-limiter";
+
 import { auth } from "@clerk/nextjs/server";
-import { type Duration } from "@upstash/ratelimit";
-import * as v from "valibot";
 
 interface LookupResult {
   success: boolean;
@@ -48,31 +48,6 @@ export async function lookupTwilioPhoneNumberAction(
     return {
       success: false,
       error: "Invalid phone number format.",
-    };
-  }
-
-  // 3. Rate limiting - Phone lookup attempts (using lookup-specific limits)
-  const lookupLimits = getActionRateLimits("lookup");
-
-  const rateLimitResult = await rateLimiter(
-    `lookup-phone:${userId}`,
-    lookupLimits.attempts,
-    lookupLimits.window as Duration
-  );
-
-  const dailyLimitResult = await rateLimiter(
-    `lookup-daily:${userId}`,
-    lookupLimits.dailyAttempts,
-    lookupLimits.dailyWindow as Duration
-  );
-  if (!rateLimitResult.success || !dailyLimitResult.success) {
-    const failedResult = !rateLimitResult.success
-      ? rateLimitResult
-      : dailyLimitResult;
-    return {
-      success: false,
-      error: "Rate limit exceeded. Please try again later.",
-      retryAfter: Math.ceil((failedResult.reset - Date.now()) / 1000),
     };
   }
 
