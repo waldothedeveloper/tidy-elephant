@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CreditCard, Shield, User } from "lucide-react";
 
-import { BeginOnboardingButton } from "@/app/onboarding/_components/begin-onboarding-button";
+import { BeginOnboardingButton } from "./begin-onboarding-btn";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

@@ -4,10 +4,10 @@ import {
   ConnectAccountOnboarding,
   ConnectComponentsProvider,
 } from "@stripe/react-connect-js";
-import { SignedIn, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react";
+// import { getProviderInfo } from "@/app/actions/onboarding/stripe/get-provider-info-action";
 import { useState } from "react";
 import { useStripeConnect } from "./useStripeConnect";
 
@@ -16,18 +16,12 @@ export default function SetupPaymentAccountPage() {
   const [onboardingExited, setOnboardingExited] = useState(false);
   const [error, setError] = useState(false);
   const [connectedAccountId, setConnectedAccountId] = useState("");
+  console.log("connectedAccountId: ", connectedAccountId);
   const stripeConnectInstance = useStripeConnect(connectedAccountId);
+  console.log("stripeConnectInstance: ", stripeConnectInstance);
 
   return (
     <div>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
-      </div>
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="pb-12">
           <span className="mt-2 text-sm text-muted-foreground">
@@ -58,24 +52,35 @@ export default function SetupPaymentAccountPage() {
                 </p>
                 <Button
                   onClick={async () => {
-                    setAccountCreatePending(true);
-                    setError(false);
-                    fetch("/api/stripe/create-connected-account", {
-                      method: "POST",
-                    })
-                      .then((response) => response.json())
-                      .then((json) => {
-                        setAccountCreatePending(false);
-                        const { account, error } = json;
+                    try {
+                      setAccountCreatePending(true);
+                      setError(false);
 
-                        if (account) {
-                          setConnectedAccountId(account);
-                        }
+                      // const accountInfo = await getProviderInfo();
+                      // if (!accountInfo.success) {
+                      //   setError(true);
+                      //   setAccountCreatePending(false);
+                      //   return;
+                      // }
 
-                        if (error) {
-                          setError(true);
-                        }
-                      });
+                      // const seed = accountInfo.data.stripe;
+                      // const res = await createStripeConnectAccount();
+                      // console.log(
+                      //   "response from createStripeConnectAccount: ",
+                      //   res
+                      // );
+
+                      // if (res.success) {
+                      //   setConnectedAccountId(res.data.accountId);
+                      //   setAccountCreatePending(false);
+                      // } else {
+                      //   setError(true);
+                      //   setAccountCreatePending(false);
+                      // }
+                    } catch {
+                      setError(true);
+                      setAccountCreatePending(false);
+                    }
                   }}
                 >
                   Create Payment Account
