@@ -395,6 +395,7 @@ export default function BusinessInfoPage() {
                           <FormLabel>Street Address</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="address-line1"
                               placeholder="123 Main Street"
@@ -417,6 +418,7 @@ export default function BusinessInfoPage() {
                           <FormLabel>Address Line 2 (Optional)</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="address-line2"
                               placeholder="Suite 100, Apt 2B, etc."
@@ -439,6 +441,7 @@ export default function BusinessInfoPage() {
                           <FormLabel>City</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="address-level2"
                               placeholder="New York"
@@ -460,6 +463,7 @@ export default function BusinessInfoPage() {
                           <FormLabel>State</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="address-level1"
                               placeholder="NY"
@@ -481,6 +485,7 @@ export default function BusinessInfoPage() {
                           <FormLabel>ZIP Code</FormLabel>
                           <FormControl>
                             <Input
+                              className="dark:text-background"
                               type="text"
                               autoComplete="postal-code"
                               placeholder="10001"

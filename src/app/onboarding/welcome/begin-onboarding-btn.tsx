@@ -19,7 +19,7 @@ export function BeginOnboardingButton() {
         return;
       }
 
-      router.push("/onboarding/verify-phone");
+      router.push("/onboarding/setup-account");
     });
   };
 
