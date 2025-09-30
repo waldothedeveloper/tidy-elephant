@@ -356,6 +356,7 @@ export const providerProfiles = pgTable("provider_profiles", {
 	businessPhone: varchar("business_phone", { length: 16 }),
 	businessPhoneLineType: phoneLineType("business_phone_line_type"),
 	employerEin: varchar("employer_ein", { length: 10 }),
+	stripeConnectedAccountId: varchar("stripe_connected_account_id", { length: 255 }),
 }, (table) => [
 	index("idx_provider_avg_rating").using("btree", table.averageRating.asc().nullsLast().op("numeric_ops")),
 	index("idx_provider_background_check").using("btree", table.backgroundCheckStatus.asc().nullsLast().op("enum_ops")),

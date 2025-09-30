@@ -60,6 +60,10 @@ async function findOrCreateAddress(addressInfo: AddressInfo): Promise<string> {
   return newAddress.id;
 }
 
+export {
+  getProviderStripeAccountDAL,
+  saveProviderStripeAccountDAL,
+} from "./stripe";
 export { getUserProfileDAL } from "./user-profile";
 
 export async function saveBusinessInfoDAL(
