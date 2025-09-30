@@ -76,7 +76,7 @@ export default async function SetupStripeAccountPage() {
             Your Profile Starts Here
           </h1>
           <p className="text-base leading-7 text-muted-foreground">
-            There are still incomplete items from Stripe's onboarding form
+            There are still incomplete items from Stripe&rsquo;s onboarding form
             waiting for your magic touch. Jump back in, zap through them, and we
             will have the welcome mat ready when you come back.
           </p>

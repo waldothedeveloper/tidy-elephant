@@ -93,7 +93,7 @@ export default async function ReturnFromStripePage() {
         </h1>
         <p className="text-base leading-7 text-muted-foreground">
           Your profile is verified, your bank is connected, and payments will
-          flow as soon as you start booking. Next stop: Let's talk about your
+          flow as soon as you start booking. Next stop: Let&rsquo;s talk about your
           hourly rate, availability, and more.
         </p>
         <Button asChild size="lg">
