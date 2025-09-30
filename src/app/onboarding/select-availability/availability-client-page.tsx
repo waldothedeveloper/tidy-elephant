@@ -136,7 +136,7 @@ export default function AvailabilityClientPage({
 
         if (result.success) {
           toast.success(result.message || "Availability saved successfully!");
-          router.push(`/onboarding/setup-payment-account`);
+          router.push(`/onboarding/setup-account`);
         } else {
           toast.error(
             result.error || "Failed to save availability. Please try again."

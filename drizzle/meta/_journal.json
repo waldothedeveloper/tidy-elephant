@@ -15,6 +15,13 @@
       "when": 1755924347830,
       "tag": "0001_flashy_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756000000000,
+      "tag": "0002_provider_profiles_add_stripe_connected_account",
+      "breakpoints": true
     }
   ]
 }

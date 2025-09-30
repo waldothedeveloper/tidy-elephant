@@ -1,6 +1,6 @@
 {
-  "id": "9d1a7b66-1b60-4323-b31b-a174b1bffcb8",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "a0e859e6-dc6f-4ebe-92f9-b6b011a55e99",
+  "prevId": "9d1a7b66-1b60-4323-b31b-a174b1bffcb8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -777,6 +777,43 @@
           "primaryKey": false,
           "notNull": false
         },
+        "stripe_invoice_id": {
+          "name": "stripe_invoice_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_payment_intent_id": {
+          "name": "stripe_payment_intent_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_customer_id": {
+          "name": "stripe_customer_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_subscription_id": {
+          "name": "stripe_subscription_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_refunded": {
+          "name": "amount_refunded",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "refunded_at": {
+          "name": "refunded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "client_notes": {
           "name": "client_notes",
           "type": "text",
@@ -908,13 +945,19 @@
           "method": "btree",
           "with": {}
         },
-        "idx_booking_status": {
-          "name": "idx_booking_status",
+        "idx_booking_status_created": {
+          "name": "idx_booking_status_created",
           "columns": [
             {
               "expression": "status",
               "isExpression": false,
               "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
               "nulls": "last"
             }
           ],
@@ -929,7 +972,7 @@
             {
               "expression": "service_date",
               "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             }
           ],
@@ -938,11 +981,32 @@
           "method": "btree",
           "with": {}
         },
-        "idx_booking_created_at": {
-          "name": "idx_booking_created_at",
+        "idx_booking_payment_status_created": {
+          "name": "idx_booking_payment_status_created",
           "columns": [
             {
+              "expression": "payment_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
               "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_booking_stripe_payment_intent": {
+          "name": "idx_booking_stripe_payment_intent",
+          "columns": [
+            {
+              "expression": "stripe_payment_intent_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -953,11 +1017,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_booking_payment_status": {
-          "name": "idx_booking_payment_status",
+        "idx_booking_stripe_invoice": {
+          "name": "idx_booking_stripe_invoice",
           "columns": [
             {
-              "expression": "payment_status",
+              "expression": "stripe_invoice_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -986,7 +1050,7 @@
             {
               "expression": "service_date",
               "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             }
           ],
@@ -1013,6 +1077,21 @@
             {
               "expression": "service_date",
               "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_booking_stripe_customer": {
+          "name": "idx_booking_stripe_customer",
+          "columns": [
+            {
+              "expression": "stripe_customer_id",
+              "isExpression": false,
               "asc": true,
               "nulls": "last"
             }
@@ -1022,13 +1101,40 @@
           "method": "btree",
           "with": {}
         },
-        "idx_booking_service_category": {
-          "name": "idx_booking_service_category",
+        "idx_booking_stripe_subscription": {
+          "name": "idx_booking_stripe_subscription",
+          "columns": [
+            {
+              "expression": "stripe_subscription_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_booking_service_category_status": {
+          "name": "idx_booking_service_category_status",
           "columns": [
             {
               "expression": "service_category_id",
               "isExpression": false,
               "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "service_date",
+              "isExpression": false,
+              "asc": false,
               "nulls": "last"
             }
           ],
@@ -1050,171 +1156,6 @@
           "isUnique": false,
           "concurrently": false,
           "method": "gin",
-          "with": {}
-        },
-        "idx_booking_date_status": {
-          "name": "idx_booking_date_status",
-          "columns": [
-            {
-              "expression": "service_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_status_date_range": {
-          "name": "idx_booking_status_date_range",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "service_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_category_status": {
-          "name": "idx_booking_category_status",
-          "columns": [
-            {
-              "expression": "service_category_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_category_date": {
-          "name": "idx_booking_category_date",
-          "columns": [
-            {
-              "expression": "service_category_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "service_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_provider_date_status": {
-          "name": "idx_booking_provider_date_status",
-          "columns": [
-            {
-              "expression": "provider_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "service_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_client_date_status": {
-          "name": "idx_booking_client_date_status",
-          "columns": [
-            {
-              "expression": "client_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "service_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_booking_provider_service_area": {
-          "name": "idx_booking_provider_service_area",
-          "columns": [
-            {
-              "expression": "provider_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "service_area",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
           "with": {}
         }
       },
@@ -1280,6 +1221,14 @@
         "positive_total_price": {
           "name": "positive_total_price",
           "value": "\"bookings\".\"total_price\" IS NULL OR \"bookings\".\"total_price\" > 0"
+        },
+        "refund_amount_valid": {
+          "name": "refund_amount_valid",
+          "value": "\"bookings\".\"amount_refunded\" IS NULL OR \n          (\"bookings\".\"amount_refunded\" >= 0 AND \n           (\"bookings\".\"total_price\" IS NULL OR \"bookings\".\"amount_refunded\" <= \"bookings\".\"total_price\"))"
+        },
+        "refund_timestamp_logic": {
+          "name": "refund_timestamp_logic",
+          "value": "(\"bookings\".\"amount_refunded\" IS NULL OR \"bookings\".\"amount_refunded\" = 0) OR \n          \"bookings\".\"refunded_at\" IS NOT NULL"
         }
       },
       "isRLSEnabled": false
@@ -2183,6 +2132,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "stripe_connected_account_id": {
+          "name": "stripe_connected_account_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "work_photos": {
           "name": "work_photos",
           "type": "text[]",
@@ -2269,6 +2224,42 @@
         "availability": {
           "name": "availability",
           "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_user_id": {
+          "name": "cal_atoms_user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_default_schedule_id": {
+          "name": "cal_atoms_default_schedule_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_access_token": {
+          "name": "cal_atoms_access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_access_token_expires_at": {
+          "name": "cal_atoms_access_token_expires_at",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_refresh_token": {
+          "name": "cal_atoms_refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cal_atoms_refresh_token_expires_at": {
+          "name": "cal_atoms_refresh_token_expires_at",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },

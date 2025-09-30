@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { twilioSendVerificationCodeAction } from "@/app/actions/onboarding/twilio-send-verification-code";
 import { twilioVerifyCodeAction } from "@/app/actions/onboarding/twilio-verify-code";
@@ -99,7 +99,6 @@ export function useCodeVerification(
       resetTimer();
     }
   }, [sharedPhoneNumber, resetTimer]);
-
 
   const handleCodeChange = useCallback(
     async (value: string) => {

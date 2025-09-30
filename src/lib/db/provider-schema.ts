@@ -109,6 +109,9 @@ export const providerProfilesTable = pgTable(
     businessPhone: varchar("business_phone", { length: 16 }),
     businessPhoneLineType: phoneLineTypeEnum("business_phone_line_type"),
     employerEin: varchar("employer_ein", { length: 10 }),
+    stripeConnectedAccountId: varchar("stripe_connected_account_id", {
+      length: 255,
+    }),
     workPhotos: text("work_photos").array().default([]),
     backgroundCheckStatus: backgroundCheckStatusEnum("background_check_status")
       .notNull()

@@ -2,12 +2,10 @@
 
 import * as v from "valibot";
 
-import { US_TIMEZONE_IDENTIFIERS } from "@/lib/utils";
-import type { UserAvailability } from "@/features/onboarding/inngest/functions";
 import { availabilitySchema } from "@/app/onboarding/select-availability/availability-schema";
+import type { UserAvailability } from "@/features/onboarding/inngest/functions";
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import { getUserProfileDAL } from "@/lib/dal/onboarding/user-profile";
-import { inngest } from "@/lib/inngest/client";
 
 type AvailabilityFormData = {
   isAvailable: boolean;
@@ -16,19 +14,20 @@ type AvailabilityFormData = {
 };
 
 type SaveAvailabilityInput = v.InferInput<typeof availabilitySchema>;
+type SaveAvailabilityOutput = v.InferOutput<typeof availabilitySchema>;
 
-interface SaveAvailabilityResult {
+type SaveAvailabilityResult = {
   success: boolean;
   message?: string;
   error?: string;
-}
+  availabilitySummary?: string;
+};
 
 export async function saveAvailabilityAction(
   formData: SaveAvailabilityInput
 ): Promise<SaveAvailabilityResult> {
-  let clerkUserId: string;
   try {
-    clerkUserId = await enforceAuthProvider();
+    await enforceAuthProvider();
   } catch (error) {
     return {
       success: false,
@@ -44,7 +43,7 @@ export async function saveAvailabilityAction(
     };
   }
 
-  const availabilityData = validationResult.output;
+  const availabilityData: SaveAvailabilityOutput = validationResult.output;
   const {
     monday,
     tuesday,
@@ -54,18 +53,8 @@ export async function saveAvailabilityAction(
     saturday,
     sunday,
     timezone,
-  }: {
-    monday: AvailabilityFormData;
-    tuesday: AvailabilityFormData;
-    wednesday: AvailabilityFormData;
-    thursday: AvailabilityFormData;
-    friday: AvailabilityFormData;
-    saturday: AvailabilityFormData;
-    sunday: AvailabilityFormData;
-    timezone: (typeof US_TIMEZONE_IDENTIFIERS)[number];
   } = availabilityData;
 
-  //  call the database to get the basic info from the user, specifically, their name and email
   const userProfileData = await getUserProfileDAL();
 
   if (!userProfileData) {
@@ -83,29 +72,32 @@ export async function saveAvailabilityAction(
     endTime: day.endTime || "",
   });
 
-  try {
-    const resultFromInngest = await inngest.send({
-      name: "onboarding/create-calendar-managed-user",
-      data: {
-        clerkUserId,
-        email: userProfileData.email,
-        name: `${userProfileData.firstname} ${userProfileData.lastname}`,
-        timezone,
-        availability: {
-          monday: transformToUserAvailability(monday),
-          tuesday: transformToUserAvailability(tuesday),
-          wednesday: transformToUserAvailability(wednesday),
-          thursday: transformToUserAvailability(thursday),
-          friday: transformToUserAvailability(friday),
-          saturday: transformToUserAvailability(saturday),
-          sunday: transformToUserAvailability(sunday),
-        },
-      },
-    });
+  const availability = {
+    monday: transformToUserAvailability(monday),
+    tuesday: transformToUserAvailability(tuesday),
+    wednesday: transformToUserAvailability(wednesday),
+    thursday: transformToUserAvailability(thursday),
+    friday: transformToUserAvailability(friday),
+    saturday: transformToUserAvailability(saturday),
+    sunday: transformToUserAvailability(sunday),
+  } satisfies Record<string, UserAvailability>;
 
+  const availableDayCount = Object.values(availability).filter(
+    (dayAvailability) => dayAvailability.isAvailable
+  ).length;
+
+  const availabilitySummary =
+    availableDayCount > 0
+      ? `Availability saved for ${availableDayCount} day${
+          availableDayCount === 1 ? "" : "s"
+        } in ${timezone}.`
+      : `No days marked as available in ${timezone}.`;
+
+  try {
     return {
       success: true,
       message: "Availability saved successfully!",
+      availabilitySummary,
     };
   } catch (error) {
     console.error("Error saving availability:", error);
