@@ -6,6 +6,7 @@ import {
   getProviderStripeAccountDAL,
   saveProviderStripeAccountDAL,
 } from "@/lib/dal/onboarding";
+import { deleteStripeAccount } from "@/lib/stripe";
 import {
   createErrorResponse,
   createSuccessResponse,
@@ -48,12 +49,29 @@ export const createStripeOnboardingSession = async (): Promise<
     accountResult.data.accountId
   );
 
-  //TODO:  IF THIS STEP FAILS, MAKE SURE TO DELETE THE STRIPE ACCOUNT YOU CREATED IN FUNCTION: createStripeAccountAction, to avoid orphaned accounts...it should also exit completely and NOT run the createStripeAccountLink function at all.
   if (!saveResult.success) {
-    return createErrorResponse({
-      message:
-        "We were unable to save your Stripe account details in our databases. Please try again or contact support if the issue persists.",
-    });
+    try {
+      const deletedStripeAcc = await deleteStripeAccount(
+        accountResult.data.accountId
+      );
+
+      if (deletedStripeAcc.deleted) {
+        return createErrorResponse({
+          message:
+            "We were unable to save your Stripe account details in our databases. Please try again or contact support if the issue persists.",
+        });
+      }
+
+      return createErrorResponse({
+        message:
+          "We were unable to save your Stripe account details in our databases. Please try again or contact support if the issue persists.",
+      });
+    } catch (error) {
+      return createErrorResponse({
+        message:
+          "Something went wrong while trying to delete your Stripe account.",
+      });
+    }
   }
 
   const accountLinkResult = await createStripeAccountLink(

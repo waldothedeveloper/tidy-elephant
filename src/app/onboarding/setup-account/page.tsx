@@ -1,11 +1,11 @@
-import { createStripeAccountLink } from "@/app/actions/onboarding/stripe/create-stripe-account-link";
-import { createStripeOnboardingSession } from "@/app/actions/onboarding/stripe/create-stripe-onboarding-session-action";
-import { getStripeAccountAction } from "@/app/actions/onboarding/stripe/get-stripe-account-action";
-import { getStripeAccountRequirementStatus } from "@/app/onboarding/_stripe/stripe-account-requirements";
 import { Button } from "@/components/ui/button";
-import { getProviderStripeAccountDAL } from "@/lib/dal/onboarding";
 import Link from "next/link";
 import { SetupStripeAccountForm } from "./setup-stripe-account-form";
+import { createStripeAccountLink } from "@/app/actions/onboarding/stripe/create-stripe-account-link";
+import { createStripeOnboardingSession } from "@/app/actions/onboarding/stripe/create-stripe-onboarding-session-action";
+import { getProviderStripeAccountDAL } from "@/lib/dal/onboarding";
+import { getStripeAccountAction } from "@/app/actions/onboarding/stripe/get-stripe-account-action";
+import { getStripeAccountRequirementStatus } from "@/app/onboarding/_stripe/stripe-account-requirements";
 
 const NEXT_STEP_PATH = "/onboarding/select-availability";
 
@@ -42,7 +42,6 @@ export default async function SetupStripeAccountPage() {
   const { hasOutstandingRequirements } =
     getStripeAccountRequirementStatus(account);
 
-  console.log("hasOutstandingRequirements: ", hasOutstandingRequirements);
   if (hasOutstandingRequirements) {
     const accountLinkResult = await createStripeAccountLink(account.id);
 
@@ -97,14 +96,15 @@ export default async function SetupStripeAccountPage() {
     <div className="mx-auto flex max-w-3xl flex-col gap-8 py-16">
       <div className="space-y-4">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">
-          Setup account
+          Profile Complete—You’re Ready to Roll
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          Create your account
+          You’ve crossed the finish line at Stripe
         </h1>
         <p className="text-base leading-7 text-muted-foreground">
-          Looks like every Stripe checkbox is complete. You can head to the next
-          step and work your scheduling magic.
+          Your profile is verified, your bank is connected, and payments will
+          flow as soon as you start booking. Next stop: Trust & Safety
+          (background check).
         </p>
       </div>
       <Button asChild size="lg">
