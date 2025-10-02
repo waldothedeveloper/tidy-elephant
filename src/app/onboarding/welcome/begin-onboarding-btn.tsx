@@ -7,6 +7,8 @@ import { beginProviderOnboardingAction } from "@/app/actions/onboarding/begin-pr
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
+const VERIFY_PHONE_PATH = "/onboarding/verify-phone";
+
 export function BeginOnboardingButton() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -19,7 +21,7 @@ export function BeginOnboardingButton() {
         return;
       }
 
-      router.push("/onboarding/setup-account");
+      router.push(VERIFY_PHONE_PATH);
     });
   };
 

@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { uploadWorkPhotosAction } from "@/app/actions/onboarding/upload-work-photos-action";
 import { useRouter } from "next/navigation";
 
+const SETUP_STRIPE_ACCOUNT_PATH = "/onboarding/setup-account";
+
 export default function ProviderOnboardingUploadWorkPhotos() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -99,7 +101,7 @@ export default function ProviderOnboardingUploadWorkPhotos() {
           throw new Error(result.message);
         }
 
-        router.push("/onboarding/select-availability");
+        router.push(SETUP_STRIPE_ACCOUNT_PATH);
         return { message: successMessage };
       }
     );
@@ -160,7 +162,7 @@ export default function ProviderOnboardingUploadWorkPhotos() {
         </div>
 
         <div className="space-y-12 max-w-4xl">
-          <div className="border-b border-border pb-12">
+          <div className="pb-12">
             <div className="mt-10 space-y-6">
               {/* Upload Area */}
               <div

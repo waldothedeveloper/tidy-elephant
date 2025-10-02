@@ -7,7 +7,7 @@ import { getProviderStripeAccountDAL } from "@/lib/dal/onboarding";
 import { getStripeAccountAction } from "@/app/actions/onboarding/stripe/get-stripe-account-action";
 import { getStripeAccountRequirementStatus } from "@/app/onboarding/_stripe/stripe-account-requirements";
 
-const NEXT_STEP_PATH = "/onboarding/select-availability";
+const BG_CHECK_PATH = "/onboarding/background-check";
 
 export default async function SetupStripeAccountPage() {
   const stripeAccountId = await getProviderStripeAccountDAL();
@@ -108,7 +108,7 @@ export default async function SetupStripeAccountPage() {
         </p>
       </div>
       <Button asChild size="lg">
-        <Link href={NEXT_STEP_PATH}>Continue to availability</Link>
+        <Link href={BG_CHECK_PATH}>Continue to availability</Link>
       </Button>
     </div>
   );

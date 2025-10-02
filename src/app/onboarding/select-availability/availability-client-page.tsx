@@ -7,6 +7,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { Loader2Icon, Moon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,21 +16,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SignedIn, UserButton } from "@clerk/nextjs";
-import { Loader2Icon, Moon } from "lucide-react";
 
-import { saveAvailabilityAction } from "@/app/actions/onboarding/save-availability-action";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { InferInput } from "valibot";
 import { Input } from "@/components/ui/input";
 import { US_TIMEZONE_IDENTIFIERS } from "@/lib/utils";
+import { availabilitySchema } from "./availability-schema";
+import { saveAvailabilityAction } from "@/app/actions/onboarding/save-availability-action";
+import { toast } from "sonner";
 import { tzOffset } from "@date-fns/tz";
-import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { InferInput } from "valibot";
-import { availabilitySchema } from "./availability-schema";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 
 type DayOfWeek = {
   id:
@@ -57,6 +57,8 @@ type AvailabilityClientPageProps = {
   daysOfWeek: readonly DayOfWeek[];
   pageData: PageData;
 };
+
+const WORK_PHOTOS_PATH = "/onboarding/upload-work-photos";
 
 export default function AvailabilityClientPage({
   daysOfWeek,
@@ -136,7 +138,7 @@ export default function AvailabilityClientPage({
 
         if (result.success) {
           toast.success(result.message || "Availability saved successfully!");
-          router.push(`/onboarding/setup-account`);
+          router.push(WORK_PHOTOS_PATH);
         } else {
           toast.error(
             result.error || "Failed to save availability. Please try again."

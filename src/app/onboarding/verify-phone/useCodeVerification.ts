@@ -22,6 +22,8 @@ type CodeVerificationState =
   | { step: "code-invalid"; error: string }
   | { step: "code-verified" };
 
+const HOURLY_RATE_PATH = "/onboarding/hourly-rate";
+
 export function useCodeVerification(
   clearPhoneNumber: () => void,
   sharedPhoneNumber: string
@@ -120,7 +122,7 @@ export function useCodeVerification(
             setCodeVerificationState({ step: "code-verified" });
             toast.success("Phone number verified successfully!");
 
-            router.push("/onboarding/type-of-business");
+            router.push(HOURLY_RATE_PATH);
           } else {
             const errorMsg = response.error || "Invalid verification code";
 

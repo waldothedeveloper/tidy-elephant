@@ -20,6 +20,7 @@ import { CircleCheckBig } from "lucide-react";
 import Link from "next/link";
 import { useCodeVerification } from "./useCodeVerification";
 
+const HOURLY_RATE_PATH = "/onboarding/hourly-rate";
 export function VerifyProviderPhoneSMSCode({
   clearPhoneNumber,
   sharedPhoneNumber,
@@ -65,7 +66,7 @@ export function VerifyProviderPhoneSMSCode({
               variant={!canSubmit ? "outline" : "default"}
               type="button"
             >
-              <Link href={canSubmit ? "/onboarding/select-categories" : "#"}>
+              <Link href={canSubmit ? HOURLY_RATE_PATH : "#"}>
                 Submit & Next Step
               </Link>
             </Button>
@@ -87,7 +88,7 @@ export function VerifyProviderPhoneSMSCode({
           </div>
 
           <div className="space-y-12">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10 flex flex-col items-start gap-y-8">
                 <div className="w-2/3">
                   <FormField

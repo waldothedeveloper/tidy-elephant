@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function OnboardingWelcomePage() {
   return (
-    <div>
+    <div className="min-h-dvh">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <BeginOnboardingButton />
@@ -93,7 +93,7 @@ export default function OnboardingWelcomePage() {
           <div className="max-w-4xl space-y-6">
             <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
               {/* Step 1 */}
-              <Card className="group transition-all hover:shadow-lg hover:shadow-primary/5">
+              <Card className="group">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
@@ -111,7 +111,7 @@ export default function OnboardingWelcomePage() {
               </Card>
 
               {/* Step 2 */}
-              <Card className="group transition-all hover:shadow-lg hover:shadow-primary/5">
+              <Card className="group">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
@@ -129,7 +129,7 @@ export default function OnboardingWelcomePage() {
               </Card>
 
               {/* Step 3 */}
-              <Card className="group transition-all hover:shadow-lg hover:shadow-primary/5">
+              <Card className="group">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
@@ -147,17 +147,7 @@ export default function OnboardingWelcomePage() {
               </Card>
             </div>
 
-            <div className="mt-12 text-center">
-              <p className="text-base font-medium text-foreground mb-2">
-                Ready to transform your organizing skills into income?
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Complete your onboarding process to secure your spot in a
-                vibrant community where clients are already looking for yo
-              </p>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-border">
+            <div className="mt-8 pt-6">
               <p className="text-sm text-muted-foreground">
                 Already completed onboarding?{" "}
                 <Button asChild variant="link" className="h-auto p-0">

@@ -26,6 +26,8 @@ import {
   type CreateHourlyRateInput,
 } from "./hourly-rate-schema";
 
+const AVAILABILITY_PATH = "/onboarding/select-availability";
+
 export function HourlyRateWrapper() {
   const [isPending, startTransition] = useTransition();
 
@@ -51,7 +53,7 @@ export function HourlyRateWrapper() {
             throw new Error(result.message);
           }
 
-          router.push("/onboarding/upload-work-photos");
+          router.push(AVAILABILITY_PATH);
           return { message: successMessage };
         }
       );
@@ -112,7 +114,7 @@ export function HourlyRateWrapper() {
 
           <div>
             <div className="space-y-12 max-w-4xl">
-              <div className="border-b border-border pb-12">
+              <div className="pb-12">
                 <div className="mt-10 max-w-md">
                   <FormField
                     control={form.control}
