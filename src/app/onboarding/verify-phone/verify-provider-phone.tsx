@@ -61,7 +61,7 @@ export function VerifyProviderPhone({
           </div>
 
           <div className="space-y-12">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10 grid grid-cols-1 gap-y-8 sm:grid-cols-4">
                 <div className="sm:col-span-1">
                   <FormField

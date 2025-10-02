@@ -3,8 +3,8 @@
 import { ArrowLeft, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VerifyPhoneLoading() {
   return (
@@ -39,7 +39,7 @@ export default function VerifyPhoneLoading() {
 
         <div>
           <div className="space-y-12 max-w-4xl">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10">
                 <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-4">
                   {/* Phone Number Field */}

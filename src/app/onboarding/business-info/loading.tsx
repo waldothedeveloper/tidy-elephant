@@ -23,7 +23,7 @@ export default function BusinessInfoLoading() {
 
         <div>
           <div className="space-y-12 max-w-4xl">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
                 {/* Business Type Field */}
                 <div className="sm:col-span-1">

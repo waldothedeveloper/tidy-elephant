@@ -3,8 +3,8 @@
 import { ArrowLeft, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SelectCategoriesLoading() {
   return (
@@ -38,10 +38,10 @@ export default function SelectCategoriesLoading() {
 
         <div>
           <div className="space-y-12 max-w-4xl">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10">
                 <Skeleton className="h-5 w-32 mb-4" />
-                
+
                 {/* Category Grid Skeleton */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {Array.from({ length: 8 }).map((_, index) => (

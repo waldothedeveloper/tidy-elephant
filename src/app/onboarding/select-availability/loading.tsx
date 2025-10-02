@@ -23,17 +23,20 @@ export default function SelectAvailabilityLoading() {
 
         <div className="space-y-12 max-w-4xl">
           {/* Available Days Section */}
-          <div className="border-b border-border pb-12">
+          <div className="pb-12">
             <div className="flex items-center gap-2 mb-6">
               <Skeleton className="size-5" />
               <Skeleton className="h-6 w-32" />
             </div>
-            
+
             <Skeleton className="h-4 w-80 mb-4" />
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {Array.from({ length: 7 }).map((_, i) => (
-                <div key={i} className="flex flex-row items-start space-x-3 space-y-0">
+                <div
+                  key={i}
+                  className="flex flex-row items-start space-x-3 space-y-0"
+                >
                   <Skeleton className="h-4 w-4 mt-1" />
                   <Skeleton className="h-4 w-16" />
                 </div>
@@ -42,14 +45,14 @@ export default function SelectAvailabilityLoading() {
           </div>
 
           {/* Time Slots Section */}
-          <div className="border-b border-border pb-12">
+          <div className="pb-12">
             <div className="flex items-center gap-2 mb-6">
               <Skeleton className="size-5" />
               <Skeleton className="h-6 w-40" />
             </div>
 
             <Skeleton className="h-4 w-72 mb-4" />
-            
+
             <div className="space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div

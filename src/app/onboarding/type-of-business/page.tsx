@@ -42,7 +42,7 @@ export default function TypeOfBusinessPage() {
 
         <div>
           <div className="space-y-12 max-w-4xl">
-            <div className="border-b border-border pb-12">
+            <div className="pb-12">
               <div className="mt-10 space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Freelancer Option */}

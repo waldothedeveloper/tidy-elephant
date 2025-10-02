@@ -1,8 +1,8 @@
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { createStripeAccountLink } from "@/app/actions/onboarding/stripe/create-stripe-account-link";
 import { getStripeAccountAction } from "@/app/actions/onboarding/stripe/get-stripe-account-action";
 import { getStripeAccountRequirementStatus } from "@/app/onboarding/_stripe/stripe-account-requirements";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default async function ReturnFromStripePage() {
   const result = await getStripeAccountAction();
@@ -93,13 +93,11 @@ export default async function ReturnFromStripePage() {
         </h1>
         <p className="text-base leading-7 text-muted-foreground">
           Your profile is verified, your bank is connected, and payments will
-          flow as soon as you start booking. Next stop: Let&rsquo;s talk about your
-          hourly rate, availability, and more.
+          flow as soon as you start booking. Next stop: Let&rsquo;s talk about
+          your hourly rate, availability, and more.
         </p>
         <Button asChild size="lg">
-          <Link href="/onboarding/select-availability">
-            Continue Onboarding
-          </Link>
+          <Link href="/onboarding/background-check">Continue Onboarding</Link>
         </Button>
       </div>
     </div>
