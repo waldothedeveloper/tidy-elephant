@@ -1,14 +1,16 @@
 "use client";
 
 import { ArrowLeft, Loader2Icon, Upload, X } from "lucide-react";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import {
+  finalizeWorkPhotosAction,
+  uploadSingleWorkPhotoAction,
+} from "@/app/actions/onboarding/upload-work-photos-action";
 import { useCallback, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { uploadWorkPhotosAction } from "@/app/actions/onboarding/upload-work-photos-action";
 import { useRouter } from "next/navigation";
 
 const SETUP_STRIPE_ACCOUNT_PATH = "/onboarding/setup-account";
@@ -88,23 +90,41 @@ export default function ProviderOnboardingUploadWorkPhotos() {
       return;
     }
 
-    const formData = new FormData();
-    selectedFiles.forEach((file, index) => {
-      formData.append(`photo-${index}`, file);
-    });
-
     const successMessage = "Work photos uploaded successfully!";
 
-    const submitPromise = uploadWorkPhotosAction(formData).then(
-      async (result) => {
-        if (!result.success) {
-          throw new Error(result.message);
+    const submitPromise = (async () => {
+      const uploadedUrls: string[] = [];
+
+      for (const file of selectedFiles) {
+        const singleFileFormData = new FormData();
+        singleFileFormData.append("photo", file);
+
+        const uploadResult =
+          await uploadSingleWorkPhotoAction(singleFileFormData);
+
+        if (!uploadResult.success || !uploadResult.url) {
+          throw new Error(
+            uploadResult.message || "Failed to upload one of the photos"
+          );
         }
 
-        router.push(SETUP_STRIPE_ACCOUNT_PATH);
-        return { message: successMessage };
+        uploadedUrls.push(uploadResult.url);
       }
-    );
+
+      const saveResult = await finalizeWorkPhotosAction({ urls: uploadedUrls });
+
+      if (!saveResult.success) {
+        throw new Error(
+          saveResult.message || "Failed to save uploaded work photos"
+        );
+      }
+
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+
+      return { message: successMessage };
+    })();
 
     toast.promise(submitPromise, {
       loading: "Uploading your work photos...",
@@ -113,15 +133,20 @@ export default function ProviderOnboardingUploadWorkPhotos() {
     });
 
     startTransition(async () => {
-      await submitPromise;
+      try {
+        await submitPromise;
+        router.push(SETUP_STRIPE_ACCOUNT_PATH);
+      } catch {
+        // Errors are handled via toast notifications
+      }
     });
-  }, [selectedFiles, router, startTransition]);
+  }, [previewUrls, router, selectedFiles, startTransition]);
 
   const hasMinimumPhotos = selectedFiles.length >= 3;
   const canAddMore = selectedFiles.length < 8;
 
   return (
-    <div>
+    <div className="min-h-dvh">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-6 flex items-center justify-between gap-x-6">
           <Button asChild type="button" variant="outline">
@@ -131,16 +156,16 @@ export default function ProviderOnboardingUploadWorkPhotos() {
             </Link>
           </Button>
           <div className="flex items-center gap-x-4">
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
             <Button
+              className="max-w-md w-full"
               variant={!hasMinimumPhotos ? "outline" : "default"}
               disabled={!hasMinimumPhotos || isPending}
               onClick={handleSubmit}
             >
               {isPending && <Loader2Icon className="animate-spin mr-2" />}
-              {isPending ? "Uploading..." : "Upload Photos & Continue"}
+              {isPending
+                ? "Uploading..."
+                : "Upload photos & continue onboarding"}
             </Button>
           </div>
         </div>
@@ -211,12 +236,12 @@ export default function ProviderOnboardingUploadWorkPhotos() {
                       )}
                     </p>
                     <p
-                      className={`text-xs ${canAddMore && !isPending ? "text-muted-foreground" : "text-muted-foreground/50"}`}
+                      className={`text-xs ${canAddMore && !isPending ? "text-destructive" : "text-muted-foreground/50"}`}
                     >
                       {isPending
                         ? "Please wait while photos are being uploaded"
                         : canAddMore
-                          ? "PNG, JPG, WEBP up to 4MB each"
+                          ? "PNG, JPG, WEBP up to 4.5MB each"
                           : "Remove a photo to add more"}
                     </p>
                   </div>

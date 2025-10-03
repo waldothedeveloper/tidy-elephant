@@ -8,6 +8,11 @@ export const imageFileSchema = v.pipe(
 );
 
 // Work photos upload schema
+const workPhotoUrlSchema = v.pipe(
+  v.string(),
+  v.url("Photo URL must be valid")
+);
+
 export const workPhotosUploadSchema = v.object({
   photos: v.pipe(
     v.array(imageFileSchema),
@@ -15,5 +20,11 @@ export const workPhotosUploadSchema = v.object({
     v.maxLength(8, "Maximum 8 photos allowed")
   ),
 });
+
+export const workPhotoUrlsSchema = v.pipe(
+  v.array(workPhotoUrlSchema),
+  v.minLength(3, "At least 3 photo URLs are required"),
+  v.maxLength(8, "Maximum 8 photo URLs allowed")
+);
 
 export type WorkPhotosUploadInput = v.InferInput<typeof workPhotosUploadSchema>;

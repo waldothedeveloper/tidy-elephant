@@ -102,7 +102,7 @@ welcome → verify-phone → type-of-business → [basic-info OR business-info] 
 ### 7. Upload Work Photos (`/onboarding/upload-work-photos/`)
 
 - **File**: `src/app/onboarding/upload-work-photos/page.tsx`
-- **Action**: `uploadWorkPhotosAction`
+- **Actions**: `uploadSingleWorkPhotoAction`, `finalizeWorkPhotosAction`
 - **Navigation**: Next → `/onboarding/select-availability`
 - **Purpose**: Upload 3–8 work photos to showcase services
 - **Requirements**: Minimum 3 photos, maximum 8 photos
