@@ -65,6 +65,12 @@ export {
   saveProviderStripeAccountDAL,
 } from "./stripe";
 export { getUserProfileDAL } from "./user-profile";
+export {
+  initializeProviderOnboardingFlowDAL,
+  getProviderOnboardingFlowDAL,
+  advanceProviderOnboardingToTrustSafetyDAL,
+} from "./flow";
+export type { ProviderOnboardingFlowStep } from "./flow";
 
 export async function saveBusinessInfoDAL(
   businessInfo: BusinessInfoFormOutput

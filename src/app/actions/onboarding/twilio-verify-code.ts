@@ -7,8 +7,8 @@ import {
   verificationCodeSchema,
 } from "@/lib/schemas/phone-verification-schemas";
 
-import { verifyTwilioCodeDAL } from "@/lib/dal/twilio";
 import { auth } from "@clerk/nextjs/server";
+import { verifyTwilioCodeDAL } from "@/lib/dal/onboarding/twilio";
 
 interface VerificationResult {
   success: boolean;

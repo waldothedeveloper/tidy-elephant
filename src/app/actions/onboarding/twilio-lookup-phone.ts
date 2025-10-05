@@ -5,7 +5,7 @@ import * as v from "valibot";
 import {
   e164PhoneNumberSchema,
   lookupTwilioPhoneNumberDAL,
-} from "@/lib/dal/twilio";
+} from "@/lib/dal/onboarding/twilio";
 
 import { auth } from "@clerk/nextjs/server";
 

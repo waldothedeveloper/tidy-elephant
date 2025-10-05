@@ -7,7 +7,7 @@ export {
   lookupTwilioPhoneNumberDAL,
   sendTwilioVerificationCodeDAL,
   verifyTwilioCodeDAL,
-} from "@/lib/dal/twilio";
+} from "@/lib/dal/onboarding/twilio";
 
 /*
 
