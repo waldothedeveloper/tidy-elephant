@@ -6,6 +6,7 @@ import * as paymentSchema from "./payment-schema";
 import * as providerSchema from "./provider-schema";
 import * as reviewSchema from "./review-schema";
 import * as userSchema from "./user-schema";
+import * as onboardingSchema from "./onboarding-schema";
 
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { Pool } from "@neondatabase/serverless";
@@ -13,6 +14,7 @@ import { Pool } from "@neondatabase/serverless";
 const schema = {
   ...userSchema,
   ...providerSchema,
+  ...onboardingSchema,
   ...clientSchema,
   ...categorySchema,
   ...bookingSchema,

@@ -1,39 +1,64 @@
 import { Check } from "lucide-react";
 
-type StepsState = {
-  id: string;
-  name: string;
-  description: string;
-  status: "complete" | "current" | "upcoming";
+import {
+  getProviderOnboardingFlowDAL,
+  type ProviderOnboardingFlowStep,
+} from "@/lib/dal/onboarding";
+import type {
+  ProviderOnboardingStepName,
+  ProviderOnboardingStepStatus,
+} from "@/types/onboarding";
+
+type StepState = {
+  id?: string;
+  stepName: ProviderOnboardingStepName;
+  stepDescription: string;
+  status: ProviderOnboardingStepStatus;
+  sortOrder: number;
 };
 
-const steps: StepsState[] = [
+const FALLBACK_STEPS: StepState[] = [
   {
-    id: "Step 1",
-    name: "Build Profile",
-    description: "Add your info, services, and photos.",
+    stepName: "Build Profile",
+    stepDescription: "Add your info, services, and photos.",
     status: "current",
+    sortOrder: 1,
   },
   {
-    id: "Step 2",
-    name: "Trust & Safety",
-    description: "Verify your identity & submit the background check.",
+    stepName: "Trust & Safety",
+    stepDescription: "Verify your identity & submit the background check.",
     status: "upcoming",
+    sortOrder: 2,
   },
   {
-    id: "Step 3",
-    name: "Onboarding Fee",
-    description: "Pay your setup fee to go live.",
+    stepName: "Onboarding Fee",
+    stepDescription: "Pay your setup fee to go live.",
     status: "upcoming",
+    sortOrder: 3,
   },
 ];
 
-export function OnboardingProgress() {
+const toStepState = (step: ProviderOnboardingFlowStep): StepState => ({
+  id: step.id,
+  stepName: step.stepName,
+  stepDescription: step.stepDescription,
+  status: step.status,
+  sortOrder: step.sortOrder,
+});
+
+export async function OnboardingProgress() {
+  const flowResult = await getProviderOnboardingFlowDAL();
+
+  const steps =
+    flowResult.success && flowResult.data.length > 0
+      ? flowResult.data.map(toStepState)
+      : FALLBACK_STEPS;
+
   return (
     <nav aria-label="Progress" className="w-full">
       <ol role="list" className="overflow-hidden flex space-y-0">
         {steps.map((step, stepIdx) => (
-          <li key={step.name} className="relative flex-1">
+          <li key={step.id ?? step.stepName} className="relative flex-1">
             {step.status === "complete" ? (
               <>
                 <div className="group relative flex flex-col items-center">
@@ -47,10 +72,10 @@ export function OnboardingProgress() {
                   </span>
                   <span className="flex min-w-0 flex-col text-center">
                     <span className="text-sm font-medium text-foreground">
-                      {step.name}
+                      {step.stepName}
                     </span>
                     <span className="hidden md:block text-xs text-muted-foreground">
-                      {step.description}
+                      {step.stepDescription}
                     </span>
                   </span>
                 </div>
@@ -77,10 +102,10 @@ export function OnboardingProgress() {
                   </span>
                   <span className="flex min-w-0 flex-col text-center">
                     <span className="text-sm font-medium text-primary">
-                      {step.name}
+                      {step.stepName}
                     </span>
                     <span className="hidden md:block text-xs text-muted-foreground">
-                      {step.description}
+                      {step.stepDescription}
                     </span>
                   </span>
                 </div>
@@ -104,10 +129,10 @@ export function OnboardingProgress() {
                   </span>
                   <span className="flex min-w-0 flex-col text-center">
                     <span className="text-sm font-medium text-muted-foreground">
-                      {step.name}
+                      {step.stepName}
                     </span>
                     <span className="hidden md:block text-xs text-muted-foreground">
-                      {step.description}
+                      {step.stepDescription}
                     </span>
                   </span>
                 </div>

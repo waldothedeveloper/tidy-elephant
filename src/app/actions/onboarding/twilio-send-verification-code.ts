@@ -2,9 +2,9 @@
 
 import * as v from "valibot";
 
-import { sendTwilioVerificationCodeDAL } from "@/lib/dal/twilio";
-import { e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
 import { auth } from "@clerk/nextjs/server";
+import { e164USPhoneNumberSchema } from "@/lib/schemas/phone-verification-schemas";
+import { sendTwilioVerificationCodeDAL } from "@/lib/dal/onboarding/twilio";
 
 interface SendVerificationResult {
   success: boolean;

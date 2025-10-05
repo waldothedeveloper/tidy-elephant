@@ -1,6 +1,7 @@
 "use server";
 
 import { addClerkProviderMetadataDAL } from "@/lib/dal/clerk";
+import { initializeProviderOnboardingFlowDAL } from "@/lib/dal/onboarding";
 import { auth } from "@clerk/nextjs/server";
 
 interface BeginProviderOnboardingResult {
@@ -26,6 +27,15 @@ export async function beginProviderOnboardingAction(): Promise<BeginProviderOnbo
       return {
         success: false,
         error: "Unable to begin onboarding process. Please try again.",
+      };
+    }
+
+    const onboardingFlowResult = await initializeProviderOnboardingFlowDAL();
+
+    if (!onboardingFlowResult.success) {
+      return {
+        success: false,
+        error: "Failed to set up onboarding steps. Please try again.",
       };
     }
 
