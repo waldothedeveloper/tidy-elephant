@@ -1,6 +1,9 @@
 "use server";
 
-import { advanceProviderOnboardingToTrustSafetyDAL } from "@/lib/dal/onboarding";
+import {
+  advanceProviderOnboardingToTrustSafetyDAL,
+  type ProviderOnboardingStepUpdateInput,
+} from "@/lib/dal/onboarding";
 import {
   createErrorResponse,
   createSuccessResponse,
@@ -9,9 +12,24 @@ import {
 
 type AdvanceOnboardingResponse = ApiResponse<{ message: string }>;
 
-export async function advanceToTrustSafetyAction(): Promise<AdvanceOnboardingResponse> {
+type AdvanceToTrustSafetyActionOptions = {
+  updates?: ProviderOnboardingStepUpdateInput[];
+};
+
+const defaultStepUpdates: ProviderOnboardingStepUpdateInput[] = [
+  { stepName: "Provider Activation Fee", status: "complete" },
+  { stepName: "Trust & Safety", status: "current" },
+];
+
+export async function advanceToTrustSafetyAction(
+  options: AdvanceToTrustSafetyActionOptions = {}
+): Promise<AdvanceOnboardingResponse> {
   try {
-    const result = await advanceProviderOnboardingToTrustSafetyDAL();
+    const updates = options.updates ?? defaultStepUpdates;
+
+    const result = await advanceProviderOnboardingToTrustSafetyDAL({
+      updates,
+    });
 
     if (!result.success) {
       return createErrorResponse({
