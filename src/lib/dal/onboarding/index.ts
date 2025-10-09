@@ -70,7 +70,10 @@ export {
   getProviderOnboardingFlowDAL,
   advanceProviderOnboardingToTrustSafetyDAL,
 } from "./flow";
-export type { ProviderOnboardingFlowStep } from "./flow";
+export type {
+  ProviderOnboardingFlowStep,
+  ProviderOnboardingStepUpdateInput,
+} from "./flow";
 
 export async function saveBusinessInfoDAL(
   businessInfo: BusinessInfoFormOutput

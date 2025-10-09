@@ -23,6 +23,11 @@ export type ProviderOnboardingFlowStep = {
   completedAt: Date | null;
 };
 
+export type ProviderOnboardingStepUpdateInput = {
+  stepName: ProviderOnboardingStepName;
+  status: ProviderOnboardingStepStatus;
+};
+
 export async function initializeProviderOnboardingFlowDAL(): Promise<InitializeOnboardingFlowResult> {
   try {
     const clerkUserId = await enforceAuthProvider();
@@ -150,8 +155,30 @@ export async function getProviderOnboardingFlowDAL(): Promise<GetOnboardingFlowR
 
 type AdvanceOnboardingFlowResult = ProviderOnboardingFlowMutationResult;
 
-export async function advanceProviderOnboardingToTrustSafetyDAL(): Promise<AdvanceOnboardingFlowResult> {
+type AdvanceProviderOnboardingOptions = {
+  updates: ProviderOnboardingStepUpdateInput[];
+};
+
+export async function advanceProviderOnboardingToTrustSafetyDAL(
+  options: AdvanceProviderOnboardingOptions
+): Promise<AdvanceOnboardingFlowResult> {
   try {
+    const uniqueUpdates = new Map<
+      ProviderOnboardingStepName,
+      ProviderOnboardingStepStatus
+    >();
+
+    for (const update of options.updates) {
+      uniqueUpdates.set(update.stepName, update.status);
+    }
+
+    if (uniqueUpdates.size === 0) {
+      return {
+        success: false,
+        error: "No onboarding step updates provided.",
+      };
+    }
+
     const clerkUserId = await enforceAuthProvider();
 
     const [user] = await db
@@ -170,33 +197,21 @@ export async function advanceProviderOnboardingToTrustSafetyDAL(): Promise<Advan
     const now = new Date();
 
     await db.transaction(async (tx) => {
-      await tx
-        .update(providerOnboardingFlowTable)
-        .set({
-          status: "complete",
-          completedAt: now,
-          updatedAt: now,
-        })
-        .where(
-          and(
-            eq(providerOnboardingFlowTable.userId, user.id),
-            eq(providerOnboardingFlowTable.sortOrder, 1)
-          )
-        );
-
-      await tx
-        .update(providerOnboardingFlowTable)
-        .set({
-          status: "current",
-          completedAt: null,
-          updatedAt: now,
-        })
-        .where(
-          and(
-            eq(providerOnboardingFlowTable.userId, user.id),
-            eq(providerOnboardingFlowTable.sortOrder, 2)
-          )
-        );
+      for (const [stepName, status] of uniqueUpdates) {
+        await tx
+          .update(providerOnboardingFlowTable)
+          .set({
+            status,
+            completedAt: status === "complete" ? now : null,
+            updatedAt: now,
+          })
+          .where(
+            and(
+              eq(providerOnboardingFlowTable.userId, user.id),
+              eq(providerOnboardingFlowTable.stepName, stepName)
+            )
+          );
+      }
     });
 
     return {
