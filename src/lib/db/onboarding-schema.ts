@@ -14,7 +14,7 @@ import { usersTable } from "./user-schema";
 export const providerOnboardingStepEnum = pgEnum("provider_onboarding_step", [
   "Build Profile",
   "Trust & Safety",
-  "Onboarding Fee",
+  "Provider Activation Fee",
 ]);
 
 export const providerOnboardingStatusEnum = pgEnum(

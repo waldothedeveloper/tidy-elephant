@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function OnboardingWelcomePage() {
   return (
-    <div className="min-h-dvh">
+    <div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <BeginOnboardingButton />

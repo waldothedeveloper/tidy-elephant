@@ -25,14 +25,14 @@ const FALLBACK_STEPS: StepState[] = [
     sortOrder: 1,
   },
   {
-    stepName: "Trust & Safety",
-    stepDescription: "Verify your identity & submit the background check.",
+    stepName: "Provider Activation Fee",
+    stepDescription: "Helps cover the cost of verification & account setup.",
     status: "upcoming",
     sortOrder: 2,
   },
   {
-    stepName: "Onboarding Fee",
-    stepDescription: "Pay your setup fee to go live.",
+    stepName: "Trust & Safety",
+    stepDescription: "Verify your identity & submit the background check.",
     status: "upcoming",
     sortOrder: 3,
   },
@@ -55,7 +55,7 @@ export async function OnboardingProgress() {
       : FALLBACK_STEPS;
 
   return (
-    <nav aria-label="Progress" className="w-full">
+    <nav aria-label="Progress">
       <ol role="list" className="overflow-hidden flex space-y-0">
         {steps.map((step, stepIdx) => (
           <li key={step.id ?? step.stepName} className="relative flex-1">

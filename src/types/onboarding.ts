@@ -1,12 +1,9 @@
 export type ProviderOnboardingStepName =
   | "Build Profile"
   | "Trust & Safety"
-  | "Onboarding Fee";
+  | "Provider Activation Fee";
 
-export type ProviderOnboardingStepStatus =
-  | "complete"
-  | "current"
-  | "upcoming";
+export type ProviderOnboardingStepStatus = "complete" | "current" | "upcoming";
 
 export type ProviderOnboardingFlowMutationResult =
   | { success: true; message: string }
