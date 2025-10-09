@@ -10,7 +10,7 @@ export default async function OnboardingLayout({
 }) {
   return (
     <div>
-      <div className="relative flex flex-col md:flex-row px-2 py-8 lg:px-8 items-center border-b border-muted-foreground/10">
+      <div className="relative flex flex-col md:flex-row px-2 py-8 lg:px-8 items-center border-b border-muted-foreground/10 w-full">
         <Link href="/" className="flex shrink-0 items-center">
           <p className="text-primary text-2xl font-semibold uppercase">Tidy</p>
           <Image
@@ -21,7 +21,7 @@ export default async function OnboardingLayout({
             alt="Tidy Elephant Logo"
           />
         </Link>
-        <div className="mt-6 md:mt-0 flex max-w-7xl flex-1 w-full">
+        <div className="mt-6 md:mt-0 flex-1 w-full">
           <OnboardingProgress />
         </div>
       </div>

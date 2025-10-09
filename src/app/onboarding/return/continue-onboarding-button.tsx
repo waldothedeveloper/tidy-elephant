@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
+const ACTIVATION_FEE_PATH = "/onboarding/activation-fee";
+
 export function ContinueOnboardingButton() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -21,7 +23,7 @@ export function ContinueOnboardingButton() {
       }
 
       toast.success(result.data.message);
-      router.push("/onboarding/background-check");
+      router.push(ACTIVATION_FEE_PATH);
     });
   };
 
