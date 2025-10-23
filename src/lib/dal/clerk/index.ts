@@ -19,19 +19,19 @@ export {
 
 */
 
-class AuthenticationError extends Error {
-  constructor(message = "Authentication required") {
-    super(message);
-    this.name = "AuthenticationError";
-  }
-}
+const makeError = (defaultMessage: string) => {
+  return class extends Error {
+    constructor(message = defaultMessage) {
+      super(message);
+      Object.setPrototypeOf(this, new.target.prototype);
+      this.name = new.target.name;
+    }
+  };
+};
 
-class AuthorizationError extends Error {
-  constructor(message = "Insufficient permissions") {
-    super(message);
-    this.name = "AuthorizationError";
-  }
-}
+class AuthenticationError extends makeError("Authentication required") {}
+
+class AuthorizationError extends makeError("Insufficient permissions") {}
 
 export const enforceAuth = async (): Promise<User["id"]> => {
   const { userId } = await auth();

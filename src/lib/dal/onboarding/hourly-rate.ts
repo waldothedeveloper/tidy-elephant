@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { CreateHourlyRateOutput } from "@/app/onboarding/hourly-rate/hourly-rate-schema";
+import type { CreateHourlyRateOutput } from "@/app/onboarding/(provider-flow)/hourly-rate/hourly-rate-schema";
 import { db } from "@/lib/db";
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import { eq } from "drizzle-orm";

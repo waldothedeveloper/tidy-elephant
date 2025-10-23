@@ -1,9 +1,6 @@
 "use client";
 
-import { ArrowLeft, Phone } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Phone } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VerifyPhoneLoading() {
@@ -12,12 +9,12 @@ export default function VerifyPhoneLoading() {
       {/* Header Navigation */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mt-6 flex items-center justify-between gap-x-6">
-          <Button asChild variant="outline">
+          {/* <Button asChild variant="outline">
             <Link href="/onboarding/basic-info">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Link>
-          </Button>
+          </Button> */}
           <Skeleton className="h-10 w-36" />
         </div>
       </div>

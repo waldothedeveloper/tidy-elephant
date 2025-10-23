@@ -13,7 +13,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-const SETUP_STRIPE_ACCOUNT_PATH = "/onboarding/setup-account";
+const SELECT_LOCATION = "/onboarding/select-location";
 
 export default function ProviderOnboardingUploadWorkPhotos() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -99,8 +99,9 @@ export default function ProviderOnboardingUploadWorkPhotos() {
         const singleFileFormData = new FormData();
         singleFileFormData.append("photo", file);
 
-        const uploadResult =
-          await uploadSingleWorkPhotoAction(singleFileFormData);
+        const uploadResult = await uploadSingleWorkPhotoAction(
+          singleFileFormData
+        );
 
         if (!uploadResult.success || !uploadResult.url) {
           throw new Error(
@@ -135,7 +136,7 @@ export default function ProviderOnboardingUploadWorkPhotos() {
     startTransition(async () => {
       try {
         await submitPromise;
-        router.push(SETUP_STRIPE_ACCOUNT_PATH);
+        router.push(SELECT_LOCATION);
       } catch {
         // Errors are handled via toast notifications
       }
@@ -195,8 +196,8 @@ export default function ProviderOnboardingUploadWorkPhotos() {
                   !canAddMore || isPending
                     ? "border-muted-foreground/10 bg-muted/20"
                     : isDragOver
-                      ? "border-primary bg-primary/5"
-                      : "border-muted-foreground/25 hover:border-muted-foreground/50"
+                    ? "border-primary bg-primary/5"
+                    : "border-muted-foreground/25 hover:border-muted-foreground/50"
                 }`}
                 onDragOver={
                   canAddMore && !isPending ? handleDragOver : undefined
@@ -208,11 +209,19 @@ export default function ProviderOnboardingUploadWorkPhotos() {
               >
                 <div className="space-y-2">
                   <Upload
-                    className={`mx-auto size-12 ${canAddMore && !isPending ? "text-muted-foreground" : "text-muted-foreground/50"}`}
+                    className={`mx-auto size-12 ${
+                      canAddMore && !isPending
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground/50"
+                    }`}
                   />
                   <div className="space-y-1">
                     <p
-                      className={`text-sm font-medium ${canAddMore && !isPending ? "text-foreground" : "text-muted-foreground/50"}`}
+                      className={`text-sm font-medium ${
+                        canAddMore && !isPending
+                          ? "text-foreground"
+                          : "text-muted-foreground/50"
+                      }`}
                     >
                       {isPending ? (
                         "Uploading photos..."
@@ -236,13 +245,17 @@ export default function ProviderOnboardingUploadWorkPhotos() {
                       )}
                     </p>
                     <p
-                      className={`text-xs ${canAddMore && !isPending ? "text-destructive" : "text-muted-foreground/50"}`}
+                      className={`text-xs ${
+                        canAddMore && !isPending
+                          ? "text-destructive"
+                          : "text-muted-foreground/50"
+                      }`}
                     >
                       {isPending
                         ? "Please wait while photos are being uploaded"
                         : canAddMore
-                          ? "PNG, JPG, WEBP up to 4.5MB each"
-                          : "Remove a photo to add more"}
+                        ? "PNG, JPG, WEBP up to 4.5MB each"
+                        : "Remove a photo to add more"}
                     </p>
                   </div>
                 </div>

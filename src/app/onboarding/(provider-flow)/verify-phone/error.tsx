@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 
-export default function BusinessInfoError({
+export default function VerifyPhoneError({
   error,
   reset,
 }: {
@@ -13,14 +13,20 @@ export default function BusinessInfoError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Business Info Error:", error);
+    console.error("Phone Verification Error:", error);
   }, [error]);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header Navigation */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mt-6 flex items-center justify-end gap-x-6">
+        <div className="mt-6 flex items-center justify-between gap-x-6">
+          {/* <Button asChild variant="outline">
+            <Link href="/onboarding/basic-info">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Link>
+          </Button> */}
           <Button variant="outline" disabled>
             Submit & Next Step
           </Button>
@@ -34,14 +40,14 @@ export default function BusinessInfoError({
             {/* Error Message */}
             <div className="space-y-6">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Business Information</p>
+                <p className="text-sm text-muted-foreground">Create Profile</p>
                 <h1 className="text-4xl font-light text-destructive tracking-tight">
                   Something went wrong
                 </h1>
               </div>
               <p className="text-lg text-destructive max-w-md mx-auto leading-relaxed">
-                We are having trouble saving your business information right now.
-                This is usually temporary.
+                We are having trouble with phone verification right now. This is
+                usually temporary.
               </p>
             </div>
 
@@ -53,7 +59,7 @@ export default function BusinessInfoError({
                 className="min-w-32"
                 variant="outline"
               >
-                <RefreshCw className="size-4 mr-2" />
+                <RefreshCw className="w-4 h-4 mr-2" />
                 Try Again
               </Button>
             </div>
@@ -64,7 +70,9 @@ export default function BusinessInfoError({
                 You can contact support if this issue continues by clicking
                 <Button asChild variant="link" className="py-0 pl-1">
                   <Link
-                    href={`mailto:support@easeandarrange.com?subject=Business Info Issue&body=I encountered an error while entering business information. Error ID: ${error.digest || "N/A"}`}
+                    href={`mailto:support@easeandarrange.com?subject=Category Selection Issue&body=I encountered an error while selecting service categories. Error ID: ${
+                      error.digest || "N/A"
+                    }`}
                   >
                     here
                   </Link>

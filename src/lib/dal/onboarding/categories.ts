@@ -4,11 +4,11 @@ import {
   providerCategoriesTable,
 } from "@/lib/db/category-schema";
 
-import type { CategoriesFormOutput } from "@/app/onboarding/select-categories/categories-schema";
+import type { CategoriesFormOutput } from "@/app/onboarding/(provider-flow)/select-categories/categories-schema";
 import { db } from "@/lib/db";
 import { enforceAuthProvider } from "../clerk";
-import { usersTable } from "@/lib/db/user-schema";
 import { providerProfilesTable } from "@/lib/db/provider-schema";
+import { usersTable } from "@/lib/db/user-schema";
 
 export async function getCategoriesDAL(): Promise<{
   success: boolean;
@@ -69,14 +69,12 @@ export async function saveProviderCategoriesDAL(
       .from(providerProfilesTable)
       .where(eq(providerProfilesTable.userId, user.id))
       .limit(1);
-    
+
     if (!providerProfile) {
       // Create provider profile if it doesn't exist
-      await db
-        .insert(providerProfilesTable)
-        .values({
-          userId: user.id,
-        });
+      await db.insert(providerProfilesTable).values({
+        userId: user.id,
+      });
     }
 
     // Verify all category IDs exist in the database
