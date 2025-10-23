@@ -5,7 +5,7 @@ import * as v from "valibot";
 import {
   CreateHourlyRateInput,
   createHourlyRateSchema,
-} from "@/app/onboarding/hourly-rate/hourly-rate-schema";
+} from "@/app/onboarding/(provider-flow)/hourly-rate/hourly-rate-schema";
 
 import { auth } from "@clerk/nextjs/server";
 import { saveProviderHourlyRateDAL } from "@/lib/dal/onboarding/hourly-rate";

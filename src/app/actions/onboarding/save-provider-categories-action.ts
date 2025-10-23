@@ -5,7 +5,7 @@ import * as v from "valibot";
 import {
   categoriesFormSchema,
   type CategoriesFormInput,
-} from "@/app/onboarding/select-categories/categories-schema";
+} from "@/app/onboarding/(provider-flow)/select-categories/categories-schema";
 import { saveProviderCategoriesDAL } from "@/lib/dal/onboarding/categories";
 import { auth } from "@clerk/nextjs/server";
 

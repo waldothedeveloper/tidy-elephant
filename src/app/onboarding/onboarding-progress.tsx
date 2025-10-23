@@ -10,11 +10,10 @@ import type {
 } from "@/types/onboarding";
 
 type StepState = {
-  id?: string;
   stepName: ProviderOnboardingStepName;
-  stepDescription: string;
+  readonly stepDescription: string;
   status: ProviderOnboardingStepStatus;
-  sortOrder: number;
+  readonly sortOrder: number;
 };
 
 const FALLBACK_STEPS: StepState[] = [
@@ -39,7 +38,6 @@ const FALLBACK_STEPS: StepState[] = [
 ];
 
 const toStepState = (step: ProviderOnboardingFlowStep): StepState => ({
-  id: step.id,
   stepName: step.stepName,
   stepDescription: step.stepDescription,
   status: step.status,
@@ -58,7 +56,7 @@ export async function OnboardingProgress() {
     <nav aria-label="Progress">
       <ol role="list" className="overflow-hidden flex space-y-0">
         {steps.map((step, stepIdx) => (
-          <li key={step.id ?? step.stepName} className="relative flex-1">
+          <li key={step.sortOrder} className="relative flex-1">
             {step.status === "complete" ? (
               <>
                 <div className="group relative flex flex-col items-center">

@@ -2,7 +2,7 @@
 
 import * as v from "valibot";
 
-import { availabilitySchema } from "@/app/onboarding/select-availability/availability-schema";
+import { availabilitySchema } from "@/app/onboarding/(provider-flow)/select-availability/availability-schema";
 import type { UserAvailability } from "@/features/onboarding/inngest/functions";
 import { enforceAuthProvider } from "@/lib/dal/clerk";
 import { getUserProfileDAL } from "@/lib/dal/onboarding/user-profile";

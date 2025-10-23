@@ -2,12 +2,13 @@
 
 import * as v from "valibot";
 
-import { enforceAuthProvider } from "@/lib/dal/clerk";
-import { put } from "@vercel/blob";
 import {
   imageFileSchema,
   workPhotoUrlsSchema,
-} from "@/app/onboarding/upload-work-photos/work-photos-schema";
+} from "@/app/onboarding/(provider-flow)/upload-work-photos/work-photos-schema";
+
+import { enforceAuthProvider } from "@/lib/dal/clerk";
+import { put } from "@vercel/blob";
 import { saveProviderWorkPhotosDAL } from "@/lib/dal/onboarding/work-photos";
 
 export async function uploadSingleWorkPhotoAction(formData: FormData) {

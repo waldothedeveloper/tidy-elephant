@@ -1,16 +1,10 @@
 import "server-only";
 
-import {
-  addressesTable,
-  businessAddressesTable,
-} from "@/lib/db/address-schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-import type { BusinessInfoFormOutput } from "@/app/onboarding/business-info/business-info-schema";
+import { addressesTable } from "@/lib/db/address-schema";
+// import type { BusinessInfoFormOutput } from "@/app/onboarding/business-info/business-info-schema";
 import { db } from "@/lib/db";
-import { enforceAuthProvider } from "@/lib/dal/clerk";
-import { providerProfilesTable } from "@/lib/db/provider-schema";
-import { usersTable } from "@/lib/db/user-schema";
 
 type AddressInfo = {
   addressLine1: string;
@@ -61,99 +55,99 @@ async function findOrCreateAddress(addressInfo: AddressInfo): Promise<string> {
 }
 
 export {
-  getProviderStripeAccountDAL,
-  saveProviderStripeAccountDAL,
-} from "./stripe";
-export { getUserProfileDAL } from "./user-profile";
-export {
-  initializeProviderOnboardingFlowDAL,
-  getProviderOnboardingFlowDAL,
   advanceProviderOnboardingToTrustSafetyDAL,
+  getProviderOnboardingFlowDAL,
+  initializeProviderOnboardingFlowDAL,
 } from "./flow";
 export type {
   ProviderOnboardingFlowStep,
   ProviderOnboardingStepUpdateInput,
 } from "./flow";
+export {
+  getProviderStripeAccountDAL,
+  saveProviderStripeAccountDAL,
+} from "./stripe";
+export { getUserProfileDAL } from "./user-profile";
 
-export async function saveBusinessInfoDAL(
-  businessInfo: BusinessInfoFormOutput
-): Promise<{
-  success: boolean;
-  message?: string;
-  error?: string;
-}> {
-  try {
-    const clerkUserId = await enforceAuthProvider();
+// export async function saveBusinessInfoDAL(
+//   businessInfo: unknown
+// ): Promise<{
+//   success: boolean;
+//   message?: string;
+//   error?: string;
+// }> {
+//   try {
+//     const clerkUserId = await enforceAuthProvider();
 
-    const [user] = await db
-      .select({ id: usersTable.id })
-      .from(usersTable)
-      .where(eq(usersTable.clerkUserID, clerkUserId))
-      .limit(1);
+//     const [user] = await db
+//       .select({ id: usersTable.id })
+//       .from(usersTable)
+//       .where(eq(usersTable.clerkUserID, clerkUserId))
+//       .limit(1);
 
-    if (!user) {
-      throw new Error("User not found in database");
-    }
+//     if (!user) {
+//       throw new Error("User not found in database");
+//     }
 
-    const addressId = await findOrCreateAddress({
-      addressLine1: businessInfo.addressLine1,
-      addressLine2: businessInfo.addressLine2 || null,
-      city: businessInfo.city,
-      state: businessInfo.state,
-      postalCode: businessInfo.postalCode,
-    });
+//     const addressId = await findOrCreateAddress({
+//       addressLine1: businessInfo.addressLine1,
+//       addressLine2: businessInfo.addressLine2 || null,
+//       city: businessInfo.city,
+//       state: businessInfo.state,
+//       postalCode: businessInfo.postalCode,
+//     });
 
-    const [providerProfile] = await db
-      .insert(providerProfilesTable)
-      .values({
-        userId: user.id,
-        businessType: businessInfo.businessType,
-        businessName: businessInfo.businessName,
-        businessPhone: businessInfo.businessPhone,
-        employerEin: businessInfo.employerEin,
-      })
-      .onConflictDoUpdate({
-        target: providerProfilesTable.userId,
-        set: {
-          businessType: businessInfo.businessType,
-          businessName: businessInfo.businessName,
-          businessPhone: businessInfo.businessPhone,
-          employerEin: businessInfo.employerEin,
-          updatedAt: new Date(),
-        },
-      })
-      .returning({ id: providerProfilesTable.id });
+//     const [providerProfile] = await db
+//       .insert(providerProfilesTable)
+//       .values({
+//         userId: user.id,
+//         businessType: businessInfo.businessType,
+//         businessName: businessInfo.businessName,
+//         businessPhone: businessInfo.businessPhone,
+//         employerEin: businessInfo.employerEin,
+//       })
+//       .onConflictDoUpdate({
+//         target: providerProfilesTable.userId,
+//         set: {
+//           businessType: businessInfo.businessType,
+//           businessName: businessInfo.businessName,
+//           businessPhone: businessInfo.businessPhone,
+//           employerEin: businessInfo.employerEin,
+//           updatedAt: new Date(),
+//         },
+//       })
+//       .returning({ id: providerProfilesTable.id });
 
-    const [existingBusinessAddress] = await db
-      .select()
-      .from(businessAddressesTable)
-      .where(
-        and(
-          eq(businessAddressesTable.providerProfileId, providerProfile.id),
-          eq(businessAddressesTable.addressId, addressId),
-          eq(businessAddressesTable.role, "work")
-        )
-      )
-      .limit(1);
+//     const [existingBusinessAddress] = await db
+//       .select()
+//       .from(businessAddressesTable)
+//       .where(
+//         and(
+//           eq(businessAddressesTable.providerProfileId, providerProfile.id),
+//           eq(businessAddressesTable.addressId, addressId),
+//           eq(businessAddressesTable.role, "work")
+//         )
+//       )
+//       .limit(1);
 
-    if (!existingBusinessAddress) {
-      await db.insert(businessAddressesTable).values({
-        providerProfileId: providerProfile.id,
-        addressId: addressId,
-        role: "work",
-        isPrimary: true,
-      });
-    }
+//     if (!existingBusinessAddress) {
+//       await db.insert(businessAddressesTable).values({
+//         providerProfileId: providerProfile.id,
+//         addressId: addressId,
+//         role: "work",
+//         isPrimary: true,
+//       });
+//     }
 
-    return {
-      success: true,
-      message: "Business information saved successfully",
-    };
-  } catch (error) {
-    console.error("Error in saveBusinessInfoDAL:", error);
-    return {
-      success: false,
-      error: "Failed to save business information",
-    };
-  }
-}
+//     return {
+//       success: true,
+//       message: "Business information saved successfully",
+//     };
+//   } catch (error) {
+//     console.error("Error in saveBusinessInfoDAL:", error);
+//     return {
+//       success: false,
+//       error: "Failed to save business information",
+//     };
+//   }
+// }
